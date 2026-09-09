@@ -1,0 +1,7 @@
+[
+  { "sport": "Running", "pro": "Eliud Kipchoge", "action": "sub-2 marathon cruise stride", "youtubeId": "MoxFkJlVZlA", "startS": 30, "endS": 55, "anchorS": 40 },
+  { "sport": "Running", "pro": "Eliud Kipchoge", "action": "Berlin world-record finish", "youtubeId": "hxDn4EEMank", "startS": 15, "endS": 40, "anchorS": 25 },
+  { "sport": "Tennis", "pro": "Rafael Nadal", "action": "Wimbledon slow-motion forehand", "youtubeId": "ZTURAxjKzp0", "startS": 5, "endS": 30, "anchorS": 12 },
+  { "sport": "Tennis", "pro": "Jannik Sinner", "action": "forehand winners", "youtubeId": "tSS5B6kXHyE", "startS": 8, "endS": 33, "anchorS": 15 },
+  { "sport": "Tennis", "pro": "Carlos Alcaraz", "action": "heavy topspin forehands", "youtubeId": "xgnfPASoKbY", "startS": 0, "endS": 25, "anchorS": 8 }
+]

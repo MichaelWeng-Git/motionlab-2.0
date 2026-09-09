@@ -1,0 +1,686 @@
+[
+  {
+    "id": "single-leg-balance",
+    "name": "Single-leg balance",
+    "sport": "general",
+    "target": "balance",
+    "desc": "full-body front view: standing tall balanced on the LEFT leg, RIGHT knee lifted to hip height with foot hanging relaxed, arms held slightly out to the sides, eyes open looking forward",
+    "dose": "3 × 30s each leg",
+    "muscles": "calves and core"
+  },
+  {
+    "id": "side-plank",
+    "name": "Side plank",
+    "sport": "general",
+    "target": "core",
+    "desc": "full-body view from the front: lying sideways propped on the RIGHT forearm, elbow under shoulder, body one straight line from head to stacked feet, hips lifted high, LEFT hand resting on the hip",
+    "dose": "3 × 20-30s each side",
+    "muscles": "abdominal and deep core muscles"
+  },
+  {
+    "id": "front-plank",
+    "name": "Front plank",
+    "sport": "general",
+    "target": "core",
+    "desc": "full-body side view facing left: horizontal plank propped on both forearms and toes, elbows under shoulders, body one rigid straight line from head to heels, face down, entire body visible",
+    "dose": "3 × 30-45s",
+    "muscles": "abdominal and deep core muscles"
+  },
+  {
+    "id": "dead-bug",
+    "name": "Dead bug",
+    "sport": "general",
+    "target": "core",
+    "desc": "lying face-up on the floor, viewed from the side: RIGHT arm extended back overhead just above the floor, LEFT leg extended straight and low, LEFT arm pointing straight up to the ceiling, RIGHT knee bent 90 degrees above the hip",
+    "dose": "3 × 10 each side",
+    "muscles": "abdominal and deep core muscles"
+  },
+  {
+    "id": "bird-dog",
+    "name": "Bird dog",
+    "sport": "general",
+    "target": "core",
+    "desc": "full-body side view: kneeling on all fours, RIGHT arm extended straight forward at shoulder height AND LEFT leg extended straight back at hip height, back flat and level, LEFT hand and RIGHT knee on the floor",
+    "dose": "3 × 8 each side",
+    "muscles": "abdominal and deep core muscles"
+  },
+  {
+    "id": "glute-bridge",
+    "name": "Glute bridge",
+    "sport": "general",
+    "target": "core",
+    "desc": "lying on the back viewed from the side: BOTH feet flat on the floor, both knees bent, hips lifted so knees, hips and shoulders form one straight line, arms flat at the sides",
+    "dose": "3 × 12",
+    "muscles": "glute muscles"
+  },
+  {
+    "id": "single-leg-glute-bridge",
+    "name": "Single-leg bridge",
+    "sport": "general",
+    "target": "core",
+    "desc": "lying on the back viewed from the side, hips lifted in a bridge on the RIGHT foot only; LEFT leg extended STRAIGHT in line with the thighs, clearly off the ground, toes pointing up, arms flat at the sides",
+    "dose": "3 × 8 each leg",
+    "muscles": "glute and hamstring muscles"
+  },
+  {
+    "id": "clamshell",
+    "name": "Clamshell",
+    "sport": "general",
+    "target": "hips",
+    "desc": "lying on the RIGHT side viewed from the front, head resting on the RIGHT arm, both knees bent 45 degrees, heels touching together, LEFT top knee lifted open toward the ceiling while the feet stay together, hips stacked",
+    "dose": "3 × 12 each side",
+    "muscles": "outer hip and glute muscles"
+  },
+  {
+    "id": "hip-flexor-stretch",
+    "name": "Hip flexor stretch",
+    "sport": "general",
+    "target": "mobility",
+    "desc": "full-body side view facing left: kneeling lunge with the RIGHT knee on the floor, LEFT foot planted flat in front, hips pressed gently forward, torso tall and upright, hands resting on the LEFT thigh",
+    "dose": "2 × 30s each side",
+    "muscles": "front-of-hip muscles"
+  },
+  {
+    "id": "bodyweight-squat",
+    "name": "Bodyweight squat",
+    "sport": "general",
+    "target": "legs",
+    "desc": "full-body side view: feet shoulder-width apart, hips pushed back in a mid squat with thighs near parallel, both arms extended straight forward at shoulder height, back flat, heels flat on the floor",
+    "dose": "3 × 12",
+    "muscles": "thigh and glute muscles"
+  },
+  {
+    "id": "walking-lunge",
+    "name": "Walking lunge",
+    "sport": "general",
+    "target": "legs",
+    "desc": "full-body side view facing left: mid-stride forward lunge, LEFT foot planted ahead with knee bent 90 degrees, RIGHT knee hovering just above the floor behind, torso upright, arms swinging naturally as if walking",
+    "dose": "3 × 10 each leg",
+    "muscles": "thigh and glute muscles"
+  },
+  {
+    "id": "reverse-lunge",
+    "name": "Reverse lunge",
+    "sport": "general",
+    "target": "legs",
+    "desc": "full-body side view facing left: LEFT foot forward and flat, RIGHT leg stepped far back with the knee bent low toward the floor, torso tall and upright, hands on hips",
+    "dose": "3 × 10 each leg",
+    "muscles": "thigh and glute muscles"
+  },
+  {
+    "id": "calf-raise",
+    "name": "Calf raise",
+    "sport": "general",
+    "target": "legs",
+    "desc": "full-body side view: standing tall with feet together, BOTH heels raised high off the floor, balancing on the balls of both feet, legs straight, arms relaxed at the sides",
+    "dose": "3 × 15",
+    "muscles": "calf muscles"
+  },
+  {
+    "id": "single-leg-calf-raise",
+    "name": "Single-leg calf raise",
+    "sport": "general",
+    "target": "legs",
+    "desc": "full-body side view: standing on the RIGHT foot only with the RIGHT heel raised high on the ball of the foot, LEFT knee bent with the LEFT foot lifted behind, arms slightly out for balance",
+    "dose": "3 × 10 each leg",
+    "muscles": "calf muscles"
+  },
+  {
+    "id": "step-up",
+    "name": "Step-up",
+    "sport": "general",
+    "target": "legs",
+    "desc": "full-body side view facing left: standing tall on a straight RIGHT leg, LEFT thigh raised parallel to the floor with the foot held flat as if placed on a high step, torso leaning slightly forward, hands on hips",
+    "dose": "3 × 8 each leg",
+    "muscles": "thigh and glute muscles"
+  },
+  {
+    "id": "lateral-lunge",
+    "name": "Lateral lunge",
+    "sport": "general",
+    "target": "legs",
+    "desc": "full-body front view: wide side lunge, RIGHT knee deeply bent over the RIGHT foot, LEFT leg extended straight out to the side with foot flat, hips pushed back, both arms reaching forward, chest up",
+    "dose": "3 × 8 each side",
+    "muscles": "thigh and glute muscles"
+  },
+  {
+    "id": "wall-sit",
+    "name": "Wall sit",
+    "sport": "general",
+    "target": "legs",
+    "desc": "full-body side view: static SEATED squat hold, back perfectly vertical, thighs parallel to the floor, knees bent 90 degrees, feet flat, arms hanging straight down at the sides",
+    "dose": "3 × 30s",
+    "muscles": "thigh muscles"
+  },
+  {
+    "id": "jump-squat",
+    "name": "Jump squat",
+    "sport": "general",
+    "target": "power",
+    "desc": "full-body front view: mid-air at the top of a vertical jump, body fully extended, legs straight beneath the hips, toes pointed down off the floor, both arms reaching straight overhead",
+    "dose": "3 × 8",
+    "muscles": "thigh, glute and calf muscles"
+  },
+  {
+    "id": "box-jump",
+    "name": "Box jump",
+    "sport": "general",
+    "target": "power",
+    "desc": "full-body side view: mid-air jump with BOTH knees tucked up high toward the chest, feet together under the hips, both arms reaching forward, torso leaning slightly forward",
+    "dose": "3 × 6",
+    "muscles": "thigh, glute and calf muscles"
+  },
+  {
+    "id": "lateral-hop",
+    "name": "Lateral hop",
+    "sport": "general",
+    "target": "power",
+    "desc": "full-body front view: hopping sideways to the RIGHT on the RIGHT leg only, RIGHT knee softly bent, LEFT foot held off the floor behind, arms out for balance, body leaning slightly into the hop",
+    "dose": "3 × 10 each leg",
+    "muscles": "thigh, glute and calf muscles"
+  },
+  {
+    "id": "skater-jump",
+    "name": "Skater jump",
+    "sport": "general",
+    "target": "power",
+    "desc": "full-body front view: landed on the bent LEFT leg, RIGHT leg swept behind and across the body without touching the floor, torso leaning forward, arms swinging across like a speed skater",
+    "dose": "3 × 8 each side",
+    "muscles": "thigh, glute and calf muscles"
+  },
+  {
+    "id": "push-up",
+    "name": "Push-up",
+    "sport": "general",
+    "target": "arms",
+    "desc": "full-body side view facing left: halfway down in a push-up, hands flat under the shoulders, elbows bent, body one rigid straight line from head to heels, toes tucked under",
+    "dose": "3 × 10",
+    "muscles": "chest and arm muscles"
+  },
+  {
+    "id": "shoulder-taps",
+    "name": "Shoulder taps",
+    "sport": "general",
+    "target": "core",
+    "desc": "full-body front-side view: high plank on straight arms with feet wide apart, LEFT hand lifted and clearly TOUCHING the RIGHT shoulder, RIGHT arm supporting the body, hips level and square to the floor",
+    "dose": "3 × 10 each side",
+    "muscles": "abdominal and deep core muscles"
+  },
+  {
+    "id": "band-pull-apart",
+    "name": "Band pull-apart",
+    "sport": "general",
+    "target": "posture",
+    "desc": "full-body front view: standing tall, both arms straight out to the sides at chest height in a wide T shape, palms facing forward, shoulder blades squeezed together, feet hip-width apart",
+    "dose": "3 × 12",
+    "muscles": "upper back and shoulder muscles"
+  },
+  {
+    "id": "wall-angel",
+    "name": "Wall angel",
+    "sport": "general",
+    "target": "posture",
+    "desc": "full-body front view: STANDING fully upright, both arms raised in a W goalpost shape with elbows bent 90 degrees at shoulder height, palms facing forward, head tall, feet hip-width apart",
+    "dose": "3 × 8",
+    "muscles": "upper back and shoulder muscles"
+  },
+  {
+    "id": "cat-cow",
+    "name": "Cat-cow",
+    "sport": "general",
+    "target": "mobility",
+    "desc": "full-body side view: on hands and knees, spine rounded high toward the ceiling in a cat arch, head tucked down, hands under shoulders, knees under hips",
+    "dose": "2 × 10",
+    "muscles": "the stretched muscle group"
+  },
+  {
+    "id": "worlds-greatest-stretch",
+    "name": "Lunge & twist stretch",
+    "sport": "general",
+    "target": "mobility",
+    "desc": "full-body front-side view: deep lunge with the LEFT foot forward and RIGHT leg extended back, RIGHT hand planted on the floor, LEFT arm reaching straight up to the ceiling, torso twisted open, eyes on the raised LEFT hand",
+    "dose": "2 × 5 each side",
+    "muscles": "the stretched muscle group"
+  },
+  {
+    "id": "hamstring-stretch",
+    "name": "Hamstring stretch",
+    "sport": "general",
+    "target": "mobility",
+    "desc": "full-body side view: standing forward fold, both legs straight, hinging at the hips with a flat back, fingertips reaching down toward the toes, head relaxed downward",
+    "dose": "2 × 30s",
+    "muscles": "hamstring muscles"
+  },
+  {
+    "id": "calf-stretch",
+    "name": "Calf stretch",
+    "sport": "general",
+    "target": "mobility",
+    "desc": "full-body side view facing left: staggered stance, RIGHT leg straight back with the heel pressed flat into the floor, LEFT knee bent forward, torso leaning forward with both arms extended ahead at shoulder height",
+    "dose": "2 × 30s each leg",
+    "muscles": "calf muscles"
+  },
+  {
+    "id": "ankle-circles",
+    "name": "Ankle mobility",
+    "sport": "general",
+    "target": "mobility",
+    "desc": "full-body front view: standing on the LEFT leg, RIGHT knee lifted with the RIGHT foot raised off the floor, RIGHT ankle rotating in a small circle, arms out to the sides for balance",
+    "dose": "2 × 10 each way",
+    "muscles": "the stretched muscle group"
+  },
+  {
+    "id": "arm-circles",
+    "name": "Arm circles",
+    "sport": "general",
+    "target": "mobility",
+    "desc": "full-body front view: standing tall with feet hip-width apart, both arms straight out to the sides mid large slow circle, fingertips tracing wide rings",
+    "dose": "2 × 10 each way",
+    "muscles": "the stretched muscle group"
+  },
+  {
+    "id": "torso-rotation",
+    "name": "Torso rotations",
+    "sport": "general",
+    "target": "mobility",
+    "desc": "full-body front view: standing with feet shoulder-width apart, torso and shoulders rotated to the LEFT, relaxed arms swinging loosely across the body, hips staying square forward",
+    "dose": "2 × 12",
+    "muscles": "the stretched muscle group"
+  },
+  {
+    "id": "superman-hold",
+    "name": "Superman hold",
+    "sport": "general",
+    "target": "posture",
+    "desc": "full-body side view: lying face down, both arms extended straight forward and both legs straight back, chest, arms and thighs lifted off the floor in a gentle upward curve",
+    "dose": "3 × 15s",
+    "muscles": "upper back and shoulder muscles"
+  },
+  {
+    "id": "good-morning",
+    "name": "Good morning",
+    "sport": "general",
+    "target": "posture",
+    "desc": "full-body side view facing left: standing hip hinge, flat back tipped forward about 45 degrees, hips pushed back, knees slightly bent, hands held lightly behind the head with elbows wide",
+    "dose": "3 × 10",
+    "muscles": "upper back and shoulder muscles"
+  },
+  {
+    "id": "farmer-carry",
+    "name": "Farmer carry",
+    "sport": "general",
+    "target": "core",
+    "desc": "full-body front view: walking tall mid stride with a proud chest, shoulders pulled back and down, both arms hanging straight down at the sides, palms facing in, gaze forward",
+    "dose": "3 × 20 steps",
+    "muscles": "abdominal and deep core muscles"
+  },
+  {
+    "id": "single-leg-rdl",
+    "name": "Single-leg deadlift",
+    "sport": "general",
+    "target": "balance",
+    "desc": "full-body side view facing left: balancing on the straight LEFT leg, torso hinged forward flat and parallel to the floor, RIGHT leg extended straight back at hip height, arms hanging straight down",
+    "dose": "3 × 8 each leg",
+    "muscles": "calves and core"
+  },
+  {
+    "id": "marching-in-place",
+    "name": "Slow marching",
+    "sport": "general",
+    "target": "balance",
+    "desc": "full-body front view: standing tall, LEFT foot planted flat, RIGHT knee lifted slowly to hip height with the foot relaxed, arms still at the sides, calm controlled upright posture",
+    "dose": "2 × 20",
+    "muscles": "calves and core"
+  },
+  {
+    "id": "heel-to-toe-walk",
+    "name": "Heel-to-toe walk",
+    "sport": "general",
+    "target": "balance",
+    "desc": "full-body front view: walking along one straight line, RIGHT heel placed directly touching the LEFT toes, arms out wide to the sides like a tightrope walker, eyes forward",
+    "dose": "2 × 10 steps",
+    "muscles": "calves and core"
+  },
+  {
+    "id": "high-knees",
+    "name": "High knees",
+    "sport": "running",
+    "target": "knee-drive",
+    "desc": "full-body side view facing left: running in place, RIGHT knee driven up to hip height, bouncing on the ball of the LEFT foot, LEFT arm swinging forward with elbow bent, fast energetic posture",
+    "dose": "3 × 20s",
+    "muscles": "hip flexors and thigh muscles"
+  },
+  {
+    "id": "a-skip",
+    "name": "A-skips",
+    "sport": "running",
+    "target": "knee-drive",
+    "desc": "full-body side view facing left: skipping, RIGHT knee punched up to waist height with the foot flexed under the knee, LEFT leg straight beneath on the ball of the foot, LEFT arm swinging forward",
+    "dose": "3 × 20m",
+    "muscles": "hip flexors and thigh muscles"
+  },
+  {
+    "id": "b-skip",
+    "name": "B-skips",
+    "sport": "running",
+    "target": "knee-drive",
+    "desc": "full-body side view facing left: skipping with the RIGHT leg extended straight out in front at hip height, toes pulled up toward the shin, LEFT leg straight beneath on the ball of the foot, arms in running swing",
+    "dose": "3 × 20m",
+    "muscles": "hip flexors and thigh muscles"
+  },
+  {
+    "id": "butt-kicks",
+    "name": "Butt kicks",
+    "sport": "running",
+    "target": "cadence",
+    "desc": "full-body side view facing left: running in place, RIGHT heel kicked up touching the glutes with the RIGHT knee pointing straight down, LEFT foot on the ground, arms in relaxed running swing",
+    "dose": "3 × 20s",
+    "muscles": "calves and hip flexors"
+  },
+  {
+    "id": "arm-swing-drill",
+    "name": "Arm swing drill",
+    "sport": "running",
+    "target": "arm-swing",
+    "desc": "full-body side view facing left: standing tall with legs still and hip-width apart, both elbows bent 90 degrees, RIGHT hand swinging up to chin height, LEFT hand swinging back past the hip",
+    "dose": "3 × 30s",
+    "muscles": "shoulders and upper arms"
+  },
+  {
+    "id": "seated-arm-swing",
+    "name": "Seated arm swings",
+    "sport": "running",
+    "target": "arm-swing",
+    "desc": "full-body side view: sitting upright on the floor with both legs extended straight forward, elbows bent 90 degrees, RIGHT arm swinging forward and LEFT arm swinging back in a running motion",
+    "dose": "3 × 20s",
+    "muscles": "shoulders and upper arms"
+  },
+  {
+    "id": "cadence-run",
+    "name": "Cadence bursts",
+    "sport": "running",
+    "target": "cadence",
+    "desc": "full-body side view: running in place with very quick small low steps, feet barely leaving the floor, elbows bent, slight forward lean, fast light rhythm",
+    "dose": "4 × 15s",
+    "muscles": "calves and hip flexors"
+  },
+  {
+    "id": "wall-drive",
+    "name": "Wall drills",
+    "sport": "running",
+    "target": "posture",
+    "desc": "full-body side view facing left: whole body in one straight forward lean of about 45 degrees, both arms extended straight ahead at shoulder height, RIGHT knee driven up toward the chest, LEFT leg straight behind on the ball of the foot",
+    "dose": "3 × 10 each leg",
+    "muscles": "upper back and shoulder muscles"
+  },
+  {
+    "id": "lean-fall-run",
+    "name": "Lean & go",
+    "sport": "running",
+    "target": "posture",
+    "desc": "full-body side view facing left: standing tall and tipping forward in one straight line from the ankles, body leaning ahead of the feet, heels light off the floor, arms ready to run",
+    "dose": "5 starts",
+    "muscles": "upper back and shoulder muscles"
+  },
+  {
+    "id": "strides",
+    "name": "Strides",
+    "sport": "running",
+    "target": "rhythm",
+    "desc": "full-body side view facing left: smooth open running stride, LEFT leg reaching forward, RIGHT leg pushing off fully extended behind, opposite arms swinging, relaxed tall posture",
+    "dose": "4 × 60m",
+    "muscles": "whole leg muscles"
+  },
+  {
+    "id": "hill-sprint",
+    "name": "Short hill sprints",
+    "sport": "running",
+    "target": "power",
+    "desc": "full-body side view facing left: sprinting up a gentle slope, RIGHT knee driven high, LEFT leg pushing off fully behind, strong forward lean, arms pumping with bent elbows",
+    "dose": "4 × 8s",
+    "muscles": "thigh, glute and calf muscles"
+  },
+  {
+    "id": "toe-walk",
+    "name": "Toe walks",
+    "sport": "running",
+    "target": "foot-strike",
+    "desc": "full-body side view: walking mid step on tiptoes with both heels lifted high off the floor, legs long, posture tall, arms relaxed at the sides",
+    "dose": "2 × 20 steps",
+    "muscles": "calves and feet"
+  },
+  {
+    "id": "heel-walk",
+    "name": "Heel walks",
+    "sport": "running",
+    "target": "foot-strike",
+    "desc": "full-body side view: walking mid step on the heels with both forefeet and toes lifted clearly off the floor, posture tall, arms relaxed at the sides",
+    "dose": "2 × 20 steps",
+    "muscles": "calves and feet"
+  },
+  {
+    "id": "single-leg-hop-run",
+    "name": "Single-leg hops",
+    "sport": "running",
+    "target": "power",
+    "desc": "full-body side view facing left: hopping forward on the RIGHT leg only, RIGHT knee softly bent, LEFT leg held bent behind and off the floor, arms out for balance",
+    "dose": "3 × 8 each leg",
+    "muscles": "thigh, glute and calf muscles"
+  },
+  {
+    "id": "carioca",
+    "name": "Karaoke",
+    "sport": "running",
+    "target": "hips",
+    "desc": "full-body front view: traveling sideways to the LEFT, RIGHT leg crossing over IN FRONT of the LEFT leg, hips rotating with the step, arms out at shoulder height for balance",
+    "dose": "3 × 20m each way",
+    "muscles": "outer hip and glute muscles"
+  },
+  {
+    "id": "leg-swing",
+    "name": "Leg swings",
+    "sport": "running",
+    "target": "mobility",
+    "desc": "full-body side view facing left: standing tall on the LEFT leg, RIGHT leg swinging straight forward up to hip height with toes up, arms out to the sides for balance",
+    "dose": "2 × 12 each leg",
+    "muscles": "the stretched muscle group"
+  },
+  {
+    "id": "run-tall-drill",
+    "name": "Run-tall drill",
+    "sport": "running",
+    "target": "posture",
+    "desc": "full-body side view: running in place with an exaggerated tall posture, head high, chest proud, shoulders back and down, RIGHT knee lifted, arms in compact running swing",
+    "dose": "3 × 20s",
+    "muscles": "upper back and shoulder muscles"
+  },
+  {
+    "id": "metronome-run",
+    "name": "Metronome steps",
+    "sport": "running",
+    "target": "cadence",
+    "desc": "full-body side view: light jogging in place with quick even steps, feet staying low to the floor, upright posture, elbows bent 90 degrees, steady rhythm",
+    "dose": "3 × 30s",
+    "muscles": "calves and hip flexors"
+  },
+  {
+    "id": "ankle-spring",
+    "name": "Ankle springs",
+    "sport": "running",
+    "target": "foot-strike",
+    "desc": "full-body side view: small vertical bounces on the balls of both feet, legs straight with knees only slightly soft, heels flicking just off the floor, arms relaxed at the sides",
+    "dose": "3 × 15",
+    "muscles": "calves and feet"
+  },
+  {
+    "id": "shadow-forehand",
+    "name": "Shadow forehand",
+    "sport": "tennis",
+    "target": "stroke",
+    "desc": "full-body front-side view: tennis forehand mid-swing with an empty open RIGHT hand sweeping across the body at waist height, hips and shoulders rotating forward, LEFT arm out for balance, knees bent",
+    "dose": "3 × 10 swings",
+    "muscles": "shoulder, forearm and core muscles"
+  },
+  {
+    "id": "shadow-backhand",
+    "name": "Shadow backhand",
+    "sport": "tennis",
+    "target": "stroke",
+    "desc": "full-body front-side view: two-handed backhand mid-swing, BOTH empty hands held together sweeping across the body from the LEFT side at waist height, hips rotating, knees bent in an athletic stance",
+    "dose": "3 × 10 swings",
+    "muscles": "shoulder, forearm and core muscles"
+  },
+  {
+    "id": "shadow-serve",
+    "name": "Shadow serve",
+    "sport": "tennis",
+    "target": "stroke",
+    "desc": "full-body side view: serve trophy pose, LEFT arm reaching straight up overhead, RIGHT arm bent 90 degrees with the empty hand raised behind the head, back slightly arched, knees bent, weight on the back foot",
+    "dose": "3 × 8 serves",
+    "muscles": "shoulder, forearm and core muscles"
+  },
+  {
+    "id": "split-step-drill",
+    "name": "Split step",
+    "sport": "tennis",
+    "target": "footwork",
+    "desc": "full-body front view: just landed from a small two-footed hop, feet wider than shoulders, knees bent, hips low, hands held ready in front of the chest, springy athletic stance",
+    "dose": "3 × 10",
+    "muscles": "calves and thigh muscles"
+  },
+  {
+    "id": "side-shuffle",
+    "name": "Side shuffles",
+    "sport": "tennis",
+    "target": "footwork",
+    "desc": "full-body front view: low athletic stance shuffling sideways to the RIGHT, feet wide apart and NEVER crossing, knees bent, hips low, arms held ready in front of the body",
+    "dose": "3 × 10m each way",
+    "muscles": "calves and thigh muscles"
+  },
+  {
+    "id": "ready-position-hold",
+    "name": "Ready position",
+    "sport": "tennis",
+    "target": "footwork",
+    "desc": "full-body front view: still symmetric athletic ready stance, feet wider than shoulders, knees bent, hips back, back flat, both hands held ready in front of the body at waist height",
+    "dose": "3 × 20s",
+    "muscles": "calves and thigh muscles"
+  },
+  {
+    "id": "unit-turn-drill",
+    "name": "Unit turn",
+    "sport": "tennis",
+    "target": "prep",
+    "desc": "full-body front view: standing with knees bent, shoulders and hips rotated together 90 degrees to the RIGHT so the LEFT shoulder points forward, both hands held together at chest height, feet planted",
+    "dose": "3 × 10 each side",
+    "muscles": "core and oblique muscles"
+  },
+  {
+    "id": "wall-rally",
+    "name": "Wall rally",
+    "sport": "tennis",
+    "target": "contact",
+    "desc": "full-body front-side view: compact short forehand swing with an empty RIGHT hand at waist height, elbow slightly bent, knees bent, LEFT hand pointing forward, small controlled motion",
+    "dose": "3 × 20 hits",
+    "muscles": "forearm and core muscles"
+  },
+  {
+    "id": "drop-feed-hit",
+    "name": "Drop-feed hits",
+    "sport": "tennis",
+    "target": "contact",
+    "desc": "full-body front-side view: LEFT arm extended low releasing downward in front of the body with an open hand, RIGHT arm swinging forward at waist height with an empty hand, knees bent, weight shifting forward",
+    "dose": "3 × 10",
+    "muscles": "forearm and core muscles"
+  },
+  {
+    "id": "medicine-ball-twist",
+    "name": "Med-ball twists",
+    "sport": "tennis",
+    "target": "rotation",
+    "desc": "full-body front view: standing with knees bent and feet planted wide, both arms extended straight together at chest height swung to the LEFT side, torso and shoulders rotated LEFT, hips mostly forward",
+    "dose": "3 × 10 each side",
+    "muscles": "oblique and core muscles"
+  },
+  {
+    "id": "med-ball-throw",
+    "name": "Rotational throw",
+    "sport": "tennis",
+    "target": "rotation",
+    "desc": "full-body front-side view: explosive rotation to the LEFT, both arms extended together at shoulder height finishing across the body, hips fully rotated, RIGHT back heel lifted and pivoting",
+    "dose": "3 × 6 each side",
+    "muscles": "oblique and core muscles"
+  },
+  {
+    "id": "band-rotation",
+    "name": "Band rotations",
+    "sport": "tennis",
+    "target": "rotation",
+    "desc": "full-body front view: standing with knees bent, both hands clasped together, straight arms sweeping diagonally from the RIGHT hip up across to LEFT shoulder height, torso rotating to the LEFT",
+    "dose": "3 × 10 each side",
+    "muscles": "oblique and core muscles"
+  },
+  {
+    "id": "wrist-roller",
+    "name": "Wrist strength",
+    "sport": "tennis",
+    "target": "arms",
+    "desc": "full-body front view: standing tall, both arms extended straight forward at shoulder height, both fists curled upward at the wrists with forearms tense, feet hip-width apart",
+    "dose": "3 × 8",
+    "muscles": "forearm muscles"
+  },
+  {
+    "id": "shoulder-external-rotation",
+    "name": "Shoulder rotations",
+    "sport": "tennis",
+    "target": "arms",
+    "desc": "full-body front view: standing tall, RIGHT elbow bent 90 degrees pinned against the ribs, RIGHT forearm rotated outward to the side with the palm facing forward, LEFT arm relaxed at the side",
+    "dose": "3 × 12 each arm",
+    "muscles": "rear shoulder muscles"
+  },
+  {
+    "id": "overhead-reach",
+    "name": "Overhead reaches",
+    "sport": "tennis",
+    "target": "mobility",
+    "desc": "full-body front view: standing tall, RIGHT arm reaching straight up overhead with fingers extended like climbing, LEFT arm bent low at the side, ribs long, gaze slightly up",
+    "dose": "2 × 10 each arm",
+    "muscles": "the stretched muscle group"
+  },
+  {
+    "id": "lunge-with-reach",
+    "name": "Lunge & reach",
+    "sport": "tennis",
+    "target": "contact",
+    "desc": "full-body front-side view: forward lunge with the RIGHT foot ahead and knee bent, LEFT arm reaching far across the body to the RIGHT at shoulder height, torso rotated slightly RIGHT, LEFT back heel lifted",
+    "dose": "3 × 8 each side",
+    "muscles": "forearm and core muscles"
+  },
+  {
+    "id": "figure-8-racket",
+    "name": "Racket figure-8s",
+    "sport": "tennis",
+    "target": "stroke",
+    "desc": "full-body front view: standing in a relaxed stance, RIGHT arm sweeping a smooth sideways figure-8 loop in front of the body with an empty hand, wrist relaxed, knees soft",
+    "dose": "2 × 10 loops",
+    "muscles": "shoulder, forearm and core muscles"
+  },
+  {
+    "id": "toss-practice",
+    "name": "Toss practice",
+    "sport": "tennis",
+    "target": "stroke",
+    "desc": "full-body side view: standing tall, LEFT arm fully straight releasing upward above the head with an open palm at the top, eyes looking up following the LEFT hand, RIGHT arm relaxed at the side",
+    "dose": "3 × 10 tosses",
+    "muscles": "shoulder, forearm and core muscles"
+  },
+  {
+    "id": "reaction-ball",
+    "name": "Reaction drill",
+    "sport": "tennis",
+    "target": "footwork",
+    "desc": "full-body front view: very low crouched athletic stance, weight forward on the balls of the feet, body leaning slightly to the RIGHT mid push-off, arms wide and ready, eyes ahead",
+    "dose": "3 × 30s",
+    "muscles": "calves and thigh muscles"
+  }
+]

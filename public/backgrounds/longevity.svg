@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 932" preserveAspectRatio="xMidYMax slice">
+  <!-- Flat VECTOR-ART scene: hard-edged shapes, no gradients, no blur.
+       Warm cream sky, geometric sun, angular mountain layers, triangle
+       pines, a winding trail. Bold but calm enough for white cards. -->
+
+  <!-- sky -->
+  <rect width="430" height="932" fill="#F7F1E3"/>
+
+  <!-- sun: flat concentric discs -->
+  <circle cx="326" cy="150" r="52" fill="#F8DA8F"/>
+  <circle cx="326" cy="150" r="34" fill="#F5BE4F"/>
+
+  <!-- flat clouds -->
+  <g fill="#FFFAEE">
+    <rect x="52" y="118" width="96" height="22" rx="11"/>
+    <rect x="84" y="100" width="56" height="22" rx="11"/>
+    <rect x="236" y="210" width="72" height="18" rx="9"/>
+  </g>
+
+  <!-- birds: simple chevrons -->
+  <g stroke="#7C8A6E" stroke-width="2.4" stroke-linecap="round" fill="none">
+    <path d="M120 246 l9 -7 l9 7"/>
+    <path d="M154 268 l7 -6 l7 6"/>
+    <path d="M96 282 l6 -5 l6 5"/>
+  </g>
+
+  <!-- back mountain range: angular peaks -->
+  <path d="M0 520 L64 430 L120 500 L188 404 L252 498 L318 428 L376 494 L430 448 V932 H0 Z" fill="#C7D6B2"/>
+  <!-- snow caps -->
+  <path d="M188 404 L212 440 L196 434 L182 448 L172 428 Z" fill="#F7F1E3"/>
+  <path d="M64 430 L82 456 L70 450 L58 462 L52 446 Z" fill="#F7F1E3"/>
+
+  <!-- mid range -->
+  <path d="M0 610 L84 520 L156 596 L238 508 L322 600 L392 534 L430 578 V932 H0 Z" fill="#9DB989"/>
+
+  <!-- front hills: bold smooth curves -->
+  <path d="M0 726 Q108 654 216 704 T430 686 V932 H0 Z" fill="#7CA06C"/>
+  <path d="M0 830 Q140 764 268 812 T430 796 V932 H0 Z" fill="#648A57"/>
+
+  <!-- winding trail on the front hill -->
+  <path d="M300 932 Q268 872 216 846 Q160 820 168 776 Q172 752 196 736" fill="none" stroke="#F2E9D2" stroke-width="12" stroke-linecap="round"/>
+
+  <!-- triangle pines -->
+  <g fill="#4E7245">
+    <path d="M84 742 l14 -30 l14 30 Z"/>
+    <path d="M112 752 l11 -24 l11 24 Z"/>
+    <path d="M352 726 l13 -28 l13 28 Z"/>
+    <path d="M382 740 l10 -22 l10 22 Z"/>
+    <path d="M46 848 l16 -34 l16 34 Z"/>
+  </g>
+</svg>

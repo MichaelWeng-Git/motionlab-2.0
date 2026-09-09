@@ -1,0 +1,15 @@
+node_modules/
+.next/
+.env.local
+.env*.local
+public/test/
+
+# On-device model weights — 4.9 GB, and single files reach 1.2 GB, well past
+# GitHub's 100 MB limit. They are downloaded/placed out of band; the app's
+# refiner picks a tier by exact filename (see AGENTS.md), so keep the folder
+# contents in sync manually rather than committing them.
+public/models/
+
+# raw art, not shipped code
+exercise-images-inbox/
+design-assets/
