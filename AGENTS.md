@@ -68,11 +68,20 @@ npx tsc --noEmit # the de-facto check; there is no test suite
 **There is no test suite and this is not a git repository.** Verification is
 done by running the dev server and inspecting the actual pages.
 
-**Do not run `npm run build` while `npm run dev` is running.** Both write to
-`.next`, and the production output overwrites the dev chunks the running server
-is serving — the app then loads as unstyled HTML with 404s on `main-app.js`,
-`app-pages-internals.js` and `layout.css`. Recovery is `rm -rf .next` plus a dev
-server restart. If two agents share this checkout, only one of them may build.
+**Only ONE Next process may run against this checkout at a time.** Everything
+writes to the same `.next`, so a second one silently breaks the first:
+
+- `npm run build` while `npm run dev` is running → the production output
+  overwrites the dev chunks, and the app loads as unstyled HTML with 404s on
+  `main-app.js`, `app-pages-internals.js` and `layout.css`
+- two `npm run dev` at once → the second takes the next free port (3001, 3002…)
+  and clobbers the first, which starts returning 404
+
+Recovery is the same both ways: kill every Next process, `rm -rf .next`, start
+one server. `npm run dev` is pinned to port 3100 in `package.json`; if the app
+answers on any other port, more than one server is running.
+
+**If two agents share this checkout, only one of them may run Next at all.**
 
 ---
 
