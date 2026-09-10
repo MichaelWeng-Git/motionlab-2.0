@@ -8,9 +8,24 @@ Two lists merged into one order of work:
 P0 items come first because several 24-point items sit on top of them: there is
 no point polishing the FORM card while its number has two sources.
 
-**Working method.** One item per commit. Claude implements; Codex then reviews
-and polishes that same item using the *Codex pass* prompt written under it. Do
-not batch items — a reverted batch loses good work with bad.
+**Working method.** Codex implements, top to bottom. A later review pass fixes
+what needs it, using the *Review pass* note under each item.
+
+**One item = one commit. This is not optional.** The review pass has to be able
+to revert a single bad item without losing the good ones around it. A commit
+touching three items cannot be unpicked. Message format:
+`P0-2: one RecoveryState selector`.
+
+Before starting an item, read the code it names — this document describes the
+problem, but the code is the source of truth and may have moved.
+
+### Stop and ask instead of guessing
+
+If an item cannot be done without inventing a number, a default, or a data
+source that does not exist — stop and say so in the commit message or a note.
+A missing feature is recoverable; a fabricated measurement destroys the owner's
+trust in every other number on the screen, and that has already happened more
+than once in this project.
 
 ### Rules that apply to every item
 
@@ -71,7 +86,7 @@ recomputes `pct` or re-tests `needsLength`.
 **Accept.** Grep shows exactly one `computeRecovery()` call site. All three
 surfaces render identical text for each of the four kinds.
 
-> **Codex pass.** Check the four states each have a *designed* empty/assumed
+> **Review pass.** Check the four states each have a *designed* empty/assumed
 > presentation, not a bare string. Check the assistant's wording matches what
 > the screen says. Check nothing reintroduces a second `computeRecovery()` call.
 
@@ -90,7 +105,7 @@ score/spark computation on the home page.
 **Accept.** Home number === `/form` number on first frame. Trend arrow sign
 matches the profile's own delta. Card links to `/form` iff the profile exists.
 
-> **Codex pass.** The mini hexagon should be visually consistent with the
+> **Review pass.** The mini hexagon should be visually consistent with the
 > `/form` hero (same axis order, same locked-axis treatment). Check the ▼/▲
 > chip colour uses `lib/palette`.
 
@@ -112,7 +127,7 @@ editable everywhere it is used — never hidden, never silently applied.
 reload. Skipping keeps the labelled assumption. A workout paired to a recording
 never asks — it already knows.
 
-> **Codex pass.** Make the ask feel like part of finishing the analysis, not a
+> **Review pass.** Make the ask feel like part of finishing the analysis, not a
 > form. Check it does not block reading the report.
 
 ---
@@ -132,7 +147,7 @@ business-date use.
 **Accept.** A session at 23:30 local appears on that local day in the LOAD
 calendar, `/weeks`, streak and CHARGE. Add fixtures at UTC−5, UTC+0, UTC+9.
 
-> **Codex pass.** Grep for any remaining `slice(0, 10)` on a date. Check the
+> **Review pass.** Grep for any remaining `slice(0, 10)` on a date. Check the
 > streak cannot be broken or extended by a timezone change.
 
 ---
@@ -151,7 +166,7 @@ so a deleted session can come back from the mirror.
 **Accept.** Delete a session, reload, it stays deleted. `recordSession`,
 `updateSession`, `deleteSession` share one writer.
 
-> **Codex pass.** Check no caller mutates `ml_sessions` directly. Check the
+> **Review pass.** Check no caller mutates `ml_sessions` directly. Check the
 > IndexedDB design includes a downgrade path before any code is written.
 
 ---
@@ -169,7 +184,7 @@ from the original position, red = rebuilt).
 **Files.** `app/report/[id]/page.tsx`, `components/VideoReplay.tsx`,
 `lib/draw.ts`.
 
-> **Codex pass.** The debug toggle is a developer affordance — keep it out of
+> **Review pass.** The debug toggle is a developer affordance — keep it out of
 > the athlete's default reading path.
 
 ---
@@ -182,7 +197,7 @@ Give Cloud 3D a real settings entry rather than a hidden flag.
 
 **Files.** `app/account/*`, `app/analyze/page.tsx`, `lib/sam3d.ts`.
 
-> **Codex pass.** Copy must be specific — "three screenshots", not "some data".
+> **Review pass.** Copy must be specific — "three screenshots", not "some data".
 
 ---
 
@@ -194,7 +209,7 @@ Move XP to server-side computation.
 
 **Files.** `app/api/*/route.ts`, Supabase policies, `lib/coins.ts`.
 
-> **Codex pass.** Check no route trusts a client-supplied identity. Check the
+> **Review pass.** Check no route trusts a client-supplied identity. Check the
 > RLS change cannot lock the user out of their own profile row.
 
 ---
@@ -204,7 +219,7 @@ Move XP to server-side computation.
 Cover `biomech`, `muscles`, `FORM`, `LOAD`, `CHARGE`, date boundaries and the
 storage migration. Seed with the P0-1 acceptance cases (§6 of the design doc).
 
-> **Codex pass.** Tests must assert *behaviour*, not restate constants. A test
+> **Review pass.** Tests must assert *behaviour*, not restate constants. A test
 > that hard-codes `REF_SESSION_SCALE` proves nothing.
 
 ---
