@@ -103,6 +103,11 @@ export default function LoadPage() {
                 labelColor="#51604F"
               />
             </div>
+            {month.needsLength > 0 && (
+              <p className="mt-2 text-center text-[11px] font-bold text-signal-okay">
+                {month.needsLength} recent {month.needsLength === 1 ? "session uses" : "sessions use"} the editable 30 min assumption
+              </p>
+            )}
           </div>
 
           {/* THIS MONTH — one square per day, greener = harder */}

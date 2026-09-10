@@ -94,7 +94,13 @@ export function buildLoadMonth(): LoadMonth | null {
   for (const s of sessions) {
     const k = s.date.slice(0, 10);
     const d = sessionDemand(s as SessionLike, acts as ActLike[]);
-    if (d == null) continue;                       // nothing measurable at all
+    if (d == null) {
+      // The workout is a fact even when its dose could not be measured. Keep
+      // the calendar mark outlined instead of making the training disappear.
+      trainedDays.add(k);
+      counts.set(k, (counts.get(k) ?? 0) + 1);
+      continue;
+    }
     add(k, d);
     if (sessionSecondsOf(s as SessionLike, acts as ActLike[]) == null) {
       unknownDays.add(k);

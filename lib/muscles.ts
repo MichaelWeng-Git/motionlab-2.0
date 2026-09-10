@@ -57,7 +57,7 @@ export type MuscleState = {
 
 // Recovery can only be stated when every recent session's dose is known.
 export function recoveryKnown(st: MuscleState | null | undefined): boolean {
-  return !!st && st.needsLength === 0;
+  return !!st && st.measured > 0 && st.needsLength === 0;
 }
 
 // How much each muscle counts toward WHOLE-BODY readiness — proportional to

@@ -483,7 +483,17 @@ export default function Home() {
             {/* WHOOP-style recovery bar — one strip. Full green = fully
                 recovered = clean body; it drains and reddens exactly as the
                 muscles above light up (both derive from the same real loads). */}
-            <RecoveryBar load={muscles?.load ?? {}} animate={freshAnalysis} />
+            {muscles && muscles.measured > 0 ? (
+              <RecoveryBar
+                load={muscles.load}
+                animate={freshAnalysis}
+                assumed={muscles.needsLength > 0}
+              />
+            ) : (
+              <p className="mt-1.5 text-center text-[11px] font-bold text-ink-soft">
+                {muscles ? "No measured sessions yet" : "Reading your sessions…"}
+              </p>
+            )}
           </div>
         </div>
       </section>
@@ -738,7 +748,7 @@ function FitLine({ y0, y1 }: { y0: number; y1: number }) {
 // hard bands): pure red at ≤25, red→amber to 50, amber→green to 90 — so 70%
 // reads yellow-green, not full green. The 100→value drain plays ONLY right
 // after a new analysis (animate); ordinary visits show the value directly.
-function RecoveryBar({ load, animate }: { load: import("@/lib/muscles").MuscleLoad; animate: boolean }) {
+function RecoveryBar({ load, animate, assumed }: { load: import("@/lib/muscles").MuscleLoad; animate: boolean; assumed: boolean }) {
   const hasData = Object.keys(load).length > 0;
   // ONE formula, shared with the assistant and every other reader
   const target = computeRecovery(load);
@@ -774,7 +784,9 @@ function RecoveryBar({ load, animate }: { load: import("@/lib/muscles").MuscleLo
   return (
     <div className="mt-1.5">
       <div className="flex items-baseline justify-between">
-        <span className="text-[10px] font-bold uppercase tracking-wide text-ink-muted">Recovery</span>
+        <span className="text-[10px] font-bold uppercase tracking-wide text-ink-muted">
+          {assumed ? "Recovery · 30 min assumed" : "Recovery"}
+        </span>
         <span className="font-golden text-[13px] leading-none tabular-nums" style={{ color }}>{shown}%</span>
       </div>
       <div className="mt-1 h-[7px] overflow-hidden rounded-full bg-black/[0.06]">
@@ -783,4 +795,3 @@ function RecoveryBar({ load, animate }: { load: import("@/lib/muscles").MuscleLo
     </div>
   );
 }
-

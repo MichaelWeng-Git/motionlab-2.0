@@ -13,3 +13,4 @@ public/models/
 # raw art, not shipped code
 exercise-images-inbox/
 design-assets/
+tsconfig.tsbuildinfo
