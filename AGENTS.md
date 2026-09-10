@@ -62,11 +62,12 @@ npm run lint     # NOTE: ESLint is not configured yet — this prompts for setup
 npx tsc --noEmit # the de-facto check; there is no test suite
 ```
 
-`lib/ensemble.ts` currently emits pre-existing `tsc` errors. Filter them
-(`npx tsc --noEmit | grep -v "lib/ensemble"`) rather than "fixing" them blind.
+`npx tsc --noEmit` is clean as of `179ebd8`. (It previously carried standing
+errors in `lib/ensemble.ts`; those are fixed — do not re-add a filter for them.)
 
-**There is no test suite and this is not a git repository.** Verification is
-done by running the dev server and inspecting the actual pages.
+**There is no test suite yet** (P1-4 adds Vitest). Verification is done by
+running the dev server and inspecting the actual pages, plus compiling `lib/`
+to ESM and exercising it under node — see Current Development State.
 
 **Only ONE Next process may run against this checkout at a time.** Everything
 writes to the same `.next`, so a second one silently breaks the first:
