@@ -1,7 +1,7 @@
 # P0-1 — Unified Workout model + migration design
 
-**Status: design only. No data is migrated and no store is written by this
-document.** Implementation is a separate, revertible commit.
+**Status: Stage A implemented** (`lib/workouts.ts`). Stages B and C are still
+design only — no store has been written or migrated.
 
 ---
 

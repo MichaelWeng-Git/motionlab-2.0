@@ -23,7 +23,7 @@ import { fetchFriends, iconOf, syncMe, type Person } from "@/lib/friends";
 import { getGoals, RING_COLORS, DEFAULT_GOALS, type Goals } from "@/lib/goals";
 import { getCharge, CHARGE_META, type Charge } from "@/lib/charge";
 import { touchDailyStreak } from "@/lib/streak";
-import { computeRecovery, fetchMuscleState, getCachedMuscleState, recoveryColor, type MuscleState } from "@/lib/muscles";
+import { computeRecovery, DEFAULT_SESSION_MIN, fetchMuscleState, getCachedMuscleState, recoveryColor, type MuscleState } from "@/lib/muscles";
 import { buildLoadMonth, loadColor, type LoadMonth } from "@/lib/fitness";
 import { SIGNAL } from "@/lib/palette";
 import { buildFormProfile, CAP_ORDER, type FormProfile } from "@/lib/form";
@@ -530,6 +530,14 @@ export default function Home() {
               />
             </div>
             <p className="mt-2.5 text-center text-[12px] font-bold text-ink-soft">{charge.why}</p>
+            {charge.assumedWorkouts > 0 && (
+              /* CHARGE is a VOLUME model, so when a workout's length is the
+                 visible 30-minute assumption the number rests on it — say so
+                 here exactly as the recovery bar does. */
+              <p className="mt-1 text-center text-[11px] font-bold text-ink-muted">
+                {charge.assumedWorkouts} {charge.assumedWorkouts === 1 ? "session assumes" : "sessions assume"} {DEFAULT_SESSION_MIN} min
+              </p>
+            )}
           </div>
         </section>
       )}

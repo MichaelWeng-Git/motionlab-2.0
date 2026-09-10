@@ -7,9 +7,17 @@
 // CHARGE = how ready.
 
 export type ChargeState = "primed" | "steady" | "drained";
-export type Charge = { value: number; state: ChargeState; why: string };
+export type Charge = {
+  value: number; state: ChargeState; why: string;
+  // workouts in the window whose duration is the visible DEFAULT_SESSION_MIN
+  // assumption rather than a recorded or stated length. CHARGE is a volume
+  // model, so when this is > 0 the number rests on that assumption and every
+  // surface showing it has to say so.
+  assumedWorkouts: number;
+};
 
 import { SIGNAL } from "./palette";
+import { buildWorkouts, DEFAULT_SESSION_MIN } from "./workouts";
 
 export const CHARGE_META: Record<ChargeState, { word: string; action: string; color: string }> = {
   primed: { word: "PRIMED", action: "PUSH TODAY", color: SIGNAL.good },
@@ -17,24 +25,35 @@ export const CHARGE_META: Record<ChargeState, { word: string; action: string; co
   drained: { word: "DRAINED", action: "GO EASY TODAY", color: SIGNAL.work },
 };
 
-const SEEDED: Charge = { value: 80, state: "primed", why: "Building your baseline" }; // fresh account
+const SEEDED: Charge = { value: 80, state: "primed", why: "Building your baseline", assumedWorkouts: 0 }; // fresh account
 
 const stateOf = (v: number): ChargeState => (v >= 67 ? "primed" : v >= 34 ? "steady" : "drained");
 
 // minutes trained per day, [0] = today … [span-1]
-function dailyMinutes(span: number): number[] | null {
-  const acts = JSON.parse(localStorage.getItem("ml_activities") ?? "[]") as { date: string; seconds?: number }[];
-  if (!acts.length) return null;
+//
+// Reads WORKOUTS, not recordings. Before P0-1 this read ml_activities directly,
+// so an athlete who only films clips had no CHARGE at all — the card simply
+// never appeared. A workout's duration is real whether it came from a GPS
+// recording, from the athlete stating it, or from the visible 30-minute
+// assumption; durationSource travels with it so the UI can say which.
+function dailyMinutes(span: number): { mins: number[]; assumed: number } | null {
+  const workouts = buildWorkouts();
+  if (!workouts.length) return null;
+  let assumed = 0;
   const mins = new Array<number>(span).fill(0);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  for (const a of acts) {
-    const d = new Date(a.date);
+  for (const w of workouts) {
+    // unknown duration contributes nothing rather than a guessed number
+    const secs = w.durationS ?? (w.clips.length ? DEFAULT_SESSION_MIN * 60 : 0);
+    if (secs <= 0) continue;
+    if (w.durationS == null) assumed++;
+    const d = new Date(w.startedAt);
     d.setHours(0, 0, 0, 0);
     const i = Math.round((today.getTime() - d.getTime()) / 86400000);
-    if (i >= 0 && i < span) mins[i] += (a.seconds ?? 0) / 60;
+    if (i >= 0 && i < span) mins[i] += secs / 60;
   }
-  return mins;
+  return { mins, assumed };
 }
 
 // the model itself, over a 28-day window ([0] = "today" of that window)
@@ -79,15 +98,15 @@ function compute(mins: number[]): Charge {
       : "Right on your usual rhythm";
 
   const value = Math.round(Math.min(100, Math.max(5, v)));
-  return { value, state: stateOf(value), why };
+  return { value, state: stateOf(value), why, assumedWorkouts: 0 };
 }
 
 // null when there is NO training history at all — the card stays hidden
 // rather than showing an invented number (owner's no-fake-data rule)
 export function getCharge(): Charge | null {
   try {
-    const mins = dailyMinutes(28);
-    return mins ? compute(mins) : null;
+    const d = dailyMinutes(28);
+    return d ? { ...compute(d.mins), assumedWorkouts: d.assumed } : null;
   } catch {
     return null;
   }
@@ -96,11 +115,11 @@ export function getCharge(): Charge | null {
 // the last `days` days of CHARGE, oldest → newest (today last) — the week strip
 export function getChargeSeries(days = 7): Charge[] {
   try {
-    const all = dailyMinutes(28 + days - 1);
-    if (!all) return new Array<Charge>(days).fill(SEEDED);
+    const d = dailyMinutes(28 + days - 1);
+    if (!d) return new Array<Charge>(days).fill(SEEDED);
     return Array.from({ length: days }, (_, k) => {
       const off = days - 1 - k;
-      return compute(all.slice(off, off + 28));
+      return { ...compute(d.mins.slice(off, off + 28)), assumedWorkouts: d.assumed };
     });
   } catch {
     return new Array<Charge>(days).fill(SEEDED);

@@ -8,7 +8,14 @@
 // Consequence: every new workout STACKS — soreness always rises after a
 // session and recovery always drops, then heals with time.
 
-import { DEFAULT_SESSION_MIN, legacyDemand, loadFromDemand } from "./biomech";
+import { buildWorkouts, readBody, workoutMuscleLoad, type Workout } from "./workouts";
+
+// These moved to lib/workouts (the pairing rule and the duration resolution now
+// live with the model they belong to). Re-exported so app/ callers are unaffected.
+export {
+  DEFAULT_SESSION_MIN, readBody, observedOf, sessionSecondsOf, volumeOf,
+  SESSION_WINDOW_H, type SessionLike, type ActLike,
+} from "./workouts";
 
 export type MuscleKey =
   | "shoulders" | "chest" | "arms" | "core" | "back"
@@ -113,9 +120,6 @@ const HALF_LIFE: Record<MuscleKeyLR, number> = Object.fromEntries(
   LR_KEYS.map((k) => [k, BASE_HALF_LIFE[k.replace(/_[lr]$/, "") as MuscleKey]])
 ) as Record<MuscleKeyLR, number>;
 
-// clips of the same sport+action within this many hours are ONE session
-const SESSION_WINDOW_H = 3;
-
 type Item = {
   key: string;
   hoursAgo: number;
@@ -126,154 +130,35 @@ type Item = {
   bio?: Partial<Record<MuscleKeyLR, number>>;
 };
 
-export type SessionLike = {
-  id: string; sport?: string; action?: string; date: string;
-  // set by the athlete on the report — the ONLY thing that turns a clip into
-  // a session-sized dose when no recorded workout is paired with it
-  sessionSeconds?: number;
-  report?: { duration?: number; biomech?: { demandRaw?: Record<string, number>; observedS?: number } };
-};
-export type ActLike = { sport?: string; seconds?: number; date: string };
-
-export function readBody(): { heightCm: number | null; weightKg: number | null } {
-  try {
-    const p = JSON.parse(localStorage.getItem("ml_profile") ?? "{}") as { height?: number; weight?: number };
-    return { heightCm: p.height ?? null, weightKg: p.weight ?? null };
-  } catch { return { heightCm: null, weightKg: null }; }
-}
-
-// How long the SESSION was, as opposed to the clip. In priority order:
-//   1. what the athlete entered on the report — always wins
-//   2. a recorded workout of the same sport that overlaps the clip's time
-//   3. unknown → null; volumeOf applies the visible DEFAULT_SESSION_MIN assumption
-export function sessionSecondsOf(s: SessionLike, acts: ActLike[]): number | null {
-  if (typeof s.sessionSeconds === "number" && s.sessionSeconds > 0) return s.sessionSeconds;
-  const t = new Date(s.date).getTime();
-  const sport = (s.sport ?? "").toLowerCase();
-  let best: number | null = null;
-  for (const a of acts) {
-    if (!a.seconds || a.seconds <= 0) continue;
-    if ((a.sport ?? "").toLowerCase() !== sport) continue;
-    // the clip must fall inside the workout, give or take the merge window
-    const start = new Date(a.date).getTime() - a.seconds * 1000;
-    const end = new Date(a.date).getTime();
-    if (t < start - SESSION_WINDOW_H * 3600e3 || t > end + SESSION_WINDOW_H * 3600e3) continue;
-    if (best == null || a.seconds > best) best = a.seconds;
-  }
-  return best;
-}
-
-// sessionSeconds / observedSeconds — how many times the clip the session was.
-// 1 when the length is unknown: credit what the camera saw, never a guess.
-export function observedOf(s: SessionLike): number {
-  return s.report?.biomech?.observedS ?? s.report?.duration ?? 0;
-}
-
-// When the session length is unknown we still have to show something. A clip
-// measures WHICH muscles worked and in what proportion perfectly well; what it
-// cannot know is the total volume. Crediting only the filmed seconds says "you
-// barely trained"; crediting the clip as a whole session says the opposite.
-// So: one stated default, surfaced everywhere a number derived from it appears,
-// and one tap to correct it. An assumption the user can see and fix is not the
-// same thing as an invented measurement.
-export { DEFAULT_SESSION_MIN } from "./biomech";
-
-// sessionSeconds / observedSeconds — how many times the clip the session was.
-export function volumeOf(s: SessionLike, acts: ActLike[]): number {
-  const obs = observedOf(s);
-  if (!(obs > 0.5)) return 1;
-  const sess = sessionSecondsOf(s, acts) ?? DEFAULT_SESSION_MIN * 60;
-  return Math.max(1, sess / obs);
-}
-
+// ONE item per WORKOUT, not per record. Before P0-1 this walked ml_sessions and
+// ml_activities separately, so a filmed recorded run produced two items whose
+// merge keys ("running|easy run" vs "workout|running") could never match — the
+// same training decayed twice and the body read sorer than it was. buildWorkouts
+// has already done the pairing; here we only decay.
 function collectItems(): { items: Item[]; protein48: number; weightKg: number; needsLength: number } | null {
-  const now = Date.now();
-  const hoursAgo = (d: string) => Math.max(0, (now - new Date(d).getTime()) / 3600e3);
   const items: Item[] = [];
   let needsLength = 0;
 
-  try {
-    const sessions = JSON.parse(localStorage.getItem("ml_sessions") ?? "[]") as {
-      id: string; sport?: string; action?: string; date: string; sessionSeconds?: number;
-      report?: {
-        duration?: number; keyMoments?: unknown[];
-        qualities?: { label: string; value: number }[];
-        biomech?: {
-          muscleLoad?: Partial<Record<MuscleKeyLR, number>>;
-          demandRaw?: Record<string, number>;
-          observedS?: number;
-        };
-      };
-    }[];
-    // Body size is applied HERE, not frozen at analysis time: entering your
-    // height and weight rescales every past session, which is the only way the
-    // profile inputs actually mean anything. Falls back to whatever the session
-    // stored when it has no raw demand (analysed before this existed).
-    const body = readBody();
-    let allActs: ActLike[] = [];
-    try { allActs = JSON.parse(localStorage.getItem("ml_activities") ?? "[]"); } catch {}
+  // Body size is applied HERE, not frozen at analysis time: entering your
+  // height and weight rescales every past session, which is the only way the
+  // profile inputs actually mean anything.
+  const body = readBody();
+  const workouts = buildWorkouts().filter((w: Workout) => w.hoursAgo <= 7 * 24);
 
-    for (const s of sessions) {
-      const h = hoursAgo(s.date);
-      if (h > 7 * 24) continue;
-      // demandRaw when present; otherwise reconstructed exactly from the
-      // legacy stored load, so old sessions leave the old clip-scale
-      // calibration behind too
-      const raw = legacyDemand((s.report?.biomech ?? {}) as never);
-      if (raw && sessionSecondsOf(s as SessionLike, allActs) == null) needsLength++;
-      const bio = raw
-        ? (loadFromDemand(raw as never, body, volumeOf(s as SessionLike, allActs)) as Partial<Record<MuscleKeyLR, number>>)
-        : s.report?.biomech?.muscleLoad;
-      items.push({
-        key: `s:${s.id}`,
-        hoursAgo: h,
-        group: `${(s.sport ?? "").toLowerCase()}|${(s.action ?? "").toLowerCase()}`,
-        bio: bio && Object.keys(bio).length ? { ...bio } : undefined,
-      });
-    }
-  } catch {}
-
-  try {
-    const acts = JSON.parse(localStorage.getItem("ml_activities") ?? "[]") as
-      { sport?: string; seconds?: number; date: string }[];
-    for (const a of acts) {
-      const h = hoursAgo(a.date);
-      if (h > 7 * 24) continue;
-      items.push({
-        key: `a:${a.date}|${a.sport ?? "w"}`,
-        hoursAgo: h,
-        group: `workout|${(a.sport ?? "").toLowerCase()}`,
-      });
-    }
-  } catch {}
+  for (const w of workouts) {
+    const bio = workoutMuscleLoad(w, body) as Partial<Record<MuscleKeyLR, number>> | null;
+    // a workout whose dose rests on the visible 30-minute assumption
+    if (bio && w.durationSource !== "recorded" && w.durationSource !== "stated") needsLength++;
+    items.push({
+      key: w.id,
+      hoursAgo: w.hoursAgo,
+      bio: bio && Object.keys(bio).length ? { ...bio } : undefined,
+    });
+  }
 
   if (!items.length) return null; // nothing real to analyze
 
-  // SAME-SESSION COLLAPSE: several clips of one workout (3 videos of the same
-  // run, minutes apart) must NOT stack as three separate trainings. Items of
-  // the same sport+action within SESSION_WINDOW_H of each other are folded into
-  // ONE, keeping the strongest reading. Different sports never merge.
-  items.sort((a, b) => a.hoursAgo - b.hoursAgo); // newest first
-  const merged: Item[] = [];
-  for (const it of items) {
-    const twin = merged.find(
-      (m) => m.group && it.group && m.group === it.group && Math.abs(m.hoursAgo - it.hoursAgo) <= SESSION_WINDOW_H
-    );
-    if (!twin) { merged.push(it); continue; }
-    twin.dupes = (twin.dupes ?? 1) + 1;
-    // keep the strongest per-muscle reading of the clips we merged
-    if (it.bio && twin.bio) {
-      for (const k of LR_KEYS) {
-        const a = twin.bio[k] ?? 0, b = it.bio[k] ?? 0;
-        if (b > a) twin.bio[k] = b;
-      }
-    } else if (it.bio && !twin.bio) {
-      twin.bio = { ...it.bio };
-    }
-  }
-  items.length = 0;
-  items.push(...merged);
-
+  const hoursAgo = (d: string) => Math.max(0, (Date.now() - new Date(d).getTime()) / 3600e3);
   let protein48 = 0;
   try {
     const meals = JSON.parse(localStorage.getItem("ml_fuel") ?? "[]") as { protein: number; date: string }[];
@@ -396,71 +281,17 @@ import { SIGNAL } from "./palette";
 // answers "what did I work on THAT day" — only that calendar day's sessions,
 // with NO time decay, because the day doesn't heal retroactively.
 export function getDayMuscleLoad(dayISO: string): MuscleLoad {
-  type Row = { key: string; group: string; when: number; bio?: Partial<Record<MuscleKeyLR, number>> };
-  const rows: Row[] = [];
-
-  try {
-    const sessions = JSON.parse(localStorage.getItem("ml_sessions") ?? "[]") as (SessionLike & {
-      report?: { biomech?: { muscleLoad?: Partial<Record<MuscleKeyLR, number>>; demandRaw?: Record<string, number>; observedS?: number } };
-    })[];
-    // same body + volume resolution as the live reader, or the two views of the
-    // same session would disagree
-    const body = readBody();
-    let allActs: ActLike[] = [];
-    try { allActs = JSON.parse(localStorage.getItem("ml_activities") ?? "[]"); } catch {}
-
-    for (const s of sessions) {
-      if (s.date.slice(0, 10) !== dayISO) continue;
-      const raw = legacyDemand((s.report?.biomech ?? {}) as never);
-      const bio = raw
-        ? (loadFromDemand(raw as never, body, volumeOf(s, allActs)) as Partial<Record<MuscleKeyLR, number>>)
-        : s.report?.biomech?.muscleLoad;
-      rows.push({
-        key: `s:${s.id}`,
-        group: `${(s.sport ?? "").toLowerCase()}|${(s.action ?? "").toLowerCase()}`,
-        when: new Date(s.date).getTime(),
-        bio: bio && Object.keys(bio).length ? { ...bio } : undefined,
-      });
-    }
-  } catch {}
-
-  try {
-    const acts = JSON.parse(localStorage.getItem("ml_activities") ?? "[]") as
-      { sport?: string; date: string }[];
-    for (const a of acts) {
-      if (a.date.slice(0, 10) !== dayISO) continue;
-      rows.push({
-        key: `a:${a.date}|${a.sport ?? "w"}`,
-        group: `workout|${(a.sport ?? "").toLowerCase()}`,
-        when: new Date(a.date).getTime(),
-      });
-    }
-  } catch {}
-
-  if (!rows.length) return {};
-
-  // same-session collapse: clips of one workout are ONE training, strongest wins
-  rows.sort((a, b) => a.when - b.when);
-  const merged: Row[] = [];
-  for (const r of rows) {
-    const twin = merged.find(
-      (m) => m.group === r.group && Math.abs(m.when - r.when) <= SESSION_WINDOW_H * 3600e3
-    );
-    if (!twin) { merged.push({ ...r }); continue; }
-    if (r.bio) {
-      twin.bio = twin.bio ?? {};
-      for (const k of LR_KEYS) {
-        const a = twin.bio[k] ?? 0, b = r.bio[k] ?? 0;
-        if (b > a) twin.bio[k] = b;
-      }
-    }
-  }
+  const body = readBody();
+  // Same Workout model as the live reader, so the two views of one session can
+  // never disagree — and a filmed recorded run counts once here too.
+  const day = buildWorkouts().filter((w: Workout) => w.startedAt.slice(0, 10) === dayISO);
+  if (!day.length) return {};
 
   const load: MuscleLoad = {};
   for (const k of LR_KEYS) {
     let fresh = 1;
-    for (const r of merged) {
-      const m = r.bio as Record<string, number> | undefined; // measured only
+    for (const w of day) {
+      const m = workoutMuscleLoad(w, body) as Record<string, number> | null; // measured only
       const imp = m?.[k] ?? m?.[k.replace(/_[lr]$/, "")] ?? 0;
       if (imp > 0) fresh *= 1 - Math.min(0.85, imp);
     }

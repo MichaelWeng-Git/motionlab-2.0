@@ -11,7 +11,7 @@
 // own, without a falling line implying the body fell apart.
 
 import { legacyDemand, loadFromDemand } from "./biomech";
-import { readBody, sessionSecondsOf, volumeOf, type ActLike, type SessionLike } from "./muscles";
+import { buildWorkouts, readBody, workoutMuscleLoad } from "./workouts";
 import type { AnalysisResult } from "./analysis";
 
 export type DayCell = {
@@ -51,32 +51,18 @@ const WINDOW_MS = 7 * 86400e3;
 // deep in it. Inverted on purpose, same three colours (lib/palette).
 export { intensityColor as loadColor } from "./palette";
 
-type Sess = { id: string; sport?: string; date: string; report?: AnalysisResult };
-type Act = { sport?: string; date: string; seconds?: number };
 
 const dayKey = (d: Date) => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 
-// How much a single session demanded: the mean over the groups it actually
-// worked, not a flat average across all 16 (which would dilute a hard leg day
-// into nothing). Computed through the SAME path the muscle figure uses —
-// current body, current session length — so the dial and the body can never
-// tell different stories.
-function sessionDemand(s: SessionLike, acts: ActLike[]): number | null {
-  const raw = legacyDemand((s.report?.biomech ?? {}) as never);
-  if (!raw) return null;
-  const ml = loadFromDemand(raw as never, readBody(), volumeOf(s, acts)) as Record<string, number>;
-  const worked = Object.values(ml).filter((v) => typeof v === "number" && v > 0.05);
-  if (!worked.length) return 0;
-  return Math.min(1.5, worked.reduce((a, b) => a + b, 0) / worked.length);
-}
-
 export function buildLoadMonth(): LoadMonth | null {
-  let sessions: Sess[] = [];
-  let acts: Act[] = [];
-  try { sessions = JSON.parse(localStorage.getItem("ml_sessions") ?? "[]"); } catch {}
-  try { acts = JSON.parse(localStorage.getItem("ml_activities") ?? "[]"); } catch {}
-  if (!sessions.length && !acts.length) return null;
+  // ONE entry per training. Before P0-1 this loop ran twice — once over
+  // ml_sessions, once over ml_activities — so a filmed recorded run was added
+  // to the same day twice, the second time using the very duration that had
+  // already scaled the first.
+  const workouts = buildWorkouts();
+  if (!workouts.length) return null;
 
+  const body = readBody();
   const daily = new Map<string, number>();
   const counts = new Map<string, number>();
   const trainedDays = new Set<string>();
@@ -86,30 +72,35 @@ export function buildLoadMonth(): LoadMonth | null {
     trainedDays.add(k);
   };
 
-  // a day is TRAINED because a session exists, not because its dose is known
-  const unknownDays = new Set<string>();
   let needsLength = 0;
   const weekStartMs = Date.now() - 7 * 86400e3;
 
-  for (const s of sessions) {
-    const k = s.date.slice(0, 10);
-    const d = sessionDemand(s as SessionLike, acts as ActLike[]);
-    if (d == null) {
-      // The workout is a fact even when its dose could not be measured. Keep
-      // the calendar mark outlined instead of making the training disappear.
-      trainedDays.add(k);
-      counts.set(k, (counts.get(k) ?? 0) + 1);
+  for (const w of workouts) {
+    const k = w.startedAt.slice(0, 10);
+
+    // the dose the CLIPS measured, if any
+    const ml = workoutMuscleLoad(w, body);
+    const worked = ml ? Object.values(ml).filter((v) => v > 0.05) : [];
+    const measured = worked.length
+      ? Math.min(1.5, worked.reduce((a, b) => a + b, 0) / worked.length)
+      : null;
+
+    if (measured != null) {
+      add(k, measured);
+      if (w.durationSource !== "recorded" && w.durationSource !== "stated") {
+        if (new Date(w.startedAt).getTime() >= weekStartMs) needsLength++;
+      }
       continue;
     }
-    add(k, d);
-    if (sessionSecondsOf(s as SessionLike, acts as ActLike[]) == null) {
-      unknownDays.add(k);
-      if (new Date(s.date).getTime() >= weekStartMs) needsLength++;
-    }
-  }
-  for (const a of acts) {
-    const mins = (a.seconds ?? 0) / 60;
-    if (mins > 0) add(a.date.slice(0, 10), Math.min(1.5, mins / 45));
+
+    // no clip dose: a recording still carries real duration
+    const mins = (w.recording?.seconds ?? 0) / 60;
+    if (mins > 0) { add(k, Math.min(1.5, mins / 45)); continue; }
+
+    // The workout is a fact even when its dose could not be measured. Keep the
+    // calendar mark outlined instead of making the training disappear.
+    trainedDays.add(k);
+    counts.set(k, (counts.get(k) ?? 0) + 1);
   }
 
   // rolling windows, anchored on the start of today so the dial does not

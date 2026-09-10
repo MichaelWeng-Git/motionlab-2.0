@@ -133,7 +133,8 @@ design-assets/, exercise-images-inbox/   raw art, not shipped code
 | `lift3d.ts` | Stage ④: MotionBERT 2D→3D lift, plus foot joints |
 | `sam3d.ts` | Stage ⑤: optional fal.ai cloud shape anchors |
 | `biomech.ts` | Deterministic biomechanics. `demandRaw`, `loadFromDemand`, `bodyScale` |
-| `muscles.ts` | Per-muscle load, decay, recovery, session-length resolution |
+| `workouts.ts` | **THE training record.** `buildWorkouts()` pairs recordings with clips — LOAD, Recovery and CHARGE all count `Workout[]`, never the raw stores |
+| `muscles.ts` | Per-muscle load, decay, recovery |
 | `fitness.ts` | LOAD: the month calendar and the rolling 7-day dial |
 | `form.ts` | FORM: six sport-agnostic capacities |
 | `charge.ts` | CHARGE: acute vs chronic readiness |
@@ -454,6 +455,7 @@ actual VO2max number, and needs no new model.
 | `afterLogin()` in `app/login/page.tsx` | Previously deleted real training data |
 | `AppShell` auth gate | Stripping the URL hash breaks every magic link |
 | `lib/palette.ts` | The single colour source |
+| `buildWorkouts()` pairing rule | Reading `ml_sessions`/`ml_activities` directly from LOAD, Recovery or CHARGE re-creates the double count it exists to remove |
 | `public/models/*` | Multi-GB weights; the refiner's tier fallback depends on the exact filenames |
 
 ---
