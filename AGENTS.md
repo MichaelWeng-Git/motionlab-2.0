@@ -84,6 +84,28 @@ answers on any other port, more than one server is running.
 
 **If two agents share this checkout, only one of them may run Next at all.**
 
+**node is not on the default PATH.** It lives under
+`~/.local/node/node-v22.14.0-darwin-arm64/bin`, which only a login shell that
+sources the profile ever sees. A bare `npm` fails with `command not found`, and
+an absolute path to `npm` still fails with `env: node: No such file or
+directory`, because npm is itself a `#!/usr/bin/env node` script. Either export
+the PATH first:
+
+```bash
+export PATH="$HOME/.local/node/node-v22.14.0-darwin-arm64/bin:$PATH"
+```
+
+or call node by absolute path on next's own bin, which is what
+`.claude/launch.json` does:
+
+```
+<abs node> node_modules/next/dist/bin/next dev -p 3100
+```
+
+`autoPort` is deliberately `false` there: **3100 is not a preference.** The
+Google OAuth callback is registered against that exact port, so a floating port
+silently breaks Google sign-in.
+
 ---
 
 ## Layout
