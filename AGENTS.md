@@ -3,6 +3,10 @@
 A map of this repository for coding agents. Read this first; the code is the
 source of truth for anything not covered here.
 
+**The plan of work lives in [docs/CHECKLIST.md](docs/CHECKLIST.md)** — merged
+P0/P1 backlog and the owner's 24-point list, one item per commit, each with the
+review prompt to run after it ships.
+
 ---
 
 ## What this is

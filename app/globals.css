@@ -342,6 +342,21 @@ button:not(:disabled),
   from { transform: scale(0.2); opacity: 0.9; }
   to   { transform: scale(2.8); opacity: 0; }
 }
+/* slow foil glint on the premium shop pack; motion is decorative only */
+.pack-foil {
+  background:
+    linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.28) 36%, transparent 52%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.06) 0 1px, transparent 1px 10px);
+  background-size: 220% 100%, auto;
+  animation: pack-foil 4s ease-in-out infinite;
+}
+@keyframes pack-foil {
+  0%, 35% { background-position: 120% 0, 0 0; }
+  70%, 100% { background-position: -120% 0, 0 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pack-foil { animation: none; }
+}
 .orn-reveal {
   animation: orn-reveal 0.55s cubic-bezier(0.34, 1.5, 0.64, 1) both;
 }

@@ -16,14 +16,33 @@ type OrnType = "ball" | "bell" | "candy" | "flake" | "gift";
 // x/y = FREE position on the tree (viewBox coords) once hung; `s` is the old
 // slot-based format, migrated to x/y on load
 type Orn = { type: OrnType; color: string; x?: number; y?: number; s?: number };
+type Rarity = "common" | "rare" | "epic";
 
 const COINS_PER_DAY = 10;
 const BALL_COLORS = ["#FF5A5F", "#F5B23D", "#12C6D4", "#FF8AB3", "#FFF6DC", "#B48CF2"];
 
-// the shop shelf — GameKit-style, two packs side by side
+const ORN_RARITY: Record<OrnType, Rarity> = {
+  ball: "common", candy: "rare", bell: "rare", flake: "epic", gift: "epic",
+};
+const RARITY_META: Record<Rarity, { label: string; color: string; bg: string }> = {
+  common: { label: "COMMON", color: "#E3F0E8", bg: "#315B49" },
+  rare: { label: "RARE", color: "#BDECF0", bg: "#167D87" },
+  epic: { label: "EPIC", color: "#F1D7FF", bg: "#7040A0" },
+};
+
+// Drop rates are also used by rollOrnament: the shop and the draw can never
+// silently disagree.
 const PACKS = [
-  { key: "basic", name: "Ornament pack", sub: "1 random decoration", cost: 30, rolls: 1, deluxe: false },
-  { key: "deluxe", name: "Deluxe pack", sub: "2 decorations · rarer finds", cost: 80, rolls: 2, deluxe: true },
+  {
+    key: "deluxe", name: "Frost vault", eyebrow: "BEST CHANCE", sub: "2 ornaments · boosted Epic odds",
+    cost: 80, rolls: 2, deluxe: true,
+    odds: { ball: 35, candy: 20, bell: 20, flake: 15, gift: 10 },
+  },
+  {
+    key: "basic", name: "Evergreen pack", eyebrow: "CLASSIC", sub: "1 surprise ornament",
+    cost: 30, rolls: 1, deluxe: false,
+    odds: { ball: 60, candy: 15, bell: 15, flake: 7, gift: 3 },
+  },
 ] as const;
 type Pack = (typeof PACKS)[number];
 
@@ -60,14 +79,20 @@ const ORN_NAMES: Record<OrnType, string> = {
   ball: "Bauble", bell: "Golden bell", candy: "Candy cane", flake: "Snowflake", gift: "Tiny gift",
 };
 
-function rollOrnament(deluxe: boolean): Orn {
-  const r = Math.random();
-  const ball = deluxe ? 0.35 : 0.6, candy = deluxe ? 0.55 : 0.75, bell = deluxe ? 0.75 : 0.9, flake = deluxe ? 0.9 : 0.97;
-  if (r < ball) return { type: "ball", color: BALL_COLORS[Math.floor(Math.random() * BALL_COLORS.length)] };
-  if (r < candy) return { type: "candy", color: "#FF5A5F" };
-  if (r < bell) return { type: "bell", color: "#F5B23D" };
-  if (r < flake) return { type: "flake", color: "#EAF6FF" };
-  return { type: "gift", color: "#FF5A5F" };
+function rollOrnament(pack: Pack): Orn {
+  let roll = Math.random() * 100;
+  let type: OrnType = "gift";
+  for (const candidate of ["ball", "candy", "bell", "flake", "gift"] as const) {
+    roll -= pack.odds[candidate];
+    if (roll < 0) { type = candidate; break; }
+  }
+  const colors: Record<Exclude<OrnType, "ball">, string> = {
+    candy: "#FF5A5F", bell: "#F5B23D", flake: "#EAF6FF", gift: "#FF5A5F",
+  };
+  return {
+    type,
+    color: type === "ball" ? BALL_COLORS[Math.floor(Math.random() * BALL_COLORS.length)] : colors[type],
+  };
 }
 
 // one hung ornament, drawn by type
@@ -123,6 +148,7 @@ export default function Tree() {
   const [coins, setCoins] = useState(0);
   const [inv, setInv] = useState<Orn[]>([]);
   const [opening, setOpening] = useState<{ pack: Pack; stage: OpenStage; won: Orn[] } | null>(null);
+  const [packInfo, setPackInfo] = useState<Pack | null>(null);
   const [placing, setPlacing] = useState<number[]>([]); // inv indices awaiting a hook
   const [broke, setBroke] = useState(false);
   // EDIT mode: free-drag ornaments anywhere, then Save persists the layout
@@ -192,7 +218,7 @@ export default function Tree() {
       setBroke(true);
       return;
     }
-    const won = Array.from({ length: pack.rolls }, () => rollOrnament(pack.deluxe));
+    const won = Array.from({ length: pack.rolls }, () => rollOrnament(pack));
     localStorage.setItem(
       "ml_coins_spent",
       String((Number(localStorage.getItem("ml_coins_spent") ?? 0) || 0) + pack.cost)
@@ -266,6 +292,7 @@ export default function Tree() {
   const placingActive = placing.length > 0;
   const current = placingActive ? inv[placing[0]] : null;
   const focused = placingActive || editing; // tree lifted above the blur
+  const discovered = new Set(inv.map((o) => o.type)).size;
 
   return (
     <div className="stagger px-5 pb-8 pt-8">
@@ -397,41 +424,97 @@ export default function Tree() {
           day sockets, oversized coins, claim burst (components/DailyCoinsTrack) */}
       <DailyCoinsTrack claims={dailyClaims} onClaim={claimDaily} />
 
-      {/* SHOP — big title, coin balance top-right (the header no longer shows coins) */}
-      <div className="relative mt-4 rounded-3xl bg-white p-5 shadow-soft">
-        <h2 className="text-center font-golden text-3xl text-ink">SHOP</h2>
-        <span className="absolute right-4 top-4 flex h-8 items-center gap-1 rounded-full bg-paper pl-1.5 pr-2.5 shadow-soft">
-          <CoinIcon size={17} />
-          <span className="text-[13px] font-extrabold tabular-nums text-ink">{coins}</span>
-        </span>
+      {/* SHOP — premium pack shelf with visible, truthful drop rules. */}
+      <div className="relative mt-4 overflow-hidden rounded-[30px] bg-[#10271F] p-4 shadow-lift">
+        <div className="pointer-events-none absolute -right-12 -top-16 h-44 w-44 rounded-full bg-[#2D6B50]/55 blur-2xl" />
+        <div className="relative flex items-start justify-between px-1 pb-4 pt-1">
+          <div>
+            <p className="text-[10px] font-black tracking-[0.2em] text-[#9FD2B7]">TREE COLLECTION</p>
+            <h2 className="font-golden text-3xl leading-none text-white">PACK SHOP</h2>
+            <p className="mt-1 text-xs font-bold text-white/70">{discovered} / 5 ornament types found</p>
+          </div>
+          <span className="flex h-9 items-center gap-1.5 rounded-full border border-white/10 bg-white/10 pl-2 pr-3 shadow-soft backdrop-blur">
+            <CoinIcon size={17} />
+            <span className="font-golden text-lg tabular-nums text-white">{coins}</span>
+          </span>
+        </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-3">
+        <div className="relative space-y-3">
           {PACKS.map((p) => (
-            <div key={p.key} className="flex flex-col items-center rounded-2xl bg-paper p-4">
-              <div
-                className={`relative grid h-20 w-16 place-items-center rounded-xl shadow-soft ${
-                  p.deluxe ? "bg-gradient-to-b from-[#F5B23D] to-[#C98F1B]" : "bg-gradient-to-b from-volt to-volt-deep"
-                }`}
-              >
-                <span className="absolute -right-1.5 -top-1.5 grid h-6 w-6 place-items-center rounded-full bg-ink text-[11px] font-extrabold text-white shadow-soft">
-                  ?
-                </span>
-                <MiniPackTree />
-                {p.deluxe && <span className="absolute bottom-1 text-[9px] font-extrabold uppercase tracking-wide text-white/90">×2</span>}
+            <article
+              key={p.key}
+              className={`relative overflow-hidden rounded-[24px] border p-3.5 ${
+                p.deluxe
+                  ? "border-[#F8D46A]/60 bg-gradient-to-br from-[#6F4C13] via-[#A66D10] to-[#50340C]"
+                  : "border-white/10 bg-[#E8F0EB]"
+              }`}
+            >
+              {p.deluxe && <div className="pointer-events-none absolute inset-0 pack-foil opacity-40" />}
+              <div className="relative flex items-center gap-3">
+                <PackArt deluxe={p.deluxe} rolls={p.rolls} />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className={`rounded-full px-2 py-1 text-[8px] font-black tracking-[0.15em] ${p.deluxe ? "bg-[#FFE58E] text-[#5A3905]" : "bg-[#315B49] text-white"}`}>
+                      {p.eyebrow}
+                    </span>
+                    <button
+                      type="button"
+                      aria-label={`View ${p.name} drop rates`}
+                      onClick={() => setPackInfo(p)}
+                      className={`grid h-6 w-6 place-items-center rounded-full border text-[11px] font-black ${p.deluxe ? "border-white/30 text-white" : "border-ink/15 text-ink"}`}
+                    >i</button>
+                  </div>
+                  <h3 className={`mt-2 font-golden text-[22px] leading-none ${p.deluxe ? "text-white" : "text-ink"}`}>{p.name}</h3>
+                  <p className={`mt-1 text-[11px] font-bold leading-tight ${p.deluxe ? "text-white/75" : "text-ink-soft"}`}>{p.sub}</p>
+                  <button
+                    onClick={() => buyPack(p)}
+                    disabled={Boolean(opening) || placing.length > 0}
+                    className={`btn-press mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-black transition disabled:opacity-50 ${
+                      coins >= p.cost
+                        ? p.deluxe ? "bg-[#FFE58E] text-[#50340C]" : "bg-ink text-white"
+                        : p.deluxe ? "bg-black/25 text-white/70" : "bg-ink/10 text-ink-soft"
+                    }`}
+                  >
+                    <CoinIcon size={16} />
+                    {coins >= p.cost ? `OPEN · ${p.cost}` : `NEED ${p.cost - coins} MORE`}
+                  </button>
+                </div>
               </div>
-              <p className="mt-3 text-sm font-extrabold text-ink">{p.name}</p>
-              <p className="mt-0.5 text-center text-[11px] font-bold leading-tight text-ink-soft">{p.sub}</p>
-              <button
-                onClick={() => buyPack(p)}
-                className="btn-press mt-3 flex w-full items-center justify-center gap-1.5 rounded-full bg-ink py-2.5 text-sm font-extrabold text-white transition"
-              >
-                <CoinIcon size={15} />
-                {p.cost}
-              </button>
-            </div>
+            </article>
           ))}
         </div>
       </div>
+
+      {/* Pack contents and exact probabilities. */}
+      {packInfo && (
+        <div className="fixed inset-0 z-[75] flex items-end justify-center bg-ink/60 px-3 backdrop-blur-[3px]" onClick={() => setPackInfo(null)}>
+          <section className="mb-3 w-full max-w-[406px] animate-pop rounded-[30px] bg-[#F7F4EA] p-5 shadow-lift" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-[10px] font-black tracking-[0.18em] text-ink-soft">DROP RATES · EACH DRAW</p>
+                <h3 className="mt-1 font-golden text-3xl leading-none text-ink">{packInfo.name}</h3>
+              </div>
+              <button onClick={() => setPackInfo(null)} aria-label="Close" className="grid h-9 w-9 place-items-center rounded-full bg-ink text-xl leading-none text-white">×</button>
+            </div>
+            <div className="mt-5 space-y-2">
+              {(["ball", "candy", "bell", "flake", "gift"] as const).map((type) => {
+                const rarity = RARITY_META[ORN_RARITY[type]];
+                return (
+                  <div key={type} className="flex items-center gap-3 rounded-2xl bg-white px-3 py-2.5">
+                    <svg viewBox="-12 -12 24 24" className="h-9 w-9"><Ornament x={0} y={0} o={{ type, color: type === "ball" ? BALL_COLORS[0] : type === "candy" || type === "gift" ? "#FF5A5F" : type === "bell" ? "#F5B23D" : "#BDECF0" }} /></svg>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-black text-ink">{ORN_NAMES[type]}</p>
+                      <span className="text-[9px] font-black tracking-[0.13em]" style={{ color: rarity.bg }}>{rarity.label}</span>
+                    </div>
+                    <span className="font-golden text-xl tabular-nums text-ink">{packInfo.odds[type]}%</span>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="mt-4 text-center text-[11px] font-bold text-ink-soft">Duplicates can drop. Every draw is independent.</p>
+          </section>
+        </div>
+      )}
 
       {/* PACK OPENING — tear → reveal → bubble */}
       {opening && (
@@ -463,12 +546,12 @@ export default function Tree() {
 
           {opening.stage === "bubble" && (
             <div className="w-full max-w-[300px] animate-pop rounded-3xl bg-paper p-6 text-center shadow-lift">
-              <div className="flex items-center justify-center gap-2">
+              <p className="text-[10px] font-black tracking-[0.18em] text-ink-soft">PACK OPENED</p>
+              <div className="mt-2 flex items-center justify-center gap-2">
                 {opening.won.map((o, i) => (
-                  <div key={i} className="float-soft" style={{ animationDelay: `${i * 0.3}s` }}>
-                    <svg viewBox="-20 -20 40 40" className="h-20 w-20">
-                      <Ornament x={0} y={0} o={o} scale={2} />
-                    </svg>
+                  <div key={i} className="float-soft rounded-2xl px-2 py-3" style={{ animationDelay: `${i * 0.3}s`, background: RARITY_META[ORN_RARITY[o.type]].color }}>
+                    <svg viewBox="-20 -20 40 40" className="h-16 w-16"><Ornament x={0} y={0} o={o} scale={2} /></svg>
+                    <span className="mt-1 block text-[8px] font-black tracking-[0.14em]" style={{ color: RARITY_META[ORN_RARITY[o.type]].bg }}>{RARITY_META[ORN_RARITY[o.type]].label}</span>
                   </div>
                 ))}
               </div>
@@ -514,5 +597,20 @@ function MiniPackTree({ size = 1 }: { size?: number }) {
       <path d="M13 8 6 18h14L13 8z" fill="#8FD6A8" />
       <path d="M13 13 3 26h20L13 13z" fill="#E3F0E8" />
     </svg>
+  );
+}
+
+function PackArt({ deluxe, rolls }: { deluxe: boolean; rolls: number }) {
+  return (
+    <div className="relative h-[126px] w-[94px] shrink-0">
+      <div className={`absolute inset-x-2 bottom-1 top-2 rotate-[-3deg] overflow-hidden rounded-[18px] border-2 shadow-[0_10px_20px_rgba(0,0,0,0.28)] ${deluxe ? "border-[#FFE58E] bg-gradient-to-b from-[#F4C64E] to-[#B66D09]" : "border-[#4F8A6B] bg-gradient-to-b from-[#244A3A] to-[#10271F]"}`}>
+        <div className="absolute inset-x-0 top-2 border-t-2 border-dashed border-white/30" />
+        <div className="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-white/10">
+          <MiniPackTree size={1.25} />
+        </div>
+        <div className="absolute inset-x-0 bottom-2 text-center text-[8px] font-black tracking-[0.16em] text-white/80">MOTIONLAB</div>
+      </div>
+      <span className={`absolute right-0 top-0 grid h-9 min-w-9 place-items-center rounded-full border-2 px-1 font-golden text-lg shadow-soft ${deluxe ? "border-[#FFF2B8] bg-[#FFE58E] text-[#5A3905]" : "border-white bg-[#E3F0E8] text-[#18392D]"}`}>×{rolls}</span>
+    </div>
   );
 }
