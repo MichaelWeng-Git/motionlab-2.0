@@ -98,6 +98,7 @@ export default function Login() {
         try { window.history.replaceState(null, "", "/login"); } catch {}
         if (ok) { go("email"); return; }
         if (!done) {
+          done = true;
           setError("This sign-in link could not be completed. Request a new link and open the newest email.");
           setChecking(false);
         }
@@ -120,7 +121,13 @@ export default function Login() {
           go("google"); return;
         }
       } catch {}
-      if (!done) setChecking(false);
+      if (!done) {
+        // The silent session check is finished. Without closing this state,
+        // its watchdog survives into the code-entry screen and shows a false
+        // "sign-in is taking too long" error twelve seconds later.
+        done = true;
+        setChecking(false);
+      }
     };
 
     check();
@@ -266,16 +273,8 @@ export default function Login() {
             </>
           ) : (
             <form onSubmit={verifyCode} className="space-y-3">
-              <p className="text-center text-sm font-semibold leading-relaxed text-ink-soft">
-                Check your inbox — we sent a sign-in link to
-                <br />
-                <span className="font-bold text-ink">{email}</span>
-                <br />
-                <span className="text-[11px]">Tap the link on THIS device to sign in.</span>
-              </p>
-              <p className="pt-1 text-center text-[11px] font-bold uppercase tracking-wide text-ink-muted">
-                or enter the code if your email has one
-              </p>
+              <p className="text-center text-sm font-semibold text-ink-soft">Check your inbox</p>
+              <p className="text-center font-bold text-ink">{email}</p>
               <input
                 autoFocus
                 inputMode="numeric"
