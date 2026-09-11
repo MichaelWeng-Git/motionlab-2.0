@@ -373,7 +373,7 @@ export default function Home() {
         <div className="flex flex-col gap-3" ref={formRef}>
         <Link
           href={form !== null ? "/form" : "/analyze"}
-          className="gk-card block flex-1 p-5 transition active:scale-[0.98]"
+          className="gk-card block flex-1 !bg-cream p-5 transition active:scale-[0.98]"
         >
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-2">
@@ -494,13 +494,13 @@ export default function Home() {
           LOAD = how much, CHARGE = how ready. */}
       {charge && (
         <section className="mt-4" ref={chargeRef}>
-          <Link href="/charge" className="gk-card block w-full p-5 text-left transition active:scale-[0.99]">
+          <Link href="/charge" className="gk-card block w-full !bg-graphite p-5 text-left transition active:scale-[0.99]">
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-2.5">
-                <span className="grid h-8 w-8 place-items-center rounded-xl" style={{ background: `${CHARGE_META[charge.state].color}1F` }}>
+                <span className="grid h-8 w-8 place-items-center rounded-xl bg-white/10">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill={CHARGE_META[charge.state].color}><path d="M13 2.5 5 13.5h5.5L11 21.5l8-11h-5.5L13 2.5z" /></svg>
                 </span>
-                <h2 className="font-golden text-lg leading-none text-ink">CHARGE</h2>
+                <h2 className="font-golden text-lg leading-none text-white">CHARGE</h2>
               </span>
               <span
                 className="rounded-full px-3 py-1.5 text-[11px] font-extrabold tracking-wide text-white"
@@ -520,12 +520,12 @@ export default function Home() {
                 labelColor={CHARGE_META[charge.state].color}
               />
             </div>
-            <p className="mt-2.5 text-center text-[12px] font-bold text-ink-soft">{charge.why}</p>
+            <p className="mt-2.5 text-center text-[12px] font-bold text-white/80">{charge.why}</p>
             {charge.assumedWorkouts > 0 && (
               /* CHARGE is a VOLUME model, so when a workout's length is the
                  visible 30-minute assumption the number rests on it — say so
                  here exactly as the recovery bar does. */
-              <p className="mt-1 text-center text-[11px] font-bold text-ink-muted">
+              <p className="mt-1 text-center text-[11px] font-bold text-white/55">
                 {charge.assumedWorkouts} {charge.assumedWorkouts === 1 ? "session assumes" : "sessions assume"} {DEFAULT_SESSION_MIN} min
               </p>
             )}
