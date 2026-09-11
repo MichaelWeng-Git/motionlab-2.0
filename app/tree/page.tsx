@@ -440,36 +440,29 @@ export default function Tree() {
           {PACKS.map((p) => (
             <article
               key={p.key}
-              className={`relative overflow-hidden rounded-2xl border p-3.5 ${
-                p.deluxe
-                  ? "border-[#F8D46A]/60 bg-gradient-to-br from-[#6F4C13] via-[#A66D10] to-[#50340C]"
-                  : "border-white/10 bg-[#E8F0EB]"
-              }`}
+              className={`relative overflow-hidden rounded-3xl border p-4 ${p.deluxe ? "border-award-gold-light bg-award-gold-wash" : "border-white/10 bg-cream"}`}
             >
-              {p.deluxe && <div className="pointer-events-none absolute inset-0 pack-foil opacity-40" />}
               <div className="relative flex items-center gap-3">
                 <PackArt deluxe={p.deluxe} rolls={p.rolls} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className={`rounded-full px-2 py-1 text-[11px] font-black tracking-[0.15em] ${p.deluxe ? "bg-award-gold-pale text-[#5A3905]" : "bg-[#315B49] text-white"}`}>
+                    <span className={`rounded-full px-2 py-1 text-[11px] font-black tracking-[0.15em] ${p.deluxe ? "bg-award-gold text-ink" : "bg-heat-1 text-white"}`}>
                       {p.eyebrow}
                     </span>
                     <button
                       type="button"
                       aria-label={`View ${p.name} drop rates`}
                       onClick={() => setPackInfo(p)}
-                      className={`grid h-6 w-6 place-items-center rounded-full border text-[11px] font-black ${p.deluxe ? "border-white/30 text-white" : "border-ink/15 text-ink"}`}
+                      className="grid h-6 w-6 place-items-center rounded-full border border-ink/15 text-[11px] font-black text-ink"
                     >i</button>
                   </div>
-                  <h3 className={`mt-2 font-golden text-[22px] leading-none ${p.deluxe ? "text-white" : "text-ink"}`}>{p.name}</h3>
-                  <p className={`mt-1 text-[11px] font-bold leading-tight ${p.deluxe ? "text-white/75" : "text-ink-soft"}`}>{p.sub}</p>
+                  <h3 className="mt-2 font-golden text-[22px] leading-none text-ink">{p.name}</h3>
+                  <p className="mt-1 text-[11px] font-bold leading-tight text-ink-soft">{p.sub}</p>
                   <button
                     onClick={() => buyPack(p)}
                     disabled={Boolean(opening) || placing.length > 0}
                     className={`btn-press mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-black transition disabled:opacity-50 ${
-                      coins >= p.cost
-                        ? p.deluxe ? "bg-award-gold-pale text-[#50340C]" : "bg-ink text-white"
-                        : p.deluxe ? "bg-black/25 text-white/70" : "bg-ink/10 text-ink-soft"
+                      coins >= p.cost ? "bg-ink text-white" : "bg-ink/10 text-ink-soft"
                     }`}
                   >
                     <CoinIcon size={16} />
@@ -602,14 +595,15 @@ function MiniPackTree({ size = 1 }: { size?: number }) {
 function PackArt({ deluxe, rolls }: { deluxe: boolean; rolls: number }) {
   return (
     <div className="relative h-[126px] w-[94px] shrink-0">
-      <div className={`absolute inset-x-2 bottom-1 top-2 rotate-[-3deg] overflow-hidden rounded-xl border-2 shadow-[0_10px_20px_rgba(0,0,0,0.28)] ${deluxe ? "border-award-gold-pale bg-gradient-to-b from-[#F4C64E] to-[#B66D09]" : "border-[#4F8A6B] bg-gradient-to-b from-[#244A3A] to-graphite"}`}>
-        <div className="absolute inset-x-0 top-2 border-t-2 border-dashed border-white/30" />
-        <div className="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-white/10">
-          <MiniPackTree size={1.25} />
+      <div className={`absolute inset-x-2 bottom-1 top-1 overflow-hidden rounded-[18px] border-2 shadow-soft ${deluxe ? "border-award-gold-light bg-award-gold" : "border-heat-2 bg-heat-1"}`}>
+        <div className="absolute inset-x-0 top-0 h-3 border-b border-white/25 bg-black/10" />
+        <div className="absolute left-1/2 top-7 h-1.5 w-7 -translate-x-1/2 rounded-full bg-black/20" />
+        <div className="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-2xl border border-white/25 bg-graphite">
+          <span className="font-golden text-xl tracking-tight text-white">ML</span>
         </div>
-        <div className="absolute inset-x-0 bottom-2 text-center text-[11px] font-black tracking-[0.16em] text-white/80">MOTIONLAB</div>
+        <div className="absolute inset-x-0 bottom-2 text-center text-[11px] font-black tracking-[0.12em] text-white">ORNAMENTS</div>
       </div>
-      <span className={`absolute right-0 top-0 grid h-9 min-w-9 place-items-center rounded-full border-2 px-1 font-golden text-lg shadow-soft ${deluxe ? "border-[#FFF2B8] bg-award-gold-pale text-[#5A3905]" : "border-white bg-[#E3F0E8] text-[#18392D]"}`}>×{rolls}</span>
+      <span className="absolute right-0 top-0 grid h-9 min-w-9 place-items-center rounded-full border-2 border-white bg-graphite px-1 font-golden text-lg text-white shadow-soft">×{rolls}</span>
     </div>
   );
 }
