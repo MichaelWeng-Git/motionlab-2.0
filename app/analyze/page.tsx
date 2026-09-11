@@ -461,7 +461,7 @@ export default function Analyze() {
 
       {step === "pick" && (
         <div className="animate-fade-up px-5">
-          <p className="text-[10px] font-black tracking-[0.22em] text-signal-good">ON-DEVICE MOTION CAPTURE</p>
+          <p className="text-[11px] font-black tracking-[0.22em] text-signal-good">ON-DEVICE MOTION CAPTURE</p>
           <h1 className="mt-2 display text-4xl font-extrabold leading-[0.94]">Turn movement<br />into feedback.</h1>
 
           {/* AI-vision cover: what the product actually does — a glowing pose
@@ -565,7 +565,7 @@ export default function Analyze() {
             <div className="mt-4 flex items-center justify-between rounded-2xl bg-white px-4 py-3 shadow-soft">
               <div className="min-w-0">
                 <p className="truncate text-xs font-black text-ink">{fileMeta.name}</p>
-                <p className="mt-0.5 text-[10px] font-bold text-ink-muted">{formatBytes(fileMeta.bytes)} · processed on this device</p>
+                <p className="mt-0.5 text-[11px] font-bold text-ink-muted">{formatBytes(fileMeta.bytes)} · processed on this device</p>
               </div>
               <button onClick={cancelAnalysis} className="ml-3 text-[11px] font-black text-signal-work">CHANGE</button>
             </div>
@@ -619,10 +619,10 @@ export default function Analyze() {
       <div className={step === "processing" ? "animate-fade-up px-5" : "hidden"}>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-[9px] font-black tracking-[0.2em] text-signal-good">MOTION ANALYSIS</p>
+            <p className="text-[11px] font-black tracking-[0.2em] text-signal-good">MOTION ANALYSIS</p>
             <h1 className="mt-1 font-golden text-[28px] leading-none text-ink">READING YOUR MOVE</h1>
           </div>
-          <button onClick={cancelAnalysis} className="rounded-full bg-white px-3 py-2 text-[10px] font-black text-signal-work shadow-soft">CANCEL</button>
+          <button onClick={cancelAnalysis} className="rounded-full bg-white px-3 py-2 text-[11px] font-black text-signal-work shadow-soft">CANCEL</button>
         </div>
 
         <section className="mt-4 overflow-hidden rounded-3xl bg-graphite shadow-lift">
@@ -631,7 +631,7 @@ export default function Analyze() {
             <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
             <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full border border-white/10 bg-black/45 px-3 py-1.5 backdrop-blur">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#7FD9AE]" />
-              <span className="text-[9px] font-black tracking-wider text-white">TRACKING</span>
+              <span className="text-[11px] font-black tracking-wider text-white">TRACKING</span>
             </div>
             <div className="absolute right-3 top-3 font-golden text-2xl tabular-nums text-white">{Math.round(progress)}%</div>
           </div>
@@ -643,16 +643,16 @@ export default function Analyze() {
                 const done = i < stage;
                 const active = i === stage;
                 return <div key={s.label} className="flex flex-1 items-center last:flex-none">
-                  <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-[10px] font-black ${skipped ? "bg-white/10 text-white/35" : done ? "bg-[#7FD9AE] text-ink" : active ? "border-2 border-[#7FD9AE] text-[#7FD9AE]" : "border border-white/15 text-white/30"}`}>{skipped ? "—" : done ? "✓" : i + 1}</span>
+                  <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-[11px] font-black ${skipped ? "bg-white/10 text-white/35" : done ? "bg-[#7FD9AE] text-ink" : active ? "border-2 border-[#7FD9AE] text-[#7FD9AE]" : "border border-white/15 text-white/30"}`}>{skipped ? "—" : done ? "✓" : i + 1}</span>
                   {i < STAGES.length - 1 && <span className={`h-px flex-1 ${done ? "bg-[#7FD9AE]/60" : "bg-white/10"}`} />}
                 </div>;
               })}
             </div>
             <div className="mt-5 rounded-2xl bg-white/[0.07] px-4 py-3">
               <div className="flex items-center gap-2"><span className="h-2 w-2 animate-pulse rounded-full bg-[#7FD9AE]" /><p className="text-sm font-black text-white">{STAGES[stage]?.label}</p></div>
-              <p className="mt-1 pl-4 text-[10px] font-bold text-white/50">{stage === 4 && !cloudEnabled ? "Local-only mode · no frames leave this device" : STAGES[stage]?.detail}</p>
+              <p className="mt-1 pl-4 text-[11px] font-bold text-white/50">{stage === 4 && !cloudEnabled ? "Local-only mode · no frames leave this device" : STAGES[stage]?.detail}</p>
             </div>
-            {fileMeta && <p className="mt-3 truncate text-center text-[9px] font-bold text-white/35">{fileMeta.name} · {formatBytes(fileMeta.bytes)}</p>}
+            {fileMeta && <p className="mt-3 truncate text-center text-[11px] font-bold text-white/35">{fileMeta.name} · {formatBytes(fileMeta.bytes)}</p>}
           </div>
         </section>
       </div>
@@ -721,7 +721,7 @@ function CaptureRule({ icon, label }: { icon: "frame" | "light" | "steady"; labe
         {icon === "light" && <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></>}
         {icon === "steady" && <><rect x="4" y="7" width="16" height="11" rx="2" /><path d="m9 7 1.5-2h3L15 7M9 12h6M12 9v6" /></>}
       </svg>
-      <p className="mt-2 text-[8px] font-black tracking-[0.12em] text-ink">{label}</p>
+      <p className="mt-2 text-[11px] font-black tracking-[0.12em] text-ink">{label}</p>
     </div>
   );
 }

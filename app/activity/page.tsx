@@ -676,7 +676,7 @@ export default function Activity() {
             {f.slice(0, 3).map((s) => (
               <div key={s.l} className="text-center">
                 <p className="text-lg font-extrabold tabular-nums">{s.v}</p>
-                <p className="mt-0.5 text-[10px] font-bold uppercase tracking-widest text-ink-muted">{s.l}</p>
+                <p className="mt-0.5 text-[11px] font-bold uppercase tracking-widest text-ink-muted">{s.l}</p>
               </div>
             ))}
           </div>
@@ -711,7 +711,7 @@ export default function Activity() {
             onChange={(e) => setExertion(+e.target.value)}
             className="mt-2 w-full accent-volt"
           />
-          <div className="flex justify-between text-[10px] font-semibold text-ink-muted">
+          <div className="flex justify-between text-[11px] font-semibold text-ink-muted">
             <span>Easy</span>
             <span>Max effort</span>
           </div>
@@ -740,8 +740,8 @@ export default function Activity() {
         {splits.length > 0 && (
           <div className="mt-3 overflow-hidden rounded-2xl bg-white shadow-soft">
             <div className="flex items-center justify-between border-b border-black/5 px-4 py-2.5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">Km</span>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-ink-muted">Pace</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-ink-muted">Km</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-ink-muted">Pace</span>
             </div>
             {splits.map((s) => (
               <div key={s.km} className="flex items-center justify-between px-4 py-2 odd:bg-black/[0.02]">
@@ -833,7 +833,7 @@ export default function Activity() {
                   : { t: "Waiting for GPS", c: "bg-signal-okay/15 text-signal-okay" }
                 : { t: "Recording", c: "bg-signal-good/12 text-signal-good" };
               return (
-                <span className={`flex items-center justify-between px-4 py-1.5 text-[10px] font-extrabold uppercase tracking-widest ${strip.c}`}>
+                <span className={`flex items-center justify-between px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-widest ${strip.c}`}>
                   {strip.t}
                   <ExpandIcon />
                 </span>
@@ -849,7 +849,7 @@ export default function Activity() {
                   >
                     {s.v}
                   </span>
-                  <span className="mt-1 block text-[9px] font-bold uppercase tracking-widest text-ink-muted">{s.l}</span>
+                  <span className="mt-1 block text-[11px] font-bold uppercase tracking-widest text-ink-muted">{s.l}</span>
                 </span>
               ))}
             </span>
@@ -902,7 +902,7 @@ export default function Activity() {
                 className="flex w-[84px] flex-col items-center gap-1.5 rounded-2xl bg-white px-2 py-2.5 shadow-soft transition active:scale-95"
               >
                 <SIcon name={sport.icon} size={34} />
-                <span className="text-[10px] font-bold text-ink">{sport.label}</span>
+                <span className="text-[11px] font-bold text-ink">{sport.label}</span>
               </button>
               <button
                 onClick={start}
@@ -915,7 +915,7 @@ export default function Activity() {
                 className="relative flex w-[84px] flex-col items-center gap-1 rounded-2xl bg-white px-2 py-2.5 shadow-soft transition active:scale-95"
               >
                 <HeartIcon />
-                <span className="text-[10px] font-bold text-ink">Sensors</span>
+                <span className="text-[11px] font-bold text-ink">Sensors</span>
                 {isGps && (
                   <span
                     className={`absolute right-2 top-2 h-2 w-2 rounded-full ${

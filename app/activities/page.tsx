@@ -116,7 +116,7 @@ export default function Activities() {
                     <p className="truncate text-sm font-extrabold">{a.name ?? a.sport}</p>
                     <p className="text-xs font-semibold text-ink-muted">{a.sport} · {timeAgo(a.date)}</p>
                     {a.demo && (
-                      <span className="mt-1 inline-block rounded-full bg-signal-work/12 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-signal-work">
+                      <span className="mt-1 inline-block rounded-full bg-signal-work/12 px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wide text-signal-work">
                         Simulated route
                       </span>
                     )}
@@ -164,7 +164,7 @@ export default function Activities() {
                   {stats.slice(0, 3).map((s) => (
                     <div key={s.l} className="text-center">
                       <p className="text-lg font-extrabold tabular-nums">{s.v}</p>
-                      <p className="mt-0.5 text-[10px] font-bold uppercase tracking-widest text-ink-muted">{s.l}</p>
+                      <p className="mt-0.5 text-[11px] font-bold uppercase tracking-widest text-ink-muted">{s.l}</p>
                     </div>
                   ))}
                 </div>

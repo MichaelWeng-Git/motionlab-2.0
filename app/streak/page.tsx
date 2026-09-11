@@ -92,7 +92,7 @@ export default function Streak() {
               >
                 <Flame size={22} lit={d.active} level={flameLevel(streak)} />
               </span>
-              <span className={`text-[10px] text-ink ${d.today ? "font-extrabold" : "font-semibold"}`}>
+              <span className={`text-[11px] text-ink ${d.today ? "font-extrabold" : "font-semibold"}`}>
                 {d.label}
               </span>
             </div>
@@ -143,11 +143,11 @@ export default function Streak() {
                   </span>
                   <p className="flex-1 text-[15px] font-extrabold text-ink">{m.label}</p>
                   {reached ? (
-                    <span className="rounded-full bg-[#FFF1DC] px-2.5 py-1 text-[10px] font-bold text-[#C25A12]">
+                    <span className="rounded-full bg-[#FFF1DC] px-2.5 py-1 text-[11px] font-bold text-[#C25A12]">
                       Reached
                     </span>
                   ) : next ? (
-                    <span className="rounded-full bg-black/[0.05] px-2.5 py-1 text-[10px] font-bold text-ink">
+                    <span className="rounded-full bg-black/[0.05] px-2.5 py-1 text-[11px] font-bold text-ink">
                       {m.n - best} to go
                     </span>
                   ) : null}

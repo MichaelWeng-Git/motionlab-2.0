@@ -140,11 +140,11 @@ export default function History() {
       <section className="mt-5">
         <div className="flex items-baseline justify-between">
           <h2 className="font-golden text-xl leading-none text-ink">12-WEEK RHYTHM</h2>
-          <span className="text-[10px] font-black tracking-[0.14em] text-ink-muted">TRAINING DAYS</span>
+          <span className="text-[11px] font-black tracking-[0.14em] text-ink-muted">TRAINING DAYS</span>
         </div>
         <div className="mt-2.5 overflow-hidden rounded-2xl bg-graphite p-5 text-white shadow-lift">
           <div className="flex gap-2">
-            <div className="grid grid-rows-7 gap-1.5 pt-px text-[8px] font-black text-white/35">
+            <div className="grid grid-rows-7 gap-1.5 pt-px text-[11px] font-black text-white/35">
               {["M", "", "W", "", "F", "", "S"].map((d, i) => <span key={i} className="flex h-3 items-center">{d}</span>)}
             </div>
             <div className="grid min-w-0 flex-1 grid-cols-12 gap-1.5">
@@ -162,23 +162,23 @@ export default function History() {
             </div>
           </div>
           <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
-            <span className="text-[9px] font-black tracking-[0.13em] text-white/45">OLDER</span>
-            <div className="flex items-center gap-1.5 text-[9px] font-bold text-white/50"><span>MINUTES</span>{["bg-heat-1", "bg-heat-2", "bg-heat-3", "bg-volt"].map((c) => <i key={c} className={`h-2.5 w-2.5 rounded-[3px] ${c}`} />)}</div>
-            <span className="text-[9px] font-black tracking-[0.13em] text-white/45">NOW</span>
+            <span className="text-[11px] font-black tracking-[0.13em] text-white/45">OLDER</span>
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-white/50"><span>MINUTES</span>{["bg-heat-1", "bg-heat-2", "bg-heat-3", "bg-volt"].map((c) => <i key={c} className={`h-2.5 w-2.5 rounded-[3px] ${c}`} />)}</div>
+            <span className="text-[11px] font-black tracking-[0.13em] text-white/45">NOW</span>
           </div>
         </div>
       </section>
 
       <section className="mt-5">
-        <div className="flex items-baseline justify-between"><h2 className="font-golden text-xl leading-none text-ink">PERSONAL BESTS</h2><span className="text-[10px] font-black tracking-[0.14em] text-ink-muted">MEASURED ONLY</span></div>
+        <div className="flex items-baseline justify-between"><h2 className="font-golden text-xl leading-none text-ink">PERSONAL BESTS</h2><span className="text-[11px] font-black tracking-[0.14em] text-ink-muted">MEASURED ONLY</span></div>
         {pbs.length ? (
           <div className="-mx-5 mt-2.5 flex snap-x gap-3 overflow-x-auto px-5 pb-2 no-scrollbar">
             {pbs.map((pb) => (
               <Link key={pb.id} href={pb.href ?? "#"} className="min-w-[180px] snap-start overflow-hidden rounded-2xl bg-white p-4 shadow-soft active:scale-[0.98]">
-                <div className="flex items-center justify-between"><span className={`rounded-full px-2 py-1 text-[8px] font-black tracking-[0.13em] ${pb.kind === "score" ? "bg-volt text-ink" : "bg-sky text-ink"}`}>{pb.kind === "score" ? "FORM SCORE" : "GPS DISTANCE"}</span><span className="text-sm font-black">›</span></div>
+                <div className="flex items-center justify-between"><span className={`rounded-full px-2 py-1 text-[11px] font-black tracking-[0.13em] ${pb.kind === "score" ? "bg-volt text-ink" : "bg-sky text-ink"}`}>{pb.kind === "score" ? "FORM SCORE" : "GPS DISTANCE"}</span><span className="text-sm font-black">›</span></div>
                 <p className="mt-5 font-golden text-4xl leading-none tabular-nums text-ink">{pb.value}<span className="ml-1 text-xs">{pb.unit}</span></p>
                 <p className="mt-2 truncate text-sm font-extrabold text-ink">{pb.sport}</p>
-                <p className="mt-0.5 text-[10px] font-bold text-ink-muted">{new Date(pb.date).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}</p>
+                <p className="mt-0.5 text-[11px] font-bold text-ink-muted">{new Date(pb.date).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}</p>
               </Link>
             ))}
           </div>
@@ -195,11 +195,11 @@ export default function History() {
           return (
             <Link href="/medals" className="block overflow-hidden rounded-2xl bg-graphite p-5 text-white shadow-lift transition active:scale-[0.99]">
               <div className="flex items-start justify-between">
-                <div><p className="text-[9px] font-black tracking-[0.18em] text-award-gold-light">PERFORMANCE CABINET</p><h2 className="mt-1 font-golden text-2xl leading-none">MEDALS</h2></div>
+                <div><p className="text-[11px] font-black tracking-[0.18em] text-award-gold-light">PERFORMANCE CABINET</p><h2 className="mt-1 font-golden text-2xl leading-none">MEDALS</h2></div>
                 <span className="font-golden text-lg text-white/60">{earnedCount} / 12 ›</span>
               </div>
               <div className="mt-4 grid grid-cols-4 gap-2">
-                {families.map((family) => <div key={family.key} className="text-center"><MedalArt family={family.key} tier={family.current ?? "bronze"} earned={!!family.current} size={68} /><p className="mt-1 truncate text-[8px] font-black text-white/55">{family.name.toUpperCase()}</p></div>)}
+                {families.map((family) => <div key={family.key} className="text-center"><MedalArt family={family.key} tier={family.current ?? "bronze"} earned={!!family.current} size={68} /><p className="mt-1 truncate text-[11px] font-black text-white/55">{family.name.toUpperCase()}</p></div>)}
               </div>
             </Link>
           );

@@ -221,7 +221,7 @@ export function DailyCoinsTrack({ claims, onClaim }: { claims: string[]; onClaim
               {/* Sunday ×2 ribbon */}
               {n.big && !claimable && n.state !== "claimed" && (
                 <span
-                  className="absolute -translate-x-1/2 rounded bg-[#DEE6CF] px-1 text-[9px] font-extrabold text-[#8A6FE8]"
+                  className="absolute -translate-x-1/2 rounded bg-[#DEE6CF] px-1 text-[11px] font-extrabold text-[#8A6FE8]"
                   style={{ top: top - 15, left: 0, boxShadow: "0 0 0 1px rgba(23,39,31,0.15)" }}
                 >
                   ×2
@@ -250,7 +250,7 @@ export function DailyCoinsTrack({ claims, onClaim }: { claims: string[]; onClaim
                 <ChunkyCoin size={size} dim={n.state === "missed"} />
                 {n.state === "grace" && (
                   <span
-                    className="absolute -right-1.5 -top-1 grid h-[15px] w-[15px] place-items-center rounded-full text-[10px] font-extrabold leading-none text-white"
+                    className="absolute -right-1.5 -top-1 grid h-[15px] w-[15px] place-items-center rounded-full text-[11px] font-extrabold leading-none text-white"
                     style={{ background: "linear-gradient(180deg,#FFB020,#FF9900)", boxShadow: "0 0 0 1.5px #FFFFFF" }}
                   >
                     !
@@ -293,7 +293,7 @@ export function DailyCoinsTrack({ claims, onClaim }: { claims: string[]; onClaim
 
               {/* day label in the track's own color family */}
               <span
-                className={`absolute -translate-x-1/2 text-[10px] font-extrabold tracking-wide ${
+                className={`absolute -translate-x-1/2 text-[11px] font-extrabold tracking-wide ${
                   n.state === "today" ? "text-ink" : n.state === "missed" ? "text-[#F2877B]/50" : "text-[#F2877B]"
                 }`}
                 style={{ top: BAR_Y + 16, left: 0 }}
@@ -321,7 +321,7 @@ export function DailyCoinsTrack({ claims, onClaim }: { claims: string[]; onClaim
             <span className="text-[14px] font-extrabold tabular-nums text-white" style={{ textShadow: "0 1px 0 rgba(80,40,0,0.4)" }}>
               {weekEarned}
             </span>
-            <span className="text-[9px] font-bold italic text-[#FFE98A]">{week === 0 ? "THIS WEEK" : "LAST WEEK"}</span>
+            <span className="text-[11px] font-bold italic text-[#FFE98A]">{week === 0 ? "THIS WEEK" : "LAST WEEK"}</span>
           </span>
         </div>
       </div>

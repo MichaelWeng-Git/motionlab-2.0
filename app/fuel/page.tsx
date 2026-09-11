@@ -131,17 +131,17 @@ export default function Fuel() {
         <div className="pointer-events-none absolute -right-20 -top-24 h-60 w-60 rounded-full bg-signal-good/60 blur-3xl" />
         <div className="relative flex items-center justify-between">
           <div>
-            <p className="text-[9px] font-black tracking-[0.2em] text-[#7FD9AE]">RECOVERY INPUT · TODAY</p>
+            <p className="text-[11px] font-black tracking-[0.2em] text-[#7FD9AE]">RECOVERY INPUT · TODAY</p>
             <h2 className="mt-2 font-golden text-3xl">PROTEIN</h2>
             <div className="mt-5 flex items-end gap-2">
               <span className="font-golden text-6xl leading-none">{protein}</span>
               <span className="pb-1 font-golden text-xl text-white/45">{target ? `/ ${target} G` : "G"}</span>
             </div>
-            {target ? <p className="mt-2 text-xs font-bold text-white/60">{protein >= target ? "Target reached" : `${target - protein} g remaining`}</p> : <Link href="/account/training" className="mt-3 inline-flex rounded-full bg-white px-3 py-2 text-[10px] font-black text-ink">ADD WEIGHT FOR TARGET</Link>}
+            {target ? <p className="mt-2 text-xs font-bold text-white/60">{protein >= target ? "Target reached" : `${target - protein} g remaining`}</p> : <Link href="/account/training" className="mt-3 inline-flex rounded-full bg-white px-3 py-2 text-[11px] font-black text-ink">ADD WEIGHT FOR TARGET</Link>}
           </div>
           <ProteinRing pct={pct} known={target != null} />
         </div>
-        {target && <div className="relative mt-5 border-t border-white/10 pt-3 text-[10px] font-bold text-white/45">Target uses 1.6 g per kg of your saved body weight</div>}
+        {target && <div className="relative mt-5 border-t border-white/10 pt-3 text-[11px] font-bold text-white/45">Target uses 1.6 g per kg of your saved body weight</div>}
       </section>
 
       <section className="mt-3 overflow-hidden rounded-2xl bg-white shadow-soft">
@@ -151,22 +151,22 @@ export default function Fuel() {
             <img src={photo} alt="Meal being analysed" className="h-full w-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/10" />
             {phase === "scanning" && <div className="absolute inset-0 overflow-hidden"><div className="animate-scan absolute inset-x-0 h-1/3 bg-gradient-to-b from-transparent via-[#7FD9AE]/65 to-transparent" /></div>}
-            {phase === "result" && scan && <span className="absolute left-3 top-3 rounded-full bg-black/60 px-3 py-1.5 text-[9px] font-black tracking-wider" style={{ color: CONF[scan.confidence].color }}>AI ESTIMATE · {CONF[scan.confidence].label}</span>}
+            {phase === "result" && scan && <span className="absolute left-3 top-3 rounded-full bg-black/60 px-3 py-1.5 text-[11px] font-black tracking-wider" style={{ color: CONF[scan.confidence].color }}>AI ESTIMATE · {CONF[scan.confidence].label}</span>}
             <button onClick={resetScan} className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full bg-black/55 text-white">×</button>
           </div>
         ) : (
-          <div className="flex items-center gap-4 bg-volt-mist p-5"><span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-graphite text-white"><CameraIcon /></span><div><p className="font-golden text-xl text-ink">LOG A MEAL</p><p className="mt-1 text-[10px] font-bold text-ink-soft">Photo analysed once, then discarded</p></div></div>
+          <div className="flex items-center gap-4 bg-volt-mist p-5"><span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-graphite text-white"><CameraIcon /></span><div><p className="font-golden text-xl text-ink">LOG A MEAL</p><p className="mt-1 text-[11px] font-bold text-ink-soft">Photo analysed once, then discarded</p></div></div>
         )}
 
         <div className="p-5">
           {phase === "result" && scan ? (
             <>
-              <label className="text-[9px] font-black tracking-wider text-ink-muted">MEAL NAME · EDIT IF NEEDED</label>
+              <label className="text-[11px] font-black tracking-wider text-ink-muted">MEAL NAME · EDIT IF NEEDED</label>
               <input value={scan.dish} onChange={(e) => setScan({ ...scan, dish: e.target.value })} className="mt-2 w-full rounded-xl bg-paper px-3 py-2.5 text-sm font-black text-ink outline-none focus:ring-2 focus:ring-[#7FD9AE]" />
               <div className="mt-3 grid grid-cols-4 gap-2">
-                {(["protein", "carbs", "fat", "kcal"] as const).map((key) => <label key={key} className={`rounded-xl p-2 text-center ${key === "protein" ? "bg-graphite text-white" : "bg-paper text-ink"}`}><input inputMode="numeric" value={scan[key]} onChange={(e) => editMacro(key, e.target.value)} className="w-full bg-transparent text-center font-golden text-xl outline-none" /><span className={`block text-[8px] font-black uppercase tracking-wider ${key === "protein" ? "text-white/50" : "text-ink-muted"}`}>{key === "kcal" ? "kcal" : `${key} g`}</span></label>)}
+                {(["protein", "carbs", "fat", "kcal"] as const).map((key) => <label key={key} className={`rounded-xl p-2 text-center ${key === "protein" ? "bg-graphite text-white" : "bg-paper text-ink"}`}><input inputMode="numeric" value={scan[key]} onChange={(e) => editMacro(key, e.target.value)} className="w-full bg-transparent text-center font-golden text-xl outline-none" /><span className={`block text-[11px] font-black uppercase tracking-wider ${key === "protein" ? "text-white/50" : "text-ink-muted"}`}>{key === "kcal" ? "kcal" : `${key} g`}</span></label>)}
               </div>
-              <p className="mt-3 text-center text-[10px] font-bold text-ink-muted">These are image-based estimates. Correct the values before saving.</p>
+              <p className="mt-3 text-center text-[11px] font-bold text-ink-muted">These are image-based estimates. Correct the values before saving.</p>
               <button onClick={save} className="btn-press-good mt-4 w-full rounded-full bg-signal-good py-3.5 text-sm font-black text-white">SAVE MEAL · +{scan.protein} G PROTEIN</button>
             </>
           ) : phase === "scanning" ? (
@@ -180,12 +180,12 @@ export default function Fuel() {
       </section>
 
       <section className="mt-3 rounded-2xl bg-white p-5 shadow-soft">
-        <div className="flex items-end justify-between"><div><p className="text-[9px] font-black tracking-[0.18em] text-ink-muted">RECENT</p><h2 className="mt-1 font-golden text-xl text-ink">MEAL HISTORY</h2></div><span className="font-golden text-lg text-ink-muted">{meals.length}</span></div>
+        <div className="flex items-end justify-between"><div><p className="text-[11px] font-black tracking-[0.18em] text-ink-muted">RECENT</p><h2 className="mt-1 font-golden text-xl text-ink">MEAL HISTORY</h2></div><span className="font-golden text-lg text-ink-muted">{meals.length}</span></div>
         {history.length ? <div className="mt-4 space-y-2">{history.map((meal, index) => {
           const date = new Date(meal.date), previous = history[index - 1];
           const showDay = !previous || new Date(previous.date).toDateString() !== date.toDateString();
-          return <div key={meal.id}>{showDay && <p className="pb-1.5 pt-2 text-[9px] font-black tracking-wider text-ink-muted">{dayLabel(date)}</p>}<div className="flex items-center gap-3 rounded-2xl bg-paper px-3 py-3"><span className="grid h-9 w-9 place-items-center rounded-xl bg-white"><MealIcon /></span><div className="min-w-0 flex-1"><p className="truncate text-xs font-black text-ink">{meal.dish}</p><p className="mt-0.5 text-[9px] font-bold text-ink-muted">{date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} · {meal.kcal} kcal estimate</p></div><span className="font-golden text-base text-ink">{meal.protein}g</span><button onClick={() => erase(meal)} aria-label={`Delete ${meal.dish}`} className="grid h-8 w-8 place-items-center rounded-full text-ink-muted active:bg-black/5"><TrashIcon /></button></div></div>;
-        })}</div> : <div className="mt-4 rounded-2xl border border-dashed border-ink/15 px-5 py-8 text-center"><MealIcon /><p className="mt-3 font-golden text-lg text-ink">NO MEALS LOGGED</p><p className="mt-1 text-[10px] font-bold text-ink-muted">Your saved estimates appear here</p></div>}
+          return <div key={meal.id}>{showDay && <p className="pb-1.5 pt-2 text-[11px] font-black tracking-wider text-ink-muted">{dayLabel(date)}</p>}<div className="flex items-center gap-3 rounded-2xl bg-paper px-3 py-3"><span className="grid h-9 w-9 place-items-center rounded-xl bg-white"><MealIcon /></span><div className="min-w-0 flex-1"><p className="truncate text-xs font-black text-ink">{meal.dish}</p><p className="mt-0.5 text-[11px] font-bold text-ink-muted">{date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} · {meal.kcal} kcal estimate</p></div><span className="font-golden text-base text-ink">{meal.protein}g</span><button onClick={() => erase(meal)} aria-label={`Delete ${meal.dish}`} className="grid h-8 w-8 place-items-center rounded-full text-ink-muted active:bg-black/5"><TrashIcon /></button></div></div>;
+        })}</div> : <div className="mt-4 rounded-2xl border border-dashed border-ink/15 px-5 py-8 text-center"><MealIcon /><p className="mt-3 font-golden text-lg text-ink">NO MEALS LOGGED</p><p className="mt-1 text-[11px] font-bold text-ink-muted">Your saved estimates appear here</p></div>}
       </section>
 
       {deleted && <div className="fixed bottom-24 left-1/2 z-[80] flex w-[calc(100%_-_32px)] max-w-[398px] -translate-x-1/2 items-center rounded-2xl bg-ink px-4 py-3 text-white shadow-lift"><span className="flex-1 truncate text-xs font-bold">Deleted {deleted.dish}</span><button onClick={undoDelete} className="ml-3 text-xs font-black text-[#7FD9AE]">UNDO</button></div>}

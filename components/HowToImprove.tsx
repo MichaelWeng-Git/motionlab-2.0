@@ -89,7 +89,7 @@ export function HowToImprove({ tips, drill, sport }: { tips: TipOut[]; drill?: {
   return (
     <section className="mt-4 overflow-hidden rounded-2xl bg-graphite p-4 text-white shadow-lift">
       <div className="px-1 pt-1">
-        <p className="text-[9px] font-black tracking-[0.18em] text-[#7FD9AE]">NEXT SESSION</p>
+        <p className="text-[11px] font-black tracking-[0.18em] text-[#7FD9AE]">NEXT SESSION</p>
         <div className="flex items-center gap-2">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
             <g stroke="#FF4E1A" strokeWidth="2.4" strokeLinecap="round">
@@ -109,9 +109,9 @@ export function HowToImprove({ tips, drill, sport }: { tips: TipOut[]; drill?: {
             <div className="min-w-0 flex-1 py-0.5">
               <div className="flex items-start justify-between gap-2">
                 <p className="text-[13px] font-black leading-snug text-white">{i + 1}. {ex.name}</p>
-                <span className="shrink-0 rounded-full bg-[#7FD9AE] px-2 py-1 text-[9px] font-black text-ink">{ex.dose}</span>
+                <span className="shrink-0 rounded-full bg-[#7FD9AE] px-2 py-1 text-[11px] font-black text-ink">{ex.dose}</span>
               </div>
-              {ex.how && <p className="mt-2 line-clamp-2 text-[10px] font-semibold leading-relaxed text-white/55">{ex.how}</p>}
+              {ex.how && <p className="mt-2 line-clamp-2 text-[11px] font-semibold leading-relaxed text-white/55">{ex.how}</p>}
             </div>
           </div>
         ))}

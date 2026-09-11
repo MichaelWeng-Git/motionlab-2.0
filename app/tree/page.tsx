@@ -451,7 +451,7 @@ export default function Tree() {
                 <PackArt deluxe={p.deluxe} rolls={p.rolls} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className={`rounded-full px-2 py-1 text-[8px] font-black tracking-[0.15em] ${p.deluxe ? "bg-award-gold-pale text-[#5A3905]" : "bg-[#315B49] text-white"}`}>
+                    <span className={`rounded-full px-2 py-1 text-[11px] font-black tracking-[0.15em] ${p.deluxe ? "bg-award-gold-pale text-[#5A3905]" : "bg-[#315B49] text-white"}`}>
                       {p.eyebrow}
                     </span>
                     <button
@@ -488,7 +488,7 @@ export default function Tree() {
           <section className="mb-3 w-full max-w-[406px] animate-pop rounded-3xl bg-[#F7F4EA] p-5 shadow-lift" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-[10px] font-black tracking-[0.18em] text-ink-soft">DROP RATES · EACH DRAW</p>
+                <p className="text-[11px] font-black tracking-[0.18em] text-ink-soft">DROP RATES · EACH DRAW</p>
                 <h3 className="mt-1 font-golden text-3xl leading-none text-ink">{packInfo.name}</h3>
               </div>
               <button onClick={() => setPackInfo(null)} aria-label="Close" className="grid h-9 w-9 place-items-center rounded-full bg-ink text-xl leading-none text-white">×</button>
@@ -501,7 +501,7 @@ export default function Tree() {
                     <svg viewBox="-12 -12 24 24" className="h-9 w-9"><Ornament x={0} y={0} o={{ type, color: type === "ball" ? BALL_COLORS[0] : type === "candy" || type === "gift" ? "#FF5A5F" : type === "bell" ? "#F5B23D" : "#BDECF0" }} /></svg>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-black text-ink">{ORN_NAMES[type]}</p>
-                      <span className="text-[9px] font-black tracking-[0.13em]" style={{ color: rarity.bg }}>{rarity.label}</span>
+                      <span className="text-[11px] font-black tracking-[0.13em]" style={{ color: rarity.bg }}>{rarity.label}</span>
                     </div>
                     <span className="font-golden text-xl tabular-nums text-ink">{packInfo.odds[type]}%</span>
                   </div>
@@ -545,12 +545,12 @@ export default function Tree() {
 
           {opening.stage === "bubble" && (
             <div className="w-full max-w-[300px] animate-pop rounded-3xl bg-paper p-6 text-center shadow-lift">
-              <p className="text-[10px] font-black tracking-[0.18em] text-ink-soft">PACK OPENED</p>
+              <p className="text-[11px] font-black tracking-[0.18em] text-ink-soft">PACK OPENED</p>
               <div className="mt-2 flex items-center justify-center gap-2">
                 {opening.won.map((o, i) => (
                   <div key={i} className="float-soft rounded-2xl px-2 py-3" style={{ animationDelay: `${i * 0.3}s`, background: RARITY_META[ORN_RARITY[o.type]].color }}>
                     <svg viewBox="-20 -20 40 40" className="h-16 w-16"><Ornament x={0} y={0} o={o} scale={2} /></svg>
-                    <span className="mt-1 block text-[8px] font-black tracking-[0.14em]" style={{ color: RARITY_META[ORN_RARITY[o.type]].bg }}>{RARITY_META[ORN_RARITY[o.type]].label}</span>
+                    <span className="mt-1 block text-[11px] font-black tracking-[0.14em]" style={{ color: RARITY_META[ORN_RARITY[o.type]].bg }}>{RARITY_META[ORN_RARITY[o.type]].label}</span>
                   </div>
                 ))}
               </div>
@@ -607,7 +607,7 @@ function PackArt({ deluxe, rolls }: { deluxe: boolean; rolls: number }) {
         <div className="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-white/10">
           <MiniPackTree size={1.25} />
         </div>
-        <div className="absolute inset-x-0 bottom-2 text-center text-[8px] font-black tracking-[0.16em] text-white/80">MOTIONLAB</div>
+        <div className="absolute inset-x-0 bottom-2 text-center text-[11px] font-black tracking-[0.16em] text-white/80">MOTIONLAB</div>
       </div>
       <span className={`absolute right-0 top-0 grid h-9 min-w-9 place-items-center rounded-full border-2 px-1 font-golden text-lg shadow-soft ${deluxe ? "border-[#FFF2B8] bg-award-gold-pale text-[#5A3905]" : "border-white bg-[#E3F0E8] text-[#18392D]"}`}>×{rolls}</span>
     </div>

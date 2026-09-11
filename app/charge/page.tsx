@@ -42,7 +42,7 @@ export default function ChargePage() {
             <div className="absolute -right-16 -top-20 h-52 w-52 rounded-full opacity-25 blur-3xl" style={{ background: CHARGE_META[detail.state].color }} />
             <div className="relative flex items-start justify-between">
               <div>
-                <p className="text-[10px] font-black tracking-[0.2em] text-white/50">READY TO TRAIN</p>
+                <p className="text-[11px] font-black tracking-[0.2em] text-white/50">READY TO TRAIN</p>
                 <p className="mt-2 font-golden text-6xl leading-none" style={{ color: CHARGE_META[detail.state].color }}>{detail.value}</p>
                 <p className="mt-1 font-golden text-xl" style={{ color: CHARGE_META[detail.state].color }}>{CHARGE_META[detail.state].word}</p>
               </div>
@@ -50,14 +50,14 @@ export default function ChargePage() {
             </div>
             <div className="relative mt-4 flex items-center justify-between border-t border-white/10 pt-4">
               <p className="text-sm font-bold text-white">{detail.why}</p>
-              <span className="rounded-full px-3 py-1.5 text-[10px] font-black text-ink" style={{ background: CHARGE_META[detail.state].color }}>{CHARGE_META[detail.state].action}</span>
+              <span className="rounded-full px-3 py-1.5 text-[11px] font-black text-ink" style={{ background: CHARGE_META[detail.state].color }}>{CHARGE_META[detail.state].action}</span>
             </div>
           </section>
 
           <section className="mt-3 rounded-2xl bg-white p-5 shadow-soft">
             <div className="flex items-baseline justify-between">
               <h2 className="font-golden text-lg text-ink">LAST 7 DAYS</h2>
-              <span className="text-[10px] font-black tracking-wider text-ink-muted">TRAINING / CHARGE</span>
+              <span className="text-[11px] font-black tracking-wider text-ink-muted">TRAINING / CHARGE</span>
             </div>
             <div className="mt-5 grid grid-cols-7 gap-2">
               {detail.days.map((d) => {
@@ -68,7 +68,7 @@ export default function ChargePage() {
                     <div className="flex h-20 items-end justify-center">
                       <span className="w-3 rounded-full" style={{ height, background: d.minutes > 0 ? "#17271F" : "#E5E9E5" }} />
                     </div>
-                    <p className="mt-2 font-golden text-[9px] text-ink-muted">{DAY[date.getDay()]}</p>
+                    <p className="mt-2 font-golden text-[11px] text-ink-muted">{DAY[date.getDay()]}</p>
                     <p className="mt-1 font-golden text-[12px]" style={{ color: d.charge == null ? "#AEB6AF" : CHARGE_META[d.charge >= 67 ? "primed" : d.charge >= 34 ? "steady" : "drained"].color }}>{d.charge ?? "—"}</p>
                   </div>
                 );
@@ -98,9 +98,9 @@ export default function ChargePage() {
 }
 
 function Metric({ label, value, sub }: { label: string; value: string; sub: string }) {
-  return <div className="rounded-2xl bg-white p-4 shadow-soft"><p className="text-[9px] font-black tracking-[0.16em] text-ink-muted">{label}</p><p className="mt-2 font-golden text-2xl text-ink">{value}</p><p className="mt-1 text-[10px] font-bold text-ink-soft">{sub}</p></div>;
+  return <div className="rounded-2xl bg-white p-4 shadow-soft"><p className="text-[11px] font-black tracking-[0.16em] text-ink-muted">{label}</p><p className="mt-2 font-golden text-2xl text-ink">{value}</p><p className="mt-1 text-[11px] font-bold text-ink-soft">{sub}</p></div>;
 }
 
 function Signal({ label, value, active }: { label: string; value: string; active: boolean }) {
-  return <div className="flex items-center justify-between gap-3"><span className="text-xs font-bold text-ink-soft">{label}</span><span className={`rounded-full px-3 py-1.5 text-[10px] font-black ${active ? "bg-[#FFF0D8] text-[#A86212]" : "bg-paper text-ink"}`}>{value}</span></div>;
+  return <div className="flex items-center justify-between gap-3"><span className="text-xs font-bold text-ink-soft">{label}</span><span className={`rounded-full px-3 py-1.5 text-[11px] font-black ${active ? "bg-[#FFF0D8] text-[#A86212]" : "bg-paper text-ink"}`}>{value}</span></div>;
 }

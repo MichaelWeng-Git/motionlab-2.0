@@ -117,7 +117,7 @@ export default function LoadPage() {
               <p className="font-golden text-[15px] leading-none">{MONTH[month.monthIndex]}</p>
               <p className="font-golden text-[15px] leading-none" style={{ color: MINT }}>
                 {month.daysTrained}
-                <span className="ml-1 text-[10px] text-white/40">
+                <span className="ml-1 text-[11px] text-white/40">
                   {month.daysTrained === 1 ? "DAY" : "DAYS"}
                 </span>
               </p>
@@ -125,7 +125,7 @@ export default function LoadPage() {
 
             <div className="mt-3.5 grid grid-cols-7 gap-x-1.5 gap-y-2">
               {WEEKDAYS.map((w, i) => (
-                <span key={i} className="pb-1 text-center font-golden text-[9px] leading-none text-white/22">{w}</span>
+                <span key={i} className="pb-1 text-center font-golden text-[11px] leading-none text-white/22">{w}</span>
               ))}
               {Array.from({ length: lead }, (_, i) => <span key={`b${i}`} />)}
               {month.days.map((d) => {
@@ -151,7 +151,7 @@ export default function LoadPage() {
                     }}
                   >
                     <span
-                      className="font-golden text-[10px] leading-none"
+                      className="font-golden text-[11px] leading-none"
                       style={{ color: trained && dosed ? SURFACE.graphite : trained ? MINT : future ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.3)" }}
                     >
                       {Number(d.date.slice(8, 10))}
@@ -189,7 +189,7 @@ export default function LoadPage() {
                         on ? "bg-ink" : "bg-black/[0.035]"
                       }`}
                     >
-                      <span className={`w-[100px] shrink-0 whitespace-nowrap text-[10.5px] font-bold ${on ? "text-white" : "text-ink"}`}>
+                      <span className={`w-[100px] shrink-0 whitespace-nowrap text-[11px] font-bold ${on ? "text-white" : "text-ink"}`}>
                         {niceName(g)}
                       </span>
                       <span className="h-[5px] flex-1 overflow-hidden rounded-full" style={{ background: on ? "rgba(255,255,255,0.15)" : "rgba(20,24,27,0.08)" }}>

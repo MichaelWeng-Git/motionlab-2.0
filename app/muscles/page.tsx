@@ -56,35 +56,35 @@ export default function MusclesPage() {
         <div className="mt-3 h-[560px] animate-pulse rounded-2xl bg-white/70" />
       ) : !state || recovery.kind === "empty" || recovery.kind === "unmeasured" ? (
         <section className="mt-3 overflow-hidden rounded-2xl bg-graphite p-6 text-white shadow-lift">
-          <p className="text-[10px] font-black tracking-[0.18em] text-[#7FD9AE]">MEASURED FROM MOVEMENT</p>
+          <p className="text-[11px] font-black tracking-[0.18em] text-[#7FD9AE]">MEASURED FROM MOVEMENT</p>
           <h2 className="mt-12 font-golden text-3xl leading-none">NO MUSCLE DATA YET</h2>
           <p className="mt-3 text-sm font-semibold leading-relaxed text-white/75">Analyse a clear full-body video to measure which muscle groups carried the session.</p>
           <button onClick={() => router.push("/analyze")} className="btn-press mt-6 w-full rounded-full bg-white py-3 text-sm font-black text-ink">Analyse movement</button>
-          <p className="mt-3 text-center text-[10px] font-bold text-white/50">{recoveryStateText(recovery)}</p>
+          <p className="mt-3 text-center text-[11px] font-bold text-white/50">{recoveryStateText(recovery)}</p>
         </section>
       ) : (
         <>
           <section className="relative mt-3 overflow-hidden rounded-2xl bg-white px-4 pb-4 pt-5 shadow-soft">
             <div className="flex items-start justify-between px-1">
               <div>
-                <p className="text-[9px] font-black tracking-[0.18em] text-ink-muted">CURRENT LOAD</p>
+                <p className="text-[11px] font-black tracking-[0.18em] text-ink-muted">CURRENT LOAD</p>
                 <h2 className="mt-1 font-golden text-3xl text-ink">{MUSCLE_NAMES[selected].toUpperCase()}</h2>
               </div>
               <div className="text-right">
                 <p className="font-golden text-4xl leading-none" style={{ color: intensityColor(current * 100) }}>{Math.round(current * 100)}</p>
-                <p className="text-[9px] font-black tracking-wider text-ink-muted">OUT OF 100</p>
+                <p className="text-[11px] font-black tracking-wider text-ink-muted">OUT OF 100</p>
               </div>
             </div>
             <div className="mt-1 flex h-[275px] items-center justify-center">
               {has3d ? <MuscleBody3D height={270} dolly={0.95} load={isolated} /> : <MuscleSpin height={255} load={isolated} />}
             </div>
-            <p className="text-center text-[10px] font-bold text-ink-muted">Select a body group below</p>
+            <p className="text-center text-[11px] font-bold text-ink-muted">Select a body group below</p>
             <div className="mt-3 grid grid-cols-3 gap-2">
               {GROUPS.map((g) => {
                 const value = muscleGroupValue(state.load, g);
                 const on = g === selected;
                 return <button key={g} onClick={() => setSelected(g)} className={`rounded-xl px-2 py-2.5 text-left transition active:scale-95 ${on ? "bg-ink text-white" : "bg-paper text-ink"}`}>
-                  <span className="block text-[10px] font-black">{SHORT[g]}</span>
+                  <span className="block text-[11px] font-black">{SHORT[g]}</span>
                   <span className="mt-1 block font-golden text-[15px]" style={{ color: on ? "#7FD9AE" : value > 0 ? intensityColor(value * 100) : "#9CA69E" }}>{value > 0 ? Math.round(value * 100) : "—"}</span>
                 </button>;
               })}
@@ -94,7 +94,7 @@ export default function MusclesPage() {
           <section className="mt-3 rounded-2xl bg-graphite p-5 text-white shadow-lift">
             <div className="flex items-baseline justify-between">
               <h2 className="font-golden text-lg">14-DAY HISTORY</h2>
-              <span className="text-[9px] font-black tracking-wider text-white/45">MEASURED SESSION LOAD</span>
+              <span className="text-[11px] font-black tracking-wider text-white/45">MEASURED SESSION LOAD</span>
             </div>
             <div className="mt-5 grid grid-cols-14 gap-1.5">
               {history.map((d) => {
@@ -102,7 +102,7 @@ export default function MusclesPage() {
                 const h = d.value == null ? 4 : Math.max(8, d.value * 72);
                 return <div key={d.date} className="text-center">
                   <div className="flex h-[76px] items-end"><span className="w-full rounded-full" style={{ height: h, background: d.value == null ? "rgba(255,255,255,.12)" : intensityColor(d.value * 100) }} /></div>
-                  <span className="mt-2 block font-golden text-[8px] text-white/40">{DAY[date.getDay()]}</span>
+                  <span className="mt-2 block font-golden text-[11px] text-white/40">{DAY[date.getDay()]}</span>
                 </div>;
               })}
             </div>

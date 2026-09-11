@@ -99,7 +99,7 @@ export default function Account() {
         <div className="min-w-0 flex-1">
           <p className="text-xl font-extrabold tracking-tight">{profile.name ?? "You"}</p>
           <div className="mt-2"><LevelBadge xp={stats?.xp ?? 0} /></div>
-          <Link href="/xp" className="mt-2 flex items-center gap-2"><span className="h-1.5 flex-1 overflow-hidden rounded-full bg-black/[0.07]"><span className="block h-full rounded-full" style={{ width: `${levelForXp(stats?.xp ?? 0).progress * 100}%`, background: levelForXp(stats?.xp ?? 0).color }} /></span><span className="text-[9px] font-black text-ink-muted">{stats?.xp ?? 0} XP ›</span></Link>
+          <Link href="/xp" className="mt-2 flex items-center gap-2"><span className="h-1.5 flex-1 overflow-hidden rounded-full bg-black/[0.07]"><span className="block h-full rounded-full" style={{ width: `${levelForXp(stats?.xp ?? 0).progress * 100}%`, background: levelForXp(stats?.xp ?? 0).color }} /></span><span className="text-[11px] font-black text-ink-muted">{stats?.xp ?? 0} XP ›</span></Link>
         </div>
       </div>
 

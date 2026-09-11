@@ -100,7 +100,7 @@ export default function FormPage() {
               <div className="absolute inset-0 grid place-items-center">
                 <div className="text-center">
                   <p className="font-golden text-[40px] leading-none">{p.form}</p>
-                  <p className="-mt-0.5 font-golden text-[10px] text-white/30">FORM</p>
+                  <p className="-mt-0.5 font-golden text-[11px] text-white/30">FORM</p>
                 </div>
               </div>
             </div>

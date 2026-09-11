@@ -131,7 +131,7 @@ export default function Report() {
         {isReal && <ShareButton a={a} cover={cover} videoUrl={hasReplay ? replay!.videoUrl : undefined} />}
         <div className="relative flex items-start justify-between pr-11">
           <div className="min-w-0 pt-1">
-            <p className="text-[9px] font-black tracking-[0.2em] text-[#7FD9AE]">MOVEMENT REPORT</p>
+            <p className="text-[11px] font-black tracking-[0.2em] text-[#7FD9AE]">MOVEMENT REPORT</p>
             <h1 className="mt-2 truncate font-golden text-3xl leading-none text-white">{(a.action ?? a.sport ?? "Movement").toUpperCase()}</h1>
             {a.sport && a.action && <p className="mt-1 text-xs font-bold text-white/50">{a.sport}</p>}
           </div>
@@ -157,7 +157,7 @@ export default function Report() {
             ].map((s) => (
               <div key={s.l} className="rounded-2xl bg-white/[0.07] px-2 py-3 text-center ring-1 ring-inset ring-white/5">
                 <p className="truncate font-golden text-base text-white">{s.v}</p>
-                <p className="mt-0.5 text-[9px] font-black uppercase tracking-wider text-white/40">{s.l}</p>
+                <p className="mt-0.5 text-[11px] font-black uppercase tracking-wider text-white/40">{s.l}</p>
               </div>
             ))}
           </div>
@@ -169,10 +169,10 @@ export default function Report() {
         <section className="mt-4 rounded-3xl bg-white p-4 shadow-soft">
           <div className="flex items-center justify-between px-1">
             <div>
-              <p className="text-[9px] font-black tracking-[0.18em] text-ink-muted">MEASURED ON DEVICE</p>
+              <p className="text-[11px] font-black tracking-[0.18em] text-ink-muted">MEASURED ON DEVICE</p>
               <h2 className="mt-1 font-golden text-xl leading-none text-ink">MOVEMENT BREAKDOWN</h2>
             </div>
-            <span className="rounded-full bg-volt-mist px-3 py-1.5 text-[9px] font-black text-signal-good">NO AI SCORES</span>
+            <span className="rounded-full bg-volt-mist px-3 py-1.5 text-[11px] font-black text-signal-good">NO AI SCORES</span>
           </div>
           <RadarChart data={a.qualities} target={RADAR_TARGET} />
           <div className="mt-1 flex items-center justify-center gap-4 text-[11px] font-semibold">

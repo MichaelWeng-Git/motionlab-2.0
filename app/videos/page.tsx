@@ -81,7 +81,7 @@ export default function Videos() {
                 </span>
                 <span className="text-right">
                   <p className="font-golden text-lg">{s.score}</p>
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-ink-muted">score</p>
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-ink-muted">score</p>
                 </span>
               </Link>
 

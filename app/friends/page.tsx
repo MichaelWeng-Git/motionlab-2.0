@@ -182,9 +182,9 @@ export default function Friends() {
         <>
           <section className="relative mt-4 overflow-hidden rounded-3xl bg-graphite p-5 text-white shadow-lift">
             <div className="absolute -right-20 -top-24 h-60 w-60 rounded-full bg-signal-good/60 blur-3xl" />
-            <p className="relative text-[9px] font-black tracking-[0.2em] text-[#7FD9AE]">YOUR TRAINING CIRCLE</p>
-            <div className="relative mt-3 flex items-end justify-between"><div><p className="font-golden text-6xl leading-none">{friends.length}</p><p className="mt-1 text-xs font-bold text-white/50">{friends.length === 1 ? "training friend" : "training friends"}</p></div><button onClick={shareInvite} className="btn-press rounded-full bg-white px-4 py-3 text-[10px] font-black text-ink">{inviteCopied ? "LINK COPIED" : "INVITE A FRIEND"}</button></div>
-            {incoming.length > 0 && <button onClick={() => setTab("requests")} className="relative mt-5 flex w-full items-center justify-between rounded-2xl bg-white/[0.08] px-4 py-3"><span className="text-xs font-black">Friend requests</span><span className="grid h-6 min-w-6 place-items-center rounded-full bg-signal-work px-1 text-[10px] font-black">{incoming.length}</span></button>}
+            <p className="relative text-[11px] font-black tracking-[0.2em] text-[#7FD9AE]">YOUR TRAINING CIRCLE</p>
+            <div className="relative mt-3 flex items-end justify-between"><div><p className="font-golden text-6xl leading-none">{friends.length}</p><p className="mt-1 text-xs font-bold text-white/50">{friends.length === 1 ? "training friend" : "training friends"}</p></div><button onClick={shareInvite} className="btn-press rounded-full bg-white px-4 py-3 text-[11px] font-black text-ink">{inviteCopied ? "LINK COPIED" : "INVITE A FRIEND"}</button></div>
+            {incoming.length > 0 && <button onClick={() => setTab("requests")} className="relative mt-5 flex w-full items-center justify-between rounded-2xl bg-white/[0.08] px-4 py-3"><span className="text-xs font-black">Friend requests</span><span className="grid h-6 min-w-6 place-items-center rounded-full bg-signal-work px-1 text-[11px] font-black">{incoming.length}</span></button>}
           </section>
 
           {/* compact sport-app segmented navigation */}
@@ -205,9 +205,9 @@ export default function Friends() {
                     on ? "bg-ink text-white" : "text-ink-muted"
                   }`}
                 >
-                  <span className="text-[10px] font-black leading-tight">{b.key === "requests" ? "REQUESTS" : b.key === "friends" ? "FRIENDS" : "DISCOVER"}</span>
+                  <span className="text-[11px] font-black leading-tight">{b.key === "requests" ? "REQUESTS" : b.key === "friends" ? "FRIENDS" : "DISCOVER"}</span>
                   {b.count > 0 && (
-                    <span className="absolute right-2 top-2 grid h-5 min-w-5 place-items-center rounded-full bg-signal-work px-1 text-[10px] font-extrabold text-white">
+                    <span className="absolute right-2 top-2 grid h-5 min-w-5 place-items-center rounded-full bg-signal-work px-1 text-[11px] font-extrabold text-white">
                       {b.count}
                     </span>
                   )}
@@ -341,5 +341,5 @@ function FriendEmpty({ kind, onInvite }: { kind: "requests" | "friends" | "peopl
     people: ["NO ATHLETES TO DISCOVER", "Share MotionLab with your training group."],
     search: ["NO MATCHES", "Try another athlete name."],
   }[kind];
-  return <div className="rounded-2xl border border-dashed border-ink/15 bg-white px-5 py-8 text-center"><span className="mx-auto grid h-11 w-11 place-items-center rounded-2xl bg-volt-mist text-signal-good"><FriendsIcon size={21} /></span><p className="mt-3 font-golden text-lg text-ink">{copy[0]}</p><p className="mt-1 text-[10px] font-bold text-ink-muted">{copy[1]}</p>{kind !== "requests" && kind !== "search" && <button onClick={onInvite} className="mt-4 rounded-full bg-ink px-4 py-2.5 text-[10px] font-black text-white">INVITE FRIEND</button>}</div>;
+  return <div className="rounded-2xl border border-dashed border-ink/15 bg-white px-5 py-8 text-center"><span className="mx-auto grid h-11 w-11 place-items-center rounded-2xl bg-volt-mist text-signal-good"><FriendsIcon size={21} /></span><p className="mt-3 font-golden text-lg text-ink">{copy[0]}</p><p className="mt-1 text-[11px] font-bold text-ink-muted">{copy[1]}</p>{kind !== "requests" && kind !== "search" && <button onClick={onInvite} className="mt-4 rounded-full bg-ink px-4 py-2.5 text-[11px] font-black text-white">INVITE FRIEND</button>}</div>;
 }

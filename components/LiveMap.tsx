@@ -177,7 +177,7 @@ export function LiveMap({
   return (
     <div className={`relative isolate ${className}`}>
       <div ref={divRef} className="absolute inset-0 z-0" />
-      <span className="pointer-events-none absolute bottom-1 right-2 z-[1] text-[9px] text-black/40">
+      <span className="pointer-events-none absolute bottom-1 right-2 z-[1] text-[11px] text-black/40">
         {satellite ? TILES.satellite.credit : TILES.map.credit}
       </span>
     </div>

@@ -782,7 +782,7 @@ function RecoveryBar({ recovery, animate }: { recovery: Extract<RecoveryState, {
   return (
     <div className="mt-1.5">
       <div className="flex items-baseline justify-between">
-        <span className="text-[10px] font-bold uppercase tracking-wide text-ink-muted">
+        <span className="text-[11px] font-bold uppercase tracking-wide text-ink-muted">
           {recoveryStateText(recovery)}
         </span>
         <span className="font-golden text-[13px] leading-none tabular-nums" style={{ color }}>{shown}%</span>
