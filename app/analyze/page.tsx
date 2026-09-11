@@ -10,6 +10,7 @@ import { createEnsemble, probePeople, type PersonSeed } from "@/lib/ensemble";
 import { createLifter } from "@/lib/lift3d";
 import { createRefiner, spreadRefinement } from "@/lib/pose2d-refine";
 import { drawSkeleton } from "@/lib/draw";
+import { SIGNAL } from "@/lib/palette";
 
 // Real skeleton tracking: MediaPipe Pose runs in the browser, frame by frame,
 // drawing the skeleton over the user's actual video. No servers, no API keys.
@@ -17,12 +18,12 @@ import { drawSkeleton } from "@/lib/draw";
 type Step = "pick" | "who" | "processing" | "error" | "notsport";
 
 const STAGES = [
-  { label: "Loading your video" },
-  { label: "Tracking your body" },
-  { label: "Scoring your movement" },
-  { label: "Building your 3D model" },
-  { label: "Refining with cloud AI" },
-  { label: "Writing your report" },
+  { label: "Preparing video", detail: "Models load on this device" },
+  { label: "Tracking movement", detail: "Up to 300 sampled frames" },
+  { label: "Cleaning motion", detail: "Occlusions and tracking errors" },
+  { label: "Building biomechanics", detail: "3D joints and measured mechanics" },
+  { label: "Optional cloud refinement", detail: "Only when enabled" },
+  { label: "Writing coaching notes", detail: "Measurements stay deterministic" },
 ];
 
 export default function Analyze() {
@@ -37,6 +38,10 @@ export default function Analyze() {
   const [errorMsg, setErrorMsg] = useState("");
   const [seenDesc, setSeenDesc] = useState(""); // what the AI saw when it's not a sport
   const cancelRef = useRef(false);
+  const runIdRef = useRef(0);
+  const requestAbortRef = useRef<AbortController | null>(null);
+  const [fileMeta, setFileMeta] = useState<{ name: string; bytes: number } | null>(null);
+  const [cloudEnabled, setCloudEnabled] = useState(false);
 
   const pickedFileRef = useRef<File | null>(null);
   const seedRef = useRef<PersonSeed | null>(null);
@@ -44,16 +49,44 @@ export default function Analyze() {
   const [pickerT, setPickerT] = useState(0); // the timestamp the picker frame came from
 
   function onFilePicked(file: File) {
+    if (!file.type.startsWith("video/")) {
+      setErrorMsg("Choose a video file to analyse.");
+      setStep("error");
+      return;
+    }
+    if (videoUrl) URL.revokeObjectURL(videoUrl);
     clearAnalysis(); // new video = clean slate, no stale report
     clearReplayDb();
     pickedFileRef.current = file;
     seedRef.current = null;
     setPicker(null);
+    setFileMeta({ name: file.name, bytes: file.size });
+    try { setCloudEnabled(localStorage.getItem("ml_cloud3d") === "on"); } catch { setCloudEnabled(false); }
     setVideoUrl(URL.createObjectURL(file));
     setStage(0);
     setProgress(0);
     setStep("who");
   }
+
+  function cancelAnalysis() {
+    cancelRef.current = true;
+    runIdRef.current++;
+    requestAbortRef.current?.abort();
+    requestAbortRef.current = null;
+    seedRef.current = null;
+    setPicker(null);
+    setStage(0);
+    setProgress(0);
+    setStep("pick");
+    if (videoUrl) URL.revokeObjectURL(videoUrl);
+    setVideoUrl(null);
+    setFileMeta(null);
+  }
+
+  useEffect(() => () => {
+    requestAbortRef.current?.abort();
+    if (videoUrl) URL.revokeObjectURL(videoUrl);
+  }, [videoUrl]);
 
   // — "who are we watching?" probe: if several people are in frame, the user
   // taps the one to analyze BEFORE any tracking starts (auto-lock is a coin
@@ -103,6 +136,8 @@ export default function Analyze() {
   useEffect(() => {
     if (step !== "processing" || !videoUrl) return;
     cancelRef.current = false;
+    const runId = ++runIdRef.current;
+    const active = () => !cancelRef.current && runIdRef.current === runId;
 
     (async () => {
       // let React paint the stage label + progress before we block on heavy work
@@ -127,7 +162,7 @@ export default function Analyze() {
         canvas.height = video.videoHeight;
         const ctx = canvas.getContext("2d")!;
 
-        if (cancelRef.current) { engine.close(); return; }
+        if (!active()) { engine.close(); return; }
         setStage(1);
 
         // — stage 1: offline frame-by-frame scan (pro pipelines never process in real time) —
@@ -170,7 +205,7 @@ export default function Analyze() {
           reverseClock: boolean
         ) => {
           for (const t of times) {
-            if (cancelRef.current) break;
+            if (!active()) break;
             await seekTo(Math.min(t, video.duration - 0.01));
             // MediaPipe VIDEO mode needs increasing timestamps per instance — the
             // backward pass feeds a reversed clock to stay monotonic.
@@ -198,7 +233,7 @@ export default function Analyze() {
 
         await scanPass(engine, fwdTimes, false);
         engine.close();
-        if (bwdTimes.length && !cancelRef.current) {
+        if (bwdTimes.length && active()) {
           // second leg of the seed-outward scan (no banner — it reads as noise)
           const engineB = await createEnsemble(seed);
           await scanPass(engineB, bwdTimes, true);
@@ -216,7 +251,7 @@ export default function Analyze() {
           wasRefined.splice(0, wasRefined.length, ...w2);
         }
         if (refiner) spreadRefinement(frames, rawLms, wasRefined); // fill the skipped frames
-        if (cancelRef.current) return;
+        if (!active()) return;
 
         // — stage 2: refine + score —
         setStage(2);
@@ -240,6 +275,7 @@ export default function Analyze() {
         await tick();
         try {
           const lifter = await lifterPromise;
+          if (!active()) { lifter?.close(); return; }
           if (lifter) {
             const poses = await lifter.lift(framesWithBody, video.videoWidth, video.videoHeight);
             framesWithBody.forEach((f, i) => { if (poses[i]) f.pose3d = poses[i]!; });
@@ -248,6 +284,7 @@ export default function Analyze() {
         } catch (e) {
           console.warn("3D lift skipped", e);
         }
+        if (!active()) return;
         // — stage 4: cloud accuracy layer (opt-in toggle) — SAM 3D Body anchors polish
         // the torso posture. Best-effort with hard timeouts; off/offline → local stands.
         setStage(4);
@@ -263,6 +300,7 @@ export default function Analyze() {
             console.warn("SAM 3D fusion skipped", e);
           }
         }
+        if (!active()) return;
         setProgress(88);
 
         // — stage 4.5: deterministic biomechanics from the final 3D skeleton —
@@ -305,6 +343,7 @@ export default function Analyze() {
           }
           const prof = JSON.parse(localStorage.getItem("ml_profile") ?? "{}");
           const ac = new AbortController();
+          requestAbortRef.current = ac;
           const to = setTimeout(() => ac.abort(), 25000);
           const resp = await fetch("/api/coach", {
             method: "POST",
@@ -321,6 +360,8 @@ export default function Analyze() {
             signal: ac.signal,
           });
           clearTimeout(to);
+          requestAbortRef.current = null;
+          if (!active()) return;
           // the AI looked and it's NOT a sport → exception screen, save nothing
           if (resp.status === 422) {
             const j = await resp.json().catch(() => ({} as { seen?: string }));
@@ -341,15 +382,17 @@ export default function Analyze() {
                 drill: j.report.drill,
                 sport: j.report.sport,
                 action: j.report.action,
-                radar: Array.isArray(j.report.radar) ? j.report.radar.slice(0, 6) : undefined,
                 proMatch: j.report.proMatch && Array.isArray(j.report.proMatch.moments) ? j.report.proMatch : undefined,
                 ai: true,
               };
             }
           }
         } catch {
+          requestAbortRef.current = null;
           /* AI coach unreachable — the on-device report still stands */
         }
+
+        if (!active()) return;
 
         // cover thumbnail — a real frame from the middle of the video
         let cover: string | undefined;
@@ -362,6 +405,7 @@ export default function Analyze() {
           cover = cc.toDataURL("image/jpeg", 0.6);
         } catch {}
 
+        if (!active()) return;
         saveAnalysis(final);
         setReplay({ videoUrl, frames: framesWithBody, snapshots: [] }); // powers the report's replay player
         // persist locally so the replay survives refreshes (device-only, never uploaded)
@@ -388,6 +432,7 @@ export default function Analyze() {
         setProgress(100);
         setTimeout(() => router.push("/report/latest"), 600);
       } catch (e) {
+        if (!active()) return;
         console.error(e);
         setErrorMsg("Something went wrong while analyzing. Try again or pick another video.");
         setStep("error");
@@ -396,6 +441,7 @@ export default function Analyze() {
 
     return () => {
       cancelRef.current = true;
+      requestAbortRef.current?.abort();
     };
   }, [step, videoUrl, router]);
 
@@ -415,18 +461,15 @@ export default function Analyze() {
 
       {step === "pick" && (
         <div className="animate-fade-up px-5">
-          <h1 className="display text-4xl font-extrabold">
-            Let&apos;s see
-            <br />
-            your move.
-          </h1>
+          <p className="text-[10px] font-black tracking-[0.22em] text-signal-good">ON-DEVICE MOTION CAPTURE</p>
+          <h1 className="mt-2 display text-4xl font-extrabold leading-[0.94]">Turn movement<br />into feedback.</h1>
 
           {/* AI-vision cover: what the product actually does — a glowing pose
               skeleton inside a viewfinder, motion trails in the trio colors.
               Dark + luminous, no mascots. */}
           <button
             onClick={() => fileRef.current?.click()}
-            className="group mt-6 block w-full overflow-hidden rounded-3xl bg-white/95 shadow-soft transition active:scale-[0.99]"
+            className="group mt-6 block w-full overflow-hidden rounded-3xl bg-graphite text-left shadow-lift transition active:scale-[0.99]"
           >
             <svg viewBox="0 0 390 210" className="block w-full">
               <defs>
@@ -493,14 +536,21 @@ export default function Analyze() {
                 );
               })()}
             </svg>
-            <div className="flex flex-col items-center gap-4 px-6 pb-7 pt-5">
-              <span className="grid h-16 w-16 place-items-center rounded-full bg-ink text-white shadow-lift transition group-hover:scale-105 group-active:scale-95">
-                <UploadIcon />
-              </span>
-              <p className="font-golden text-3xl leading-none text-ink">UPLOAD YOUR VIDEO</p>
+            <div className="flex items-center gap-4 border-t border-white/10 px-5 py-5">
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white text-ink transition group-hover:scale-105 group-active:scale-95"><UploadIcon /></span>
+              <div className="min-w-0 flex-1">
+                <p className="font-golden text-2xl leading-none text-white">CHOOSE A VIDEO</p>
+                <p className="mt-1 text-[11px] font-bold text-white/55">Your full video stays on this device</p>
+              </div>
+              <span className="text-xl text-white/60">→</span>
             </div>
           </button>
 
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            <CaptureRule icon="frame" label="FULL BODY" />
+            <CaptureRule icon="light" label="GOOD LIGHT" />
+            <CaptureRule icon="steady" label="STEADY VIEW" />
+          </div>
         </div>
       )}
 
@@ -511,6 +561,18 @@ export default function Analyze() {
             <br />
             watching?
           </h1>
+          {fileMeta && (
+            <div className="mt-4 flex items-center justify-between rounded-2xl bg-white px-4 py-3 shadow-soft">
+              <div className="min-w-0">
+                <p className="truncate text-xs font-black text-ink">{fileMeta.name}</p>
+                <p className="mt-0.5 text-[10px] font-bold text-ink-muted">{formatBytes(fileMeta.bytes)} · processed on this device</p>
+              </div>
+              <button onClick={cancelAnalysis} className="ml-3 text-[11px] font-black text-signal-work">CHANGE</button>
+            </div>
+          )}
+          {fileMeta && fileMeta.bytes >= 500 * 1024 * 1024 && (
+            <p className="mt-3 rounded-2xl bg-award-gold-wash px-4 py-3 text-[11px] font-bold leading-relaxed text-[#805B17]">Large video. MotionLab samples at most 300 frames, but decoding can still take longer and use more memory.</p>
+          )}
           {!picker ? (
             <div className="mt-6 flex flex-col items-center gap-4 rounded-3xl bg-white p-10 shadow-soft">
               <span className="h-8 w-8 animate-spin rounded-full border-[3px] border-black/10 border-t-ink" />
@@ -555,43 +617,44 @@ export default function Analyze() {
 
       {/* processing — the user's real video with the live skeleton on top */}
       <div className={step === "processing" ? "animate-fade-up px-5" : "hidden"}>
-        <h1 className="font-golden text-[26px] leading-none text-ink">READING YOUR MOVE…</h1>
-
-        <div className="relative mt-4 overflow-hidden rounded-3xl bg-ink">
-          <video ref={videoRef} className="w-full" playsInline muted />
-          <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
-          <div className="absolute right-4 top-4 rounded-full bg-black/50 px-3 py-1.5 text-[11px] font-bold tabular-nums text-white backdrop-blur">
-            {Math.round(progress)}%
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-[9px] font-black tracking-[0.2em] text-signal-good">MOTION ANALYSIS</p>
+            <h1 className="mt-1 font-golden text-[28px] leading-none text-ink">READING YOUR MOVE</h1>
           </div>
+          <button onClick={cancelAnalysis} className="rounded-full bg-white px-3 py-2 text-[10px] font-black text-signal-work shadow-soft">CANCEL</button>
         </div>
 
-        <div className="mt-5 space-y-2.5 pb-6">
-          {STAGES.map((s, i) => {
-            const state = i < stage ? "done" : i === stage ? "active" : "todo";
-            return (
-              <div
-                key={s.label}
-                className={`flex items-center gap-3 rounded-2xl border p-4 transition ${
-                  state === "todo" ? "border-black/5 bg-white opacity-50" : "border-black/5 bg-white shadow-soft"
-                }`}
-              >
-                <span
-                  className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-sm font-bold ${
-                    state === "done"
-                      ? "bg-signal-good text-white"
-                      : state === "active"
-                      ? "bg-ink text-volt-glow"
-                      : "bg-black/5 text-ink-muted"
-                  }`}
-                >
-                  {state === "done" ? "✓" : i + 1}
-                </span>
-                <p className="text-sm font-bold">{s.label}</p>
-                {state === "active" && <span className="ml-auto h-2 w-2 animate-pulse rounded-full bg-volt-deep" />}
-              </div>
-            );
-          })}
-        </div>
+        <section className="mt-4 overflow-hidden rounded-3xl bg-graphite shadow-lift">
+          <div className="relative overflow-hidden bg-black">
+            <video ref={videoRef} className="w-full" playsInline muted />
+            <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
+            <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full border border-white/10 bg-black/45 px-3 py-1.5 backdrop-blur">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#7FD9AE]" />
+              <span className="text-[9px] font-black tracking-wider text-white">TRACKING</span>
+            </div>
+            <div className="absolute right-3 top-3 font-golden text-2xl tabular-nums text-white">{Math.round(progress)}%</div>
+          </div>
+          <div className="p-5">
+            <div className="h-1.5 overflow-hidden rounded-full bg-white/10"><span className="block h-full rounded-full bg-[#7FD9AE] transition-[width] duration-300" style={{ width: `${progress}%` }} /></div>
+            <div className="mt-4 flex items-center justify-between">
+              {STAGES.map((s, i) => {
+                const skipped = i === 4 && !cloudEnabled && stage > 4;
+                const done = i < stage;
+                const active = i === stage;
+                return <div key={s.label} className="flex flex-1 items-center last:flex-none">
+                  <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-[10px] font-black ${skipped ? "bg-white/10 text-white/35" : done ? "bg-[#7FD9AE] text-ink" : active ? "border-2 border-[#7FD9AE] text-[#7FD9AE]" : "border border-white/15 text-white/30"}`}>{skipped ? "—" : done ? "✓" : i + 1}</span>
+                  {i < STAGES.length - 1 && <span className={`h-px flex-1 ${done ? "bg-[#7FD9AE]/60" : "bg-white/10"}`} />}
+                </div>;
+              })}
+            </div>
+            <div className="mt-5 rounded-2xl bg-white/[0.07] px-4 py-3">
+              <div className="flex items-center gap-2"><span className="h-2 w-2 animate-pulse rounded-full bg-[#7FD9AE]" /><p className="text-sm font-black text-white">{STAGES[stage]?.label}</p></div>
+              <p className="mt-1 pl-4 text-[10px] font-bold text-white/50">{stage === 4 && !cloudEnabled ? "Local-only mode · no frames leave this device" : STAGES[stage]?.detail}</p>
+            </div>
+            {fileMeta && <p className="mt-3 truncate text-center text-[9px] font-bold text-white/35">{fileMeta.name} · {formatBytes(fileMeta.bytes)}</p>}
+          </div>
+        </section>
       </div>
 
       {step === "notsport" && (
@@ -648,4 +711,23 @@ function UploadIcon() {
       <path d="M5 20h14" />
     </svg>
   );
+}
+
+function CaptureRule({ icon, label }: { icon: "frame" | "light" | "steady"; label: string }) {
+  return (
+    <div className="rounded-2xl bg-white px-2 py-3 text-center shadow-soft">
+      <svg className="mx-auto" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={SIGNAL.good} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        {icon === "frame" && <><path d="M8 3H4a1 1 0 0 0-1 1v4M16 3h4a1 1 0 0 1 1 1v4M8 21H4a1 1 0 0 1-1-1v-4M16 21h4a1 1 0 0 0 1-1v-4" /><circle cx="12" cy="8" r="2" /><path d="M12 10.5v4M8.5 20l3.5-5.5 3.5 5.5M12 12l-4 2M12 12l4 2" /></>}
+        {icon === "light" && <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></>}
+        {icon === "steady" && <><rect x="4" y="7" width="16" height="11" rx="2" /><path d="m9 7 1.5-2h3L15 7M9 12h6M12 9v6" /></>}
+      </svg>
+      <p className="mt-2 text-[8px] font-black tracking-[0.12em] text-ink">{label}</p>
+    </div>
+  );
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  if (bytes < 1024 * 1024 * 1024) return `${Math.round(bytes / 1024 / 1024)} MB`;
+  return `${(bytes / 1024 / 1024 / 1024).toFixed(1)} GB`;
 }

@@ -6,6 +6,7 @@ import { TopBar } from "@/components/TopBar";
 import { BottomNav } from "@/components/BottomNav";
 import { CoachMark } from "@/components/CoachMark";
 import { hasAuthCallback } from "@/lib/supabase-client";
+import { CloudSync } from "@/components/CloudSync";
 
 const AUTH_PATHS = ["/login", "/onboarding", "/account/help"];
 
@@ -82,6 +83,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      <CloudSync />
       {!immersive && <TopBar />}
       {/* the ONLY scroll container in the app; a flex column so full-height pages
           (Activity) can flex-1 to fill without fragile percentage-height chains */}

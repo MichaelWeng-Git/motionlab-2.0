@@ -1,3 +1,5 @@
+import { xpFromCounts } from "./xp";
+
 // Real (local) data layer for the prototype.
 // Every number in the UI derives from recorded analysis sessions.
 // No sessions yet → everything is 0 / locked / empty.
@@ -156,7 +158,7 @@ export function getStats(): Stats {
     streakDays: streak,
     // XP mechanism (mirrored in the in-app assistant's knowledge):
     // +50 per video analysis, +25 per recorded workout, +10 first activity of each day
-    xp: sessions.length * 50 + activityDates.length * 25 + dayKeys.size * 10,
+    xp: xpFromCounts(sessions.length, activityDates.length, dayKeys.size),
     latestSport: latest?.sport ?? null,
     latestAction: latest?.action ?? null,
     monthDelta: latest ? latest.score - baseline : 0,

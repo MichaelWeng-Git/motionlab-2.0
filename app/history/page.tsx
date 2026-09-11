@@ -6,7 +6,10 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getSessions, getStats, type Session } from "@/lib/stats";
-import { ClapperIcon, DiamondIcon, FlameIcon, MapPinIcon, MedalIcon, PlayIcon, RocketIcon, TrophyIcon } from "@/components/Icons";
+import { MapPinIcon, PlayIcon } from "@/components/Icons";
+import { MedalArt } from "@/components/MedalArt";
+import { earnedMedalIds, medalCollection } from "@/lib/medals";
+import { personalBests, progressHeatmap, type HeatDay, type PersonalBest } from "@/lib/progress";
 
 // wireframe earth: continents scroll behind a circular clip = the globe turns
 function Globe({ className }: { className?: string }) {
@@ -51,12 +54,15 @@ function Globe({ className }: { className?: string }) {
 export default function History() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [acts, setActs] = useState(0);
-  const [actDates, setActDates] = useState<string[]>([]);
-  const [lastThumb, setLastThumb] = useState<string | null>(null);
+  const [heatmap, setHeatmap] = useState<HeatDay[][]>([]);
+  const [pbs, setPbs] = useState<PersonalBest[]>([]);
   const [medalStats, setMedalStats] = useState({ total: 0, bestScore: 0, streakDays: 0 });
 
   useEffect(() => {
-    setSessions(getSessions().sort((a, b) => b.date.localeCompare(a.date)));
+    const savedSessions = getSessions().sort((a, b) => b.date.localeCompare(a.date));
+    setSessions(savedSessions);
+    setHeatmap(progressHeatmap());
+    setPbs(personalBests(savedSessions));
     try {
       const s = getStats();
       setMedalStats({ total: s.total, bestScore: s.bestScore, streakDays: s.streakDays });
@@ -64,28 +70,15 @@ export default function History() {
     try {
       const a = JSON.parse(localStorage.getItem("ml_activities") ?? "[]") as { date: string; thumb?: string }[];
       setActs(a.length);
-      setActDates(a.map((x) => x.date));
-      const withThumb = a.filter((x) => x.thumb);
-      setLastThumb(withThumb.length ? withThumb[withThumb.length - 1].thumb! : null);
     } catch {}
   }, []);
-
-  // this-week day markers (Mon..Sun)
-  const monday = new Date();
-  monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
-  monday.setHours(0, 0, 0, 0);
-  const weekDays = new Set(
-    [...sessions.map((s) => s.date), ...actDates]
-      .filter((d) => new Date(d) >= monday)
-      .map((d) => (new Date(d).getDay() + 6) % 7)
-  );
 
   const best = sessions.reduce((m, x) => Math.max(m, x.score), 0);
 
 
   return (
     <div className="stagger px-5 pt-8">
-      <h1 className="text-3xl font-extrabold tracking-tight">Progress</h1>
+      <h1 className="font-golden text-[26px] leading-none">Progress</h1>
 
       {/* all-time at a glance — ONE bordered block, three bold columns */}
       <div className="mt-4 overflow-hidden rounded-3xl bg-white shadow-soft">
@@ -93,7 +86,7 @@ export default function History() {
           {[
             { v: sessions.length, l: "Analyses" },
             { v: acts, l: "Workouts" },
-            { v: best, l: "Best score" },
+            { v: sessions.length ? best : "—", l: "Best score" },
           ].map((x) => (
             <div key={x.l} className="text-center">
               <p className="text-2xl font-extrabold tabular-nums text-ink">{x.v}</p>
@@ -143,63 +136,72 @@ export default function History() {
         </div>
       </section>
 
-      {/* this week */}
+      {/* Twelve-week training consistency — each dot comes from a real Workout. */}
       <section className="mt-5">
         <div className="flex items-baseline justify-between">
-          <h2 className="font-golden text-xl leading-none text-ink">THIS WEEK</h2>
-          <span className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-ink">
-            {weekDays.size} {weekDays.size === 1 ? "day" : "days"} active
-          </span>
+          <h2 className="font-golden text-xl leading-none text-ink">12-WEEK RHYTHM</h2>
+          <span className="text-[10px] font-black tracking-[0.14em] text-ink-muted">TRAINING DAYS</span>
         </div>
-        <div className="mt-2.5 rounded-3xl bg-white p-5 shadow-soft">
-        <div className="flex gap-1.5">
-          {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
-            <div key={i} className="flex flex-1 flex-col items-center gap-1.5">
-              <span className={`h-9 w-full rounded-lg ${weekDays.has(i) ? "bg-volt" : "bg-black/[0.05]"}`} />
-              <span className="text-[10px] font-bold text-ink-muted">{d}</span>
+        <div className="mt-2.5 overflow-hidden rounded-2xl bg-graphite p-5 text-white shadow-lift">
+          <div className="flex gap-2">
+            <div className="grid grid-rows-7 gap-1.5 pt-px text-[8px] font-black text-white/35">
+              {["M", "", "W", "", "F", "", "S"].map((d, i) => <span key={i} className="flex h-3 items-center">{d}</span>)}
             </div>
-          ))}
+            <div className="grid min-w-0 flex-1 grid-cols-12 gap-1.5">
+              {heatmap.map((week, wi) => (
+                <div key={wi} className="grid grid-rows-7 gap-1.5">
+                  {week.map((d) => (
+                    <span
+                      key={d.date}
+                      title={`${new Date(d.date).toLocaleDateString()} · ${d.future ? "upcoming" : d.count ? `${d.count} workout${d.count === 1 ? "" : "s"}${d.minutes == null ? " · duration unknown" : ` · ${d.minutes} min`}` : "rest"}`}
+                      className={`h-3 rounded-[3px] ${d.future ? "bg-transparent" : d.level === 4 ? "bg-volt" : d.level === 3 ? "bg-heat-3" : d.level === 2 ? "bg-heat-2" : d.level === 1 ? (d.minutes == null ? "border border-volt bg-transparent" : "bg-heat-1") : "bg-white/[0.08]"}`}
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
+            <span className="text-[9px] font-black tracking-[0.13em] text-white/45">OLDER</span>
+            <div className="flex items-center gap-1.5 text-[9px] font-bold text-white/50"><span>MINUTES</span>{["bg-heat-1", "bg-heat-2", "bg-heat-3", "bg-volt"].map((c) => <i key={c} className={`h-2.5 w-2.5 rounded-[3px] ${c}`} />)}</div>
+            <span className="text-[9px] font-black tracking-[0.13em] text-white/45">NOW</span>
+          </div>
         </div>
-        </div>
+      </section>
+
+      <section className="mt-5">
+        <div className="flex items-baseline justify-between"><h2 className="font-golden text-xl leading-none text-ink">PERSONAL BESTS</h2><span className="text-[10px] font-black tracking-[0.14em] text-ink-muted">MEASURED ONLY</span></div>
+        {pbs.length ? (
+          <div className="-mx-5 mt-2.5 flex snap-x gap-3 overflow-x-auto px-5 pb-2 no-scrollbar">
+            {pbs.map((pb) => (
+              <Link key={pb.id} href={pb.href ?? "#"} className="min-w-[180px] snap-start overflow-hidden rounded-2xl bg-white p-4 shadow-soft active:scale-[0.98]">
+                <div className="flex items-center justify-between"><span className={`rounded-full px-2 py-1 text-[8px] font-black tracking-[0.13em] ${pb.kind === "score" ? "bg-volt text-ink" : "bg-sky text-ink"}`}>{pb.kind === "score" ? "FORM SCORE" : "GPS DISTANCE"}</span><span className="text-sm font-black">›</span></div>
+                <p className="mt-5 font-golden text-4xl leading-none tabular-nums text-ink">{pb.value}<span className="ml-1 text-xs">{pb.unit}</span></p>
+                <p className="mt-2 truncate text-sm font-extrabold text-ink">{pb.sport}</p>
+                <p className="mt-0.5 text-[10px] font-bold text-ink-muted">{new Date(pb.date).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}</p>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <Link href="/analyze" className="mt-2.5 flex items-center justify-between rounded-2xl border border-dashed border-black/15 bg-white/55 p-5"><div><p className="font-extrabold text-ink">Your first PB starts here</p><p className="mt-1 text-xs font-bold text-ink-muted">Analyze a movement or record a GPS workout.</p></div><span className="font-golden text-2xl">›</span></Link>
+        )}
       </section>
 
       {/* MEDALS — moved off Home so the first screen stays about TODAY */}
       <section className="mb-2 mt-5">
         {(() => {
-          const badges: { icon: React.ReactNode; name: string; earned: boolean }[] = [
-            { icon: <ClapperIcon size={26} />, name: "First analysis", earned: medalStats.total >= 1 },
-            { icon: <RocketIcon size={26} />, name: "Score 75+", earned: medalStats.bestScore >= 75 },
-            { icon: <FlameIcon size={26} />, name: "3-day streak", earned: medalStats.streakDays >= 3 },
-            { icon: <MedalIcon size={26} />, name: "5 sessions", earned: medalStats.total >= 5 },
-            { icon: <DiamondIcon size={26} />, name: "Score 90+", earned: medalStats.bestScore >= 90 },
-            { icon: <TrophyIcon size={26} />, name: "20 sessions", earned: medalStats.total >= 20 },
-          ];
-          const earnedCount = badges.filter((b) => b.earned).length;
+          const families = medalCollection({ analyses: medalStats.total, bestScore: medalStats.bestScore, streakDays: medalStats.streakDays, workouts: acts });
+          const earnedCount = earnedMedalIds(families).length;
           return (
-            <div className="rounded-3xl bg-white p-5 shadow-soft">
-              <div className="relative">
-                <h2 className="text-center font-golden text-2xl leading-none text-ink">MEDALS</h2>
-                <span className="absolute right-0 top-1/2 -translate-y-1/2 text-[11px] font-bold text-ink-muted">
-                  {earnedCount} / {badges.length}
-                </span>
+            <Link href="/medals" className="block overflow-hidden rounded-2xl bg-graphite p-5 text-white shadow-lift transition active:scale-[0.99]">
+              <div className="flex items-start justify-between">
+                <div><p className="text-[9px] font-black tracking-[0.18em] text-award-gold-light">PERFORMANCE CABINET</p><h2 className="mt-1 font-golden text-2xl leading-none">MEDALS</h2></div>
+                <span className="font-golden text-lg text-white/60">{earnedCount} / 12 ›</span>
               </div>
-              <div className="-mx-5 mt-2.5 flex gap-4 overflow-x-auto px-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                {badges.map((b) => (
-                  <div key={b.name} className="flex w-[76px] shrink-0 flex-col items-center gap-2">
-                    <span
-                      className={`grid h-16 w-16 place-items-center rounded-full ${
-                        b.earned ? "bg-volt-mist text-volt-deep shadow-soft" : "bg-black/[0.04] text-ink-muted/60"
-                      }`}
-                    >
-                      {b.icon}
-                    </span>
-                    <span className={`text-center text-[10px] font-semibold leading-tight ${b.earned ? "text-ink" : "text-ink-muted"}`}>
-                      {b.name}
-                    </span>
-                  </div>
-                ))}
+              <div className="mt-4 grid grid-cols-4 gap-2">
+                {families.map((family) => <div key={family.key} className="text-center"><MedalArt family={family.key} tier={family.current ?? "bronze"} earned={!!family.current} size={68} /><p className="mt-1 truncate text-[8px] font-black text-white/55">{family.name.toUpperCase()}</p></div>)}
               </div>
-            </div>
+            </Link>
           );
         })()}
       </section>
@@ -207,4 +209,3 @@ export default function History() {
     </div>
   );
 }
-

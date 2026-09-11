@@ -112,15 +112,6 @@ export default function Report() {
 
   // vs your best: the strongest OTHER session OF THE SAME SPORT (never compare a run to a serve)
   const best = isReal ? bestOther(curId, a.sport) : null;
-  let gap: { label: string; delta: number } | undefined;
-  if (best?.radar && a.radar) {
-    for (const cur of a.radar) {
-      const b = best.radar.find((x) => x.label === cur.label);
-      if (!b) continue;
-      const delta = Math.round(b.value - cur.value);
-      if (delta > 4 && (!gap || delta > gap.delta)) gap = { label: cur.label, delta };
-    }
-  }
 
   return (
     <div className="stagger px-5 pt-2">
@@ -134,20 +125,26 @@ export default function Report() {
         ←
       </button>
 
-      {/* hero: one score + one plain sentence */}
-      <section className="relative rounded-3xl bg-white p-6 shadow-soft">
+      {/* hero: one score, one activity, one takeaway. */}
+      <section className="relative overflow-hidden rounded-3xl bg-graphite p-6 text-white shadow-lift">
+        <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-signal-good/60 blur-3xl" />
         {isReal && <ShareButton a={a} cover={cover} videoUrl={hasReplay ? replay!.videoUrl : undefined} />}
-        <div className="flex justify-center">
-          <ScoreRing score={a.score} />
+        <div className="relative flex items-start justify-between pr-11">
+          <div className="min-w-0 pt-1">
+            <p className="text-[9px] font-black tracking-[0.2em] text-[#7FD9AE]">MOVEMENT REPORT</p>
+            <h1 className="mt-2 truncate font-golden text-3xl leading-none text-white">{(a.action ?? a.sport ?? "Movement").toUpperCase()}</h1>
+            {a.sport && a.action && <p className="mt-1 text-xs font-bold text-white/50">{a.sport}</p>}
+          </div>
+          <ScoreRing score={a.score} size={116} dark />
         </div>
-        <div className="mt-5">
+        <div className="relative mt-5 border-t border-white/10 pt-4">
           {/* PR celebration — beats every previous session of this sport */}
           {isReal && best && a.score > best.score && (
             <span className="inline-flex animate-pop items-center gap-1 rounded-full bg-volt px-3 py-1 text-xs font-extrabold text-volt-ink shadow-lift">
               New personal best&nbsp;+{a.score - best.score}
             </span>
           )}
-          <p className="mt-3 text-lg font-bold leading-snug">{a.headline}</p>
+          <p className="text-lg font-bold leading-snug text-white">{a.headline}</p>
         </div>
 
         {/* at a glance — what the engine recognized, in plain chips */}
@@ -158,14 +155,32 @@ export default function Report() {
               { v: reps.length > 0 ? String(reps.length) : "—", l: reps.length === 1 ? "rep" : "reps" },
               { v: `${a.duration.toFixed(1)}s`, l: "Length" },
             ].map((s) => (
-              <div key={s.l} className="rounded-2xl bg-paper px-2 py-3 text-center">
-                <p className="truncate text-sm font-extrabold">{s.v}</p>
-                <p className="mt-0.5 text-[11px] font-semibold text-ink-muted">{s.l}</p>
+              <div key={s.l} className="rounded-2xl bg-white/[0.07] px-2 py-3 text-center ring-1 ring-inset ring-white/5">
+                <p className="truncate font-golden text-base text-white">{s.v}</p>
+                <p className="mt-0.5 text-[9px] font-black uppercase tracking-wider text-white/40">{s.l}</p>
               </div>
             ))}
           </div>
         )}
       </section>
+
+      {/* The score's component parts, measured locally from tracked motion. */}
+      {a.qualities.length >= 3 && (
+        <section className="mt-4 rounded-3xl bg-white p-4 shadow-soft">
+          <div className="flex items-center justify-between px-1">
+            <div>
+              <p className="text-[9px] font-black tracking-[0.18em] text-ink-muted">MEASURED ON DEVICE</p>
+              <h2 className="mt-1 font-golden text-xl leading-none text-ink">MOVEMENT BREAKDOWN</h2>
+            </div>
+            <span className="rounded-full bg-volt-mist px-3 py-1.5 text-[9px] font-black text-signal-good">NO AI SCORES</span>
+          </div>
+          <RadarChart data={a.qualities} target={RADAR_TARGET} />
+          <div className="mt-1 flex items-center justify-center gap-4 text-[11px] font-semibold">
+            <span className="inline-flex items-center gap-1.5 text-ink"><span className="h-2 w-2 rounded-full bg-volt" /> You</span>
+            <span className="inline-flex items-center gap-1.5 text-ink-muted"><span className="inline-block h-0 w-4 border-t-2 border-dashed border-[#5B6472]" /> Target</span>
+          </div>
+        </section>
+      )}
 
       {/* ——— the tape: your real video with focus + rep markers ——— */}
       <section className="mt-4">
@@ -219,27 +234,6 @@ export default function Report() {
       {/* ——— how to improve: exercise cards, two per row ——— */}
       <HowToImprove tips={a.tips} drill={a.drill} sport={a.sport} />
 
-      {/* ——— radar: the sport's fundamentals vs a good-amateur target ——— */}
-      {a.radar && a.radar.length >= 3 && (
-        <section className="mt-4 rounded-3xl bg-white p-4 shadow-soft">
-          <div className="flex items-center justify-between px-1">
-            <h2 className="font-golden text-lg leading-none text-ink">
-              {a.sport ? `${a.sport.toUpperCase()} BREAKDOWN` : "BREAKDOWN"}
-            </h2>
-          </div>
-          <RadarChart data={a.radar} target={RADAR_TARGET} />
-          <div className="mt-1 flex items-center justify-center gap-4 text-[11px] font-semibold">
-            <span className="inline-flex items-center gap-1.5 text-ink">
-              <span className="h-2 w-2 rounded-full bg-volt" /> You
-            </span>
-            <span className="inline-flex items-center gap-1.5 text-ink-muted">
-              <span className="inline-block h-0 w-4 border-t-2 border-dashed border-[#5B6472]" /> Target
-            </span>
-          </div>
-        </section>
-      )}
-
-
       {/* ——— how long the session actually was: turns the clip sample into a
               real dose (lib/muscles volumeOf) ——— */}
       {a.biomech?.bodyKnown && (a.biomech.observedS ?? a.duration ?? 0) > 0 && (
@@ -273,7 +267,7 @@ export default function Report() {
 
 // The strongest OTHER session of the SAME sport — the only fair "vs your best".
 // A tennis serve and an easy run share no scale, so cross-sport comparison is out.
-function bestOther(curId: string | null, sport?: string): { score: number; sport: string; radar?: { label: string; value: number }[] } | null {
+function bestOther(curId: string | null, sport?: string): { score: number; sport: string } | null {
   if (!sport) return null;
   let sessions: Session[] = [];
   try { sessions = getSessions(); } catch { return null; }
@@ -283,8 +277,7 @@ function bestOther(curId: string | null, sport?: string): { score: number; sport
   );
   if (!others.length) return null;
   const top = others.reduce((a, b) => (b.score > a.score ? b : a));
-  const radar = (top.report as AnalysisResult | undefined)?.radar;
-  return { score: top.score, sport: top.sport ?? sport, radar };
+  return { score: top.score, sport: top.sport ?? sport };
 }
 
 // Coaching, mockup-style: the 3 points that matter most as tappable cards

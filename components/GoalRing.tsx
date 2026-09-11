@@ -4,7 +4,9 @@
 // ONE circle cut into three 120° arcs (13° deliberate gaps), one hue in three
 // steps. Kept in a component so both screens can never drift apart.
 
-export const GOAL_BG = "#14181B";               // neutral graphite ground
+import { SURFACE } from "@/lib/palette";
+
+export const GOAL_BG = SURFACE.graphite;               // neutral graphite ground
 export const GOAL_ARCS = ["#DCF5E6", "#7FD9AE", "#2E9E6B"]; // one hue, three steps
 export const GOAL_LABELS = ["MOVE", "ANALYZE", "WORKOUT"];
 
@@ -128,7 +130,7 @@ export function GoalRows({ values, targets }: { values: number[]; targets: numbe
 export function GoalCardShell({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <div
-      className={`relative overflow-hidden rounded-[26px] px-5 py-4 text-white shadow-lift ${className}`}
+      className={`relative overflow-hidden rounded-2xl px-5 py-4 text-white shadow-lift ${className}`}
       style={{ background: GOAL_BG }}
     >
       <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/22 to-transparent" />

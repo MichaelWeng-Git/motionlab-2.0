@@ -1,16 +1,18 @@
 import type { MedalFamilyKey, MedalTier } from "@/lib/medals";
+import { AWARD } from "@/lib/palette";
 
-const METAL: Record<MedalTier, { edge: string; face: string; light: string }> = {
-  bronze: { edge: "#8E5734", face: "#C98658", light: "#F1B486" },
-  silver: { edge: "#718078", face: "#AFBBB4", light: "#E5ECE8" },
-  gold: { edge: "#9B6A12", face: "#E8B23E", light: "#FFE38A" },
-};
+// the brand near-black, matching tailwind's `ink`
+const SIGNAL_INK = "#17271F";
+
+// The metal shades live in lib/palette AWARD so the podium, the medal art and
+// the pack trim cannot drift apart.
+const METAL: Record<MedalTier, { edge: string; face: string; light: string }> = AWARD;
 
 export function MedalArt({ family, tier = "bronze", earned = true, size = 82 }: { family: MedalFamilyKey; tier?: MedalTier; earned?: boolean; size?: number }) {
   const m = METAL[tier];
   return <svg width={size} height={size} viewBox="0 0 100 112" fill="none" style={!earned ? { filter: "grayscale(1)", opacity: .25 } : undefined}>
-    <path d="M27 5h18l5 35-17 7z" fill="#203E32" stroke="#10271F" strokeWidth="3" /><path d="M73 5H55l-5 35 17 7z" fill="#315E4A" stroke="#10271F" strokeWidth="3" />
-    <path d="M50 32 78 49v33L50 99 22 82V49z" fill={m.edge} stroke="#10271F" strokeWidth="4" strokeLinejoin="round" />
+    <path d="M27 5h18l5 35-17 7z" fill="#203E32" stroke={SIGNAL_INK} strokeWidth="3" /><path d="M73 5H55l-5 35 17 7z" fill="#315E4A" stroke={SIGNAL_INK} strokeWidth="3" />
+    <path d="M50 32 78 49v33L50 99 22 82V49z" fill={m.edge} stroke={SIGNAL_INK} strokeWidth="4" strokeLinejoin="round" />
     <circle cx="50" cy="66" r="23" fill={m.face} stroke={m.light} strokeWidth="3" /><circle cx="50" cy="66" r="17" stroke={m.edge} strokeWidth="2" strokeDasharray="2 3" />
     <MedalGlyph family={family} color={m.light} />
   </svg>;

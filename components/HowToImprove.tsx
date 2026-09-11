@@ -1,6 +1,6 @@
 "use client";
 
-// "How to improve" — exercise cards (two per row): illustration from the
+// "How to improve" — compact training prescription: illustration from the
 // palette-locked library in /public/exercises + name + dose. The AI coach picks
 // each exercise FROM lib/exercise-catalog.json for this user's specific flaws;
 // older reports are padded from the catalog by flagged body part.
@@ -44,7 +44,7 @@ function CardImg({ src }: { src: string | null }) {
   const [failed, setFailed] = useState(false);
   const loading = !!src && !loaded && !failed;
   return (
-    <div className={`min-h-0 flex-1 overflow-hidden rounded-xl bg-white ${loading ? "skeleton" : ""}`}>
+    <div className={`h-full min-h-0 w-full overflow-hidden rounded-xl bg-white ${loading ? "skeleton" : ""}`}>
       {src && !failed && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -60,14 +60,14 @@ function CardImg({ src }: { src: string | null }) {
 }
 
 export function HowToImprove({ tips, drill, sport }: { tips: TipOut[]; drill?: { title: string; detail: string }; sport?: string }) {
-  type Item = { name: string; dose: string; img: string | null };
+  type Item = { name: string; dose: string; how?: string; img: string | null };
   const items: Item[] = [];
   const seen = new Set<string>();
-  const push = (name: string, dose: string, img: string | null) => {
+  const push = (name: string, dose: string, img: string | null, how?: string) => {
     const key = name.toLowerCase();
     if (seen.has(key)) return;
     seen.add(key);
-    items.push({ name, dose, img });
+    items.push({ name, dose, how, img });
   };
 
   // 1) the coach's per-problem exercises (new reports)
@@ -76,31 +76,20 @@ export function HowToImprove({ tips, drill, sport }: { tips: TipOut[]; drill?: {
     // new reports carry the exact catalog id; older ones fall back to fuzzy name match
     const byId = t.exercise.id ? CAT.find((c) => c.id === t.exercise!.id) : null;
     const m = byId ?? matchCatalog(t.exercise.name);
-    push(m?.name ?? t.exercise.name, t.exercise.dose, m ? `/exercises/${m.id}.png` : null);
+    push(m?.name ?? t.exercise.name, t.exercise.dose, m ? `/exercises/${m.id}.png` : null, t.exercise.how);
   }
   // 2) the legacy single drill
   if (!items.length && drill?.title) {
     const m = matchCatalog(drill.title);
     const secs = drill.detail.match(/(\d+)\s*(?:s\b|sec|seconds)/i)?.[1];
-    push(drill.title, secs ? `3 × ${secs}s` : "3 × 10", m ? `/exercises/${m.id}.png` : null);
-  }
-  // 3) pad from the catalog up to FOUR cards (two full rows) — picked from the
-  //    SAME body parts the coach flagged for THIS person, same sport or general
-  if (items.length < 4) {
-    const wanted = new Set(tips.flatMap((t) => targetsFor(t.bodyPart)));
-    const pool = CAT.filter(
-      (c) => (c.sport === "general" || c.sport.toLowerCase() === (sport ?? "").toLowerCase()) && wanted.has(c.target)
-    );
-    for (const c of pool) {
-      if (items.length >= 4) break;
-      push(c.name, c.dose, `/exercises/${c.id}.png`);
-    }
+    push(drill.title, secs ? `3 × ${secs}s` : "3 × 10", m ? `/exercises/${m.id}.png` : null, drill.detail);
   }
   if (!items.length) return null;
 
   return (
-    <section className="mt-4 rounded-3xl bg-white p-4 shadow-soft">
-      <div className="px-1">
+    <section className="mt-4 overflow-hidden rounded-2xl bg-graphite p-4 text-white shadow-lift">
+      <div className="px-1 pt-1">
+        <p className="text-[9px] font-black tracking-[0.18em] text-[#7FD9AE]">NEXT SESSION</p>
         <div className="flex items-center gap-2">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
             <g stroke="#FF4E1A" strokeWidth="2.4" strokeLinecap="round">
@@ -110,19 +99,20 @@ export function HowToImprove({ tips, drill, sport }: { tips: TipOut[]; drill?: {
               <path d="M1.8 9.5 V14.5 M22.2 9.5 V14.5" strokeWidth="2.6" />
             </g>
           </svg>
-          <h2 className="font-golden text-lg leading-none text-ink">HOW TO IMPROVE</h2>
+          <h2 className="font-golden text-xl leading-none text-white">TRAIN THESE</h2>
         </div>
       </div>
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        {items.slice(0, 4).map((ex, i) => (
-          <div key={i} className="flex aspect-square flex-col rounded-2xl bg-[#EFF6F1] p-3">
-            <CardImg src={ex.img} />
-            <p className="mt-2 text-[13px] font-semibold leading-snug text-black">
-              {i + 1}. {ex.name}
-            </p>
-            <span className="mt-1.5 self-start rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-black">
-              {ex.dose}
-            </span>
+      <div className="mt-4 space-y-2">
+        {items.slice(0, 3).map((ex, i) => (
+          <div key={i} className="flex min-h-[104px] gap-3 rounded-2xl bg-white/[0.07] p-3 ring-1 ring-inset ring-white/5">
+            <div className="h-20 w-20 shrink-0"><CardImg src={ex.img} /></div>
+            <div className="min-w-0 flex-1 py-0.5">
+              <div className="flex items-start justify-between gap-2">
+                <p className="text-[13px] font-black leading-snug text-white">{i + 1}. {ex.name}</p>
+                <span className="shrink-0 rounded-full bg-[#7FD9AE] px-2 py-1 text-[9px] font-black text-ink">{ex.dose}</span>
+              </div>
+              {ex.how && <p className="mt-2 line-clamp-2 text-[10px] font-semibold leading-relaxed text-white/55">{ex.how}</p>}
+            </div>
           </div>
         ))}
       </div>

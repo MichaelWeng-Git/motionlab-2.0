@@ -354,6 +354,12 @@ button:not(:disabled),
   0%, 35% { background-position: 120% 0, 0 0; }
   70%, 100% { background-position: -120% 0, 0 0; }
 }
+.medal-unlock { animation: medal-unlock .7s cubic-bezier(.2,1.25,.35,1) both; }
+@keyframes medal-unlock {
+  from { opacity: 0; transform: translateY(28px) scale(.72) rotate(-5deg); }
+  65% { opacity: 1; transform: translateY(-4px) scale(1.04) rotate(1deg); }
+  to { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
+}
 @media (prefers-reduced-motion: reduce) {
   .pack-foil { animation: none; }
 }
@@ -419,8 +425,8 @@ button:not(:disabled),
 .stagger > *:nth-child(8) { animation-delay: 0.3s; }
 .stagger > *:nth-child(n + 9) { animation-delay: 0.34s; }
 @keyframes stagger-in {
-  from { opacity: 0; transform: translate3d(0, 8px, 0); }
-  to   { opacity: 1; transform: none; }
+  from { transform: translate3d(0, 8px, 0); }
+  to   { transform: none; }
 }
 
 /* skeleton shimmer for loading slots */
@@ -463,14 +469,12 @@ button:not(:disabled),
 
 @keyframes page-in {
   from {
-    opacity: 0;
     /* vertical-only: NO scale. A scaling ancestor makes its absolute/fixed children
        drift sideways mid-animation (the Activity bottom panel "shifting right").
        14px: the float-up must be OBVIOUS, even when switching pages quickly. */
     transform: translate3d(0, 14px, 0);
   }
   to {
-    opacity: 1;
     transform: none;
   }
 }

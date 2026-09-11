@@ -33,3 +33,38 @@ export function intensityColor(v: number): string {
   if (x >= 55) return SIGNAL.okay;
   return SIGNAL.good;
 }
+
+// ——— SURFACES ———
+// The two non-white grounds the app paints cards on. Both were magic constants
+// repeated per file (`INK` in /form and /load, `GOAL_BG` in GoalRing, inline in
+// weeks/loading), and a fourth near-black `#10271F` had started spreading —
+// close enough to these to be indistinguishable alone, far enough to read as a
+// rendering fault when two of them share a screen.
+export const SURFACE = {
+  // neutral graphite — the TODAY card and every dark card. Deliberately NOT a
+  // green-black: the ring's mint arcs are the only colour on that card, and a
+  // green ground fights them.
+  graphite: "#14181B",
+  // warm paper — the day-intensity card. The 3D body reads a different colour
+  // on cream than on white, so this is a deliberate choice, not decoration.
+  cream: "#F3F0E8",
+} as const;
+
+// ——— AWARD METAL ———
+// Podium ranks, medal tiers, deluxe pack trim. A genuine gap in the palette
+// above: none of good/okay/work means "first place". `face` is the flat UI
+// colour; `edge`/`light` exist so illustrated medals can be shaded from the
+// same source rather than inventing their own golds.
+export const AWARD = {
+  gold:   { edge: "#9B6A12", face: "#E8B23E", light: "#FFE38A" },
+  silver: { edge: "#718078", face: "#AFBBB4", light: "#E5ECE8" },
+  bronze: { edge: "#8E5734", face: "#C98658", light: "#F1B486" },
+} as const;
+
+// ——— SEQUENTIAL HEAT ———
+// A 4-step ramp for density/frequency (activity heatmaps, streak calendars),
+// where the question is "how much", not "how good". The signal scale above is
+// categorical and cannot express this — reaching for it produces red squares
+// on a calendar, which reads as failure rather than volume.
+// Mirrors tailwind.config.ts `heat.*` — keep the two identical.
+export const HEAT = ["#315741", "#4D8A5D", "#7FCF72", "#A8E89B"] as const;

@@ -163,7 +163,7 @@ export default function Help() {
       <div className="px-4 pb-[max(0.9rem,env(safe-area-inset-bottom))] pt-2">
         <form
           onSubmit={(e) => { e.preventDefault(); send(input); }}
-          className="flex items-center gap-2 rounded-[26px] bg-paper/50 p-2 shadow-lift backdrop-blur-xl"
+          className="flex items-center gap-2 rounded-2xl bg-paper/50 p-2 shadow-lift backdrop-blur-xl"
         >
           <input
             value={input}

@@ -44,7 +44,9 @@ export type AnalysisResult = {
   sport?: string;   // recognized by the AI coach
   action?: string;
   ai?: boolean;     // true when the report text came from the LLM
-  radar?: { label: string; value: number }[]; // 6 sport-specific dimensions (0-100)
+  // Legacy only. New reports visualise the deterministic `qualities` below;
+  // LLM-authored radar numbers are never presented as measurements.
+  radar?: { label: string; value: number }[];
   proMatch?: {
     score: number;
     pro: string;
@@ -305,7 +307,7 @@ export function computeAnalysis(frames: Frame[], duration: number): AnalysisResu
   const keyMoments: KeyMoment[] = [];
   if (wristSpeeds.length) {
     const peakIdx = wristSpeeds.indexOf(Math.max(...wristSpeeds));
-    keyMoments.push({ t: good[Math.min(peakIdx + 1, good.length - 1)].t, kind: "peak", label: "Peak power 💥" });
+    keyMoments.push({ t: good[Math.min(peakIdx + 1, good.length - 1)].t, kind: "peak", label: "Peak power" });
   }
   // the two roughest patches (biggest accel spikes), kept apart from each other & the peak
   const spikes = accels

@@ -132,6 +132,36 @@ Surface palette (`tailwind.config.ts`): `ink` / `ink-soft` / `ink-muted`,
 `paper` / `paper-card`, `volt` (deep-green actions), `volt-glow` `#FF9A66`
 (the one warm accent — flame, coins, route only), `volt-mist` (selected states).
 
+**Card grounds** — `bg-graphite` `#14181B` is the app's ONE dark card ground
+(TODAY, GoalRing, every dark hero); `bg-cream` `#F3F0E8` is the warm paper used
+by the day-intensity card. Both also exist as `SURFACE.*` in `lib/palette.ts`
+for inline styles — Tailwind cannot read a TS constant, so the value lives in
+two files and **must not drift**.
+
+**`award.*`** — `gold` / `gold-light` / `gold-pale` / `gold-wash` / `silver` /
+`bronze`. Podium ranks, medal tiers, deluxe pack trim. `AWARD` in
+`lib/palette.ts` additionally carries `edge`/`light` shades so illustrated
+medals shade from the same source (`components/MedalArt.tsx` imports it rather
+than keeping its own table).
+
+**`heat.1–4`** — a sequential ramp for DENSITY (activity heatmaps, streak
+calendars): "how much", not "how good". The signal scale is categorical and
+cannot express this; reaching for it paints red squares on a calendar, which
+reads as failure rather than volume.
+
+### Why this section exists
+
+A parallel palette had started growing: `#10271F` (27 uses) sat **7.0** RGB
+units from `ink`, `#E8B23E` sat 17.1 from `signal.okay`, `#EAF4EE` sat 19.6
+from `volt-mist`. Individually invisible; on one screen they read as a
+rendering fault. Near-duplicates are the drift that actually hurts — an
+obviously wrong colour gets noticed and fixed.
+
+**Before adding a colour, check whether the role already has a token.** If the
+role genuinely has none (a podium rank, a density ramp), add it to BOTH
+`tailwind.config.ts` and `lib/palette.ts` and document it here — do not inline
+a hex.
+
 Dark surfaces in use: `#14181B` (TODAY / GoalRing ground) and `#F3F0E8` cream
 (day-intensity card). **Card surface colour is not decoration** — the 3D body
 reads a different colour on cream than on white, so a card showing the body

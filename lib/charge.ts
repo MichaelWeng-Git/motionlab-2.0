@@ -15,6 +15,15 @@ export type Charge = {
   // surface showing it has to say so.
   assumedWorkouts: number;
 };
+export type ChargeDay = { date: string; minutes: number; charge: number | null };
+export type ChargeDetail = Charge & {
+  acuteMinutes: number;
+  chronicMinutes: number;
+  ratio: number | null;
+  consecutiveDays: number;
+  restedYesterday: boolean;
+  days: ChargeDay[];
+};
 
 import { SIGNAL } from "./palette";
 import { buildWorkouts, DEFAULT_SESSION_MIN } from "./workouts";
@@ -24,8 +33,6 @@ export const CHARGE_META: Record<ChargeState, { word: string; action: string; co
   steady: { word: "STEADY", action: "TRAIN AS PLANNED", color: SIGNAL.okay },
   drained: { word: "DRAINED", action: "GO EASY TODAY", color: SIGNAL.work },
 };
-
-const SEEDED: Charge = { value: 80, state: "primed", why: "Building your baseline", assumedWorkouts: 0 }; // fresh account
 
 const stateOf = (v: number): ChargeState => (v >= 67 ? "primed" : v >= 34 ? "steady" : "drained");
 
@@ -101,6 +108,24 @@ function compute(mins: number[]): Charge {
   return { value, state: stateOf(value), why, assumedWorkouts: 0 };
 }
 
+function signals(mins: number[]) {
+  let acute = 0;
+  let chronic = 0;
+  for (let i = mins.length - 1; i >= 0; i--) {
+    acute += (mins[i] - acute) / 7;
+    chronic += (mins[i] - chronic) / 28;
+  }
+  let consecutiveDays = 0;
+  for (let i = mins[0] > 0 ? 0 : 1; i < mins.length && mins[i] > 0; i++) consecutiveDays++;
+  return {
+    acute,
+    chronic,
+    ratio: chronic >= 3 ? acute / chronic : null,
+    consecutiveDays,
+    restedYesterday: mins[1] === 0 && chronic >= 3,
+  };
+}
+
 // null when there is NO training history at all — the card stays hidden
 // rather than showing an invented number (owner's no-fake-data rule)
 export function getCharge(): Charge | null {
@@ -112,16 +137,50 @@ export function getCharge(): Charge | null {
   }
 }
 
+export function getChargeDetail(): ChargeDetail | null {
+  try {
+    const d = dailyMinutes(34);
+    if (!d) return null;
+    const current = compute(d.mins.slice(0, 28));
+    const s = signals(d.mins.slice(0, 28));
+    const today = new Date();
+    today.setHours(12, 0, 0, 0);
+    const days = Array.from({ length: 7 }, (_, index) => {
+      const offset = 6 - index;
+      const date = new Date(today);
+      date.setDate(today.getDate() - offset);
+      const window = d.mins.slice(offset, offset + 28);
+      return {
+        date: date.toISOString().slice(0, 10),
+        minutes: Math.round(d.mins[offset] ?? 0),
+        charge: window.some((v) => v > 0) ? compute(window).value : null,
+      };
+    });
+    return {
+      ...current,
+      assumedWorkouts: d.assumed,
+      acuteMinutes: s.acute,
+      chronicMinutes: s.chronic,
+      ratio: s.ratio,
+      consecutiveDays: s.consecutiveDays,
+      restedYesterday: s.restedYesterday,
+      days,
+    };
+  } catch {
+    return null;
+  }
+}
+
 // the last `days` days of CHARGE, oldest → newest (today last) — the week strip
 export function getChargeSeries(days = 7): Charge[] {
   try {
     const d = dailyMinutes(28 + days - 1);
-    if (!d) return new Array<Charge>(days).fill(SEEDED);
+    if (!d) return [];
     return Array.from({ length: days }, (_, k) => {
       const off = days - 1 - k;
       return { ...compute(d.mins.slice(off, off + 28)), assumedWorkouts: d.assumed };
     });
   } catch {
-    return new Array<Charge>(days).fill(SEEDED);
+    return [];
   }
 }

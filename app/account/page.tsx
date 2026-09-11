@@ -12,11 +12,16 @@ import { getStats, type Stats } from "@/lib/stats";
 import { CameraIcon, ChatIcon, DumbbellIcon, FriendsIcon, LogoutIcon, PersonIcon } from "@/components/Icons";
 import { clearDraft } from "@/lib/profile-draft";
 import { syncMe } from "@/lib/friends";
+import { LevelBadge, XpAvatarRing } from "@/components/XpLevel";
+import { levelForXp } from "@/lib/xp";
+import { syncAccountData } from "@/lib/cloud-data";
 
 export default function Account() {
   const [profile, setProfile] = useState<Profile>({});
   const [stats, setStats] = useState<Stats | null>(null);
   const [confirmOut, setConfirmOut] = useState(false);
+  const [logoutError, setLogoutError] = useState("");
+  const [loggingOut, setLoggingOut] = useState(false);
   // WhatsApp-style photo change: camera badge on the avatar → action sheet
   // (Take photo / Choose from library / Remove) → preview → saved instantly
   const [photoSheet, setPhotoSheet] = useState(false);
@@ -70,6 +75,7 @@ export default function Account() {
     ],
     [
       { icon: <ChatIcon className="text-[#7C5CFF]" />, tint: "#7C5CFF1C", label: "Help & feedback", href: "/account/help" },
+      { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21h-4v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3.1 14H3v-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V3h4v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.1v4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>, tint: "#17271F12", label: "Settings & data", href: "/account/settings" },
     ],
   ];
 
@@ -79,21 +85,21 @@ export default function Account() {
         <Link href="/" className="grid h-9 w-9 place-items-center rounded-full bg-white text-ink shadow-soft">
           ←
         </Link>
-        <h1 className="text-2xl font-extrabold tracking-tight">Profile</h1>
+        <h1 className="font-golden text-[26px] leading-none">Profile</h1>
       </div>
       {/* profile header — tap the avatar (camera badge = the affordance) to
           change the photo, WhatsApp-style */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-soft">
         <button onClick={() => setPhotoSheet(true)} className="relative shrink-0 transition active:scale-95" aria-label="Change profile photo">
-          <span className="grid h-16 w-16 place-items-center overflow-hidden rounded-full bg-volt-mist">
-            <Avatar p={profile} iconSize={44} />
-          </span>
+          <XpAvatarRing xp={stats?.xp ?? 0}><span className="grid h-full w-full place-items-center bg-volt-mist"><Avatar p={profile} iconSize={44} /></span></XpAvatarRing>
           <span className="absolute -bottom-0.5 -right-0.5 grid h-6 w-6 place-items-center rounded-full bg-ink text-white ring-2 ring-[#ECEFEC]">
             <CameraIcon size={13} />
           </span>
         </button>
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="text-xl font-extrabold tracking-tight">{profile.name ?? "You"}</p>
+          <div className="mt-2"><LevelBadge xp={stats?.xp ?? 0} /></div>
+          <Link href="/xp" className="mt-2 flex items-center gap-2"><span className="h-1.5 flex-1 overflow-hidden rounded-full bg-black/[0.07]"><span className="block h-full rounded-full" style={{ width: `${levelForXp(stats?.xp ?? 0).progress * 100}%`, background: levelForXp(stats?.xp ?? 0).color }} /></span><span className="text-[9px] font-black text-ink-muted">{stats?.xp ?? 0} XP ›</span></Link>
         </div>
       </div>
 
@@ -101,7 +107,7 @@ export default function Account() {
       <div className="mt-6 grid grid-cols-3 gap-2.5">
         {[
           { v: stats?.total ?? 0, l: "Sessions" },
-          { v: stats?.bestScore ?? 0, l: "Best score" },
+          { v: stats?.total ? stats.bestScore : "—", l: "Best score" },
           { v: stats && stats.monthDelta > 0 ? `+${stats.monthDelta}` : "—", l: "This month" },
         ].map((s) => (
           <div key={s.l} className="rounded-2xl bg-white py-4 text-center shadow-soft">
@@ -221,27 +227,38 @@ export default function Account() {
             <h2 className="text-lg font-extrabold">Log out?</h2>
             <div className="mt-5 flex gap-2.5">
               <button
-                onClick={() => setConfirmOut(false)}
+                onClick={() => { setConfirmOut(false); setLogoutError(""); }}
                 className="flex-1 rounded-full bg-white py-3 text-sm font-bold text-ink transition active:scale-[0.98]"
               >
                 Cancel
               </button>
               <button
-                onClick={() => {
-                  localStorage.removeItem("ml_onboarded");
+                onClick={async () => {
+                  // Flush the latest local changes while the auth session still
+                  // exists. Logging out changes identity only; it never changes
+                  // profile, onboarding, or training records.
+                  setLoggingOut(true);
+                  setLogoutError("");
+                  const saved = await syncAccountData();
+                  if (!saved) {
+                    setLoggingOut(false);
+                    setLogoutError("Your latest changes could not be saved. Check your connection and try again.");
+                    return;
+                  }
                   localStorage.removeItem("ml_auth");
-                  import("@/lib/supabase-client").then((m) => m.sbBrowser()?.auth.signOut());
+                  await import("@/lib/supabase-client").then((m) => m.sbBrowser()?.auth.signOut());
                   signOut({ callbackUrl: "/login" });
                 }}
-                className="btn-press-work flex-1 rounded-full bg-signal-work py-3 text-sm font-bold text-white transition"
+                disabled={loggingOut}
+                className="btn-press-work flex-1 rounded-full bg-signal-work py-3 text-sm font-bold text-white transition disabled:opacity-50"
               >
-                Log out
+                {loggingOut ? "Saving…" : "Log out"}
               </button>
             </div>
+            {logoutError && <p className="mt-3 text-xs font-semibold text-signal-work">{logoutError}</p>}
           </div>
         </div>
       )}
     </div>
   );
 }
-

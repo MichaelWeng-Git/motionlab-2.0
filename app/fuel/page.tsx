@@ -1,257 +1,201 @@
 "use client";
 
-// FUEL — athlete fueling, framed as training input (never a diet app):
-// snap a meal → the vision model estimates macros → protein counts toward
-// a 1.6 g/kg daily target. Photos are analyzed and dropped, never stored.
+// FUEL is recovery input, not calorie judgement. Protein is the hierarchy;
+// meal photos are analysed then dropped. All AI macros remain visibly labelled
+// estimates and can be corrected before saving.
 
-import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { logMeal, proteinTarget, removeMeal, todayMeals, type Meal } from "@/lib/fuel";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { getMeals, logMeal, proteinTarget, removeMeal, restoreMeal, todayMeals, type Meal } from "@/lib/fuel";
+import { SIGNAL } from "@/lib/palette";
 
 type Scan = {
-  isFood: boolean;
-  dish: string;
-  protein: number;
-  carbs: number;
-  fat: number;
-  kcal: number;
+  isFood: boolean; dish: string; protein: number; carbs: number; fat: number; kcal: number;
   confidence: "high" | "medium" | "low";
 };
-
-const CONF: Record<Scan["confidence"], string> = { high: "#3BA55D", medium: "#E8A13C", low: "#E0523F" };
+const CONF: Record<Scan["confidence"], { label: string; color: string }> = {
+  high: { label: "HIGH CONFIDENCE", color: "#7FD9AE" },
+  medium: { label: "CHECK PORTION", color: "#F5B23D" },
+  low: { label: "LOW CONFIDENCE", color: "#E0523F" },
+};
 
 export default function Fuel() {
   const router = useRouter();
   const camRef = useRef<HTMLInputElement>(null);
   const libRef = useRef<HTMLInputElement>(null);
+  const requestRef = useRef<AbortController | null>(null);
   const [photo, setPhoto] = useState<string | null>(null);
   const [phase, setPhase] = useState<"idle" | "scanning" | "result" | "notfood" | "error">("idle");
   const [scan, setScan] = useState<Scan | null>(null);
   const [meals, setMeals] = useState<Meal[]>([]);
-  const [target, setTarget] = useState<number | null>(null); // null = weight not set
-  const [logged, setLogged] = useState(false);
+  const [target, setTarget] = useState<number | null>(null);
+  const [deleted, setDeleted] = useState<Meal | null>(null);
 
+  const refresh = () => setMeals(getMeals());
   useEffect(() => {
-    setMeals(todayMeals());
+    refresh();
     setTarget(proteinTarget());
+    return () => requestRef.current?.abort();
   }, []);
 
-  // downscale to a small JPEG — enough for the model, tiny upload
+  function resetScan() {
+    requestRef.current?.abort();
+    requestRef.current = null;
+    setPhase("idle");
+    setPhoto(null);
+    setScan(null);
+  }
+
   function onPick(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
+    if (!file.type.startsWith("image/")) { setPhase("error"); return; }
     const img = new Image();
     img.onload = async () => {
-      const MAX = 640;
-      const s = Math.min(1, MAX / Math.max(img.width, img.height));
-      const c = document.createElement("canvas");
-      c.width = Math.round(img.width * s);
-      c.height = Math.round(img.height * s);
-      c.getContext("2d")!.drawImage(img, 0, 0, c.width, c.height);
+      const max = 640;
+      const scale = Math.min(1, max / Math.max(img.width, img.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(img.width * scale));
+      canvas.height = Math.max(1, Math.round(img.height * scale));
+      canvas.getContext("2d")!.drawImage(img, 0, 0, canvas.width, canvas.height);
       URL.revokeObjectURL(img.src);
-      const dataUrl = c.toDataURL("image/jpeg", 0.8);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
       setPhoto(dataUrl);
       setScan(null);
-      setLogged(false);
       setPhase("scanning");
+      const controller = new AbortController();
+      requestRef.current = controller;
       try {
-        const r = await fetch("/api/fuel", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ image: dataUrl }),
+        const response = await fetch("/api/fuel", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image: dataUrl }), signal: controller.signal,
         });
-        const data = await r.json();
-        if (!r.ok || !data.ok) throw new Error("scan failed");
-        if (!data.isFood) {
-          setPhase("notfood");
-          return;
-        }
-        setScan(data as Scan);
+        const data = await response.json();
+        if (!response.ok || !data.ok) throw new Error("scan failed");
+        if (!data.isFood) { setPhase("notfood"); return; }
+        setScan(normalizeScan(data));
         setPhase("result");
-      } catch {
-        setPhase("error");
+      } catch (error) {
+        if ((error as Error).name !== "AbortError") setPhase("error");
+      } finally {
+        requestRef.current = null;
       }
     };
+    img.onerror = () => { URL.revokeObjectURL(img.src); setPhase("error"); };
     img.src = URL.createObjectURL(file);
   }
 
-  function logIt() {
-    if (!scan || logged) return;
-    logMeal({ dish: scan.dish, protein: scan.protein, carbs: scan.carbs, fat: scan.fat, kcal: scan.kcal });
-    setMeals(todayMeals());
-    setLogged(true);
-    setTimeout(() => {
-      setPhase("idle");
-      setPhoto(null);
-      setScan(null);
-    }, 700);
+  function editMacro(key: "protein" | "carbs" | "fat" | "kcal", value: string) {
+    if (!scan) return;
+    setScan({ ...scan, [key]: Math.max(0, Math.round(Number(value) || 0)) });
   }
 
-  const protein = meals.reduce((m, x) => m + x.protein, 0);
+  function save() {
+    if (!scan) return;
+    logMeal({ dish: scan.dish.trim() || "Meal", protein: scan.protein, carbs: scan.carbs, fat: scan.fat, kcal: scan.kcal });
+    refresh();
+    resetScan();
+  }
+
+  function erase(meal: Meal) {
+    removeMeal(meal.id);
+    setDeleted(meal);
+    refresh();
+    window.setTimeout(() => setDeleted((m) => m?.id === meal.id ? null : m), 5000);
+  }
+
+  function undoDelete() {
+    if (!deleted) return;
+    restoreMeal(deleted);
+    setDeleted(null);
+    refresh();
+  }
+
+  const today = todayMeals();
+  const protein = today.reduce((sum, meal) => sum + meal.protein, 0);
   const pct = target ? Math.min(1, protein / target) : 0;
+  const history = [...meals].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 30);
 
   return (
-    <div className="stagger px-5 pb-8 pt-8">
-      <div className="flex items-center gap-3">
-        <button
-          onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
-          className="grid h-9 w-9 place-items-center rounded-full bg-white text-ink shadow-soft"
-        >
-          ←
-        </button>
-        <h1 className="text-2xl font-extrabold tracking-tight">Fuel</h1>
-      </div>
-
+    <div className="stagger px-5 pb-10 pt-3">
+      <header className="flex items-center gap-2.5">
+        <button onClick={() => router.back()} className="flex h-7 w-11 items-center justify-center rounded-full bg-white text-[13px] text-ink shadow-soft active:scale-95">←</button>
+        <h1 className="font-golden text-[24px] leading-none">Fuel</h1>
+      </header>
       <input ref={camRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={onPick} />
       <input ref={libRef} type="file" accept="image/*" className="hidden" onChange={onPick} />
 
-      {/* the scanner */}
-      <div className="mt-4 overflow-hidden rounded-3xl bg-white shadow-soft">
+      <section className="relative mt-3 overflow-hidden rounded-3xl bg-graphite p-5 text-white shadow-lift">
+        <div className="pointer-events-none absolute -right-20 -top-24 h-60 w-60 rounded-full bg-signal-good/60 blur-3xl" />
+        <div className="relative flex items-center justify-between">
+          <div>
+            <p className="text-[9px] font-black tracking-[0.2em] text-[#7FD9AE]">RECOVERY INPUT · TODAY</p>
+            <h2 className="mt-2 font-golden text-3xl">PROTEIN</h2>
+            <div className="mt-5 flex items-end gap-2">
+              <span className="font-golden text-6xl leading-none">{protein}</span>
+              <span className="pb-1 font-golden text-xl text-white/45">{target ? `/ ${target} G` : "G"}</span>
+            </div>
+            {target ? <p className="mt-2 text-xs font-bold text-white/60">{protein >= target ? "Target reached" : `${target - protein} g remaining`}</p> : <Link href="/account/training" className="mt-3 inline-flex rounded-full bg-white px-3 py-2 text-[10px] font-black text-ink">ADD WEIGHT FOR TARGET</Link>}
+          </div>
+          <ProteinRing pct={pct} known={target != null} />
+        </div>
+        {target && <div className="relative mt-5 border-t border-white/10 pt-3 text-[10px] font-bold text-white/45">Target uses 1.6 g per kg of your saved body weight</div>}
+      </section>
+
+      <section className="mt-3 overflow-hidden rounded-2xl bg-white shadow-soft">
         {photo ? (
-          <div className="relative">
+          <div className="relative h-[205px] overflow-hidden bg-ink">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={photo} alt="Your meal" className="max-h-[240px] w-full object-cover" />
-            {phase === "scanning" && (
-              <div className="absolute inset-0 overflow-hidden bg-ink/30">
-                <div className="animate-scan absolute inset-x-0 h-1/3 bg-gradient-to-b from-transparent via-white/50 to-transparent" />
-              </div>
-            )}
-            {phase === "result" && scan && (
-              <span
-                className="absolute left-3 top-3 rounded-full px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide text-white"
-                style={{ background: CONF[scan.confidence] }}
-              >
-                {scan.confidence}
-              </span>
-            )}
+            <img src={photo} alt="Meal being analysed" className="h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/10" />
+            {phase === "scanning" && <div className="absolute inset-0 overflow-hidden"><div className="animate-scan absolute inset-x-0 h-1/3 bg-gradient-to-b from-transparent via-[#7FD9AE]/65 to-transparent" /></div>}
+            {phase === "result" && scan && <span className="absolute left-3 top-3 rounded-full bg-black/60 px-3 py-1.5 text-[9px] font-black tracking-wider" style={{ color: CONF[scan.confidence].color }}>AI ESTIMATE · {CONF[scan.confidence].label}</span>}
+            <button onClick={resetScan} className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full bg-black/55 text-white">×</button>
           </div>
         ) : (
-          <div className="grid h-[190px] place-items-center bg-[radial-gradient(120%_100%_at_50%_0%,#24463A_0%,#0E1811_65%)]">
-            <div className="text-center">
-              <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-white/[0.12]">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 7h3l2-2.5h6L17 7h3a1.5 1.5 0 0 1 1.5 1.5V18a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 18V8.5A1.5 1.5 0 0 1 4 7z" />
-                  <circle cx="12" cy="13" r="3.6" />
-                </svg>
-              </span>
-              <p className="mt-3 font-golden text-2xl leading-none text-white">SCAN YOUR MEAL</p>
-            </div>
-          </div>
+          <div className="flex items-center gap-4 bg-volt-mist p-5"><span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-graphite text-white"><CameraIcon /></span><div><p className="font-golden text-xl text-ink">LOG A MEAL</p><p className="mt-1 text-[10px] font-bold text-ink-soft">Photo analysed once, then discarded</p></div></div>
         )}
 
         <div className="p-5">
           {phase === "result" && scan ? (
             <>
-              <div className="flex items-baseline justify-between">
-                <p className="text-lg font-extrabold text-ink">{scan.dish}</p>
-                <p className="text-sm font-bold text-ink-muted tabular-nums">{scan.kcal} kcal</p>
+              <label className="text-[9px] font-black tracking-wider text-ink-muted">MEAL NAME · EDIT IF NEEDED</label>
+              <input value={scan.dish} onChange={(e) => setScan({ ...scan, dish: e.target.value })} className="mt-2 w-full rounded-xl bg-paper px-3 py-2.5 text-sm font-black text-ink outline-none focus:ring-2 focus:ring-[#7FD9AE]" />
+              <div className="mt-3 grid grid-cols-4 gap-2">
+                {(["protein", "carbs", "fat", "kcal"] as const).map((key) => <label key={key} className={`rounded-xl p-2 text-center ${key === "protein" ? "bg-graphite text-white" : "bg-paper text-ink"}`}><input inputMode="numeric" value={scan[key]} onChange={(e) => editMacro(key, e.target.value)} className="w-full bg-transparent text-center font-golden text-xl outline-none" /><span className={`block text-[8px] font-black uppercase tracking-wider ${key === "protein" ? "text-white/50" : "text-ink-muted"}`}>{key === "kcal" ? "kcal" : `${key} g`}</span></label>)}
               </div>
-              <div className="mt-3 grid grid-cols-3 gap-2.5">
-                {[
-                  { v: scan.protein, l: "Protein", hero: true },
-                  { v: scan.carbs, l: "Carbs" },
-                  { v: scan.fat, l: "Fat" },
-                ].map((m) => (
-                  <div key={m.l} className={`rounded-2xl py-3 text-center ${m.hero ? "bg-ink text-white" : "bg-paper text-ink"}`}>
-                    <p className="text-xl font-extrabold tabular-nums">
-                      {m.v}
-                      <span className="text-xs font-bold opacity-60"> g</span>
-                    </p>
-                    <p className={`mt-0.5 text-[11px] font-bold ${m.hero ? "text-white/70" : "text-ink-muted"}`}>{m.l}</p>
-                  </div>
-                ))}
-              </div>
-              <button
-                onClick={logIt}
-                className="btn-press-good mt-4 w-full rounded-full bg-signal-good py-3.5 text-[15px] font-extrabold text-white transition"
-              >
-                {logged ? "Logged" : `Log it · +${scan.protein}g protein`}
-              </button>
-              <button
-                onClick={() => { setPhase("idle"); setPhoto(null); setScan(null); }}
-                className="mt-2.5 w-full rounded-full bg-white py-3 text-sm font-bold text-ink transition active:scale-[0.98]"
-              >
-                Scan another
-              </button>
-            </>
-          ) : phase === "notfood" || phase === "error" ? (
-            <>
-              <p className="text-center text-[15px] font-extrabold text-ink">
-                {phase === "notfood" ? "That doesn't look like food" : "Scan failed"}
-              </p>
-              <button
-                onClick={() => { setPhase("idle"); setPhoto(null); }}
-                className="btn-press mt-4 w-full rounded-full bg-ink py-3.5 text-[15px] font-bold text-white transition"
-              >
-                Try again
-              </button>
+              <p className="mt-3 text-center text-[10px] font-bold text-ink-muted">These are image-based estimates. Correct the values before saving.</p>
+              <button onClick={save} className="btn-press-good mt-4 w-full rounded-full bg-signal-good py-3.5 text-sm font-black text-white">SAVE MEAL · +{scan.protein} G PROTEIN</button>
             </>
           ) : phase === "scanning" ? (
-            <p className="text-center text-sm font-bold text-ink-soft">Reading your meal…</p>
+            <div className="flex items-center justify-center gap-3 py-2"><span className="h-5 w-5 animate-spin rounded-full border-2 border-black/10 border-t-ink" /><p className="text-sm font-black text-ink">Estimating the visible portion…</p></div>
+          ) : phase === "notfood" || phase === "error" ? (
+            <div className="text-center"><p className="text-sm font-black text-ink">{phase === "notfood" ? "No meal detected" : "Couldn’t analyse this photo"}</p><button onClick={resetScan} className="btn-press mt-4 w-full rounded-full bg-ink py-3 text-sm font-black text-white">TRY ANOTHER PHOTO</button></div>
           ) : (
-            <div className="flex gap-2.5">
-              <button
-                onClick={() => camRef.current?.click()}
-                className="btn-press flex-1 rounded-full bg-ink py-3.5 text-[15px] font-bold text-white transition"
-              >
-                Camera
-              </button>
-              <button
-                onClick={() => libRef.current?.click()}
-                className="flex-1 rounded-full bg-white py-3.5 text-[15px] font-bold text-ink shadow-soft transition active:scale-[0.98]"
-              >
-                From library
-              </button>
-            </div>
+            <div className="grid grid-cols-2 gap-2.5"><button onClick={() => camRef.current?.click()} className="btn-press rounded-full bg-ink py-3.5 text-sm font-black text-white">CAMERA</button><button onClick={() => libRef.current?.click()} className="rounded-full bg-paper py-3.5 text-sm font-black text-ink active:scale-[0.98]">LIBRARY</button></div>
           )}
         </div>
-      </div>
+      </section>
 
-      {/* today's protein — the one number an athlete needs */}
-      <div className="mt-4 rounded-3xl bg-white p-5 shadow-soft">
-        <div className="flex items-baseline justify-between">
-          <h2 className="font-golden text-xl leading-none text-ink">TODAY&apos;S PROTEIN</h2>
-          <p className="text-sm font-extrabold tabular-nums text-ink">
-            {protein}
-            {target ? (
-              <span className="text-ink-muted"> / {target} g</span>
-            ) : (
-              <span className="text-ink-muted"> g</span>
-            )}
-          </p>
-        </div>
-        <div className="mt-3 h-3 overflow-hidden rounded-full bg-black/[0.07]">
-          <div
-            className="h-full rounded-full bg-signal-good transition-all duration-700 ease-out"
-            style={{ width: `${Math.max(pct * 100, protein > 0 && target ? 4 : 0)}%` }}
-          />
-        </div>
-        {!target && (
-          <Link href="/account/profile" className="mt-3 block text-[12px] font-bold text-ink-soft underline underline-offset-2">
-            Add your weight to set a protein target
-          </Link>
-        )}
+      <section className="mt-3 rounded-2xl bg-white p-5 shadow-soft">
+        <div className="flex items-end justify-between"><div><p className="text-[9px] font-black tracking-[0.18em] text-ink-muted">RECENT</p><h2 className="mt-1 font-golden text-xl text-ink">MEAL HISTORY</h2></div><span className="font-golden text-lg text-ink-muted">{meals.length}</span></div>
+        {history.length ? <div className="mt-4 space-y-2">{history.map((meal, index) => {
+          const date = new Date(meal.date), previous = history[index - 1];
+          const showDay = !previous || new Date(previous.date).toDateString() !== date.toDateString();
+          return <div key={meal.id}>{showDay && <p className="pb-1.5 pt-2 text-[9px] font-black tracking-wider text-ink-muted">{dayLabel(date)}</p>}<div className="flex items-center gap-3 rounded-2xl bg-paper px-3 py-3"><span className="grid h-9 w-9 place-items-center rounded-xl bg-white"><MealIcon /></span><div className="min-w-0 flex-1"><p className="truncate text-xs font-black text-ink">{meal.dish}</p><p className="mt-0.5 text-[9px] font-bold text-ink-muted">{date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} · {meal.kcal} kcal estimate</p></div><span className="font-golden text-base text-ink">{meal.protein}g</span><button onClick={() => erase(meal)} aria-label={`Delete ${meal.dish}`} className="grid h-8 w-8 place-items-center rounded-full text-ink-muted active:bg-black/5"><TrashIcon /></button></div></div>;
+        })}</div> : <div className="mt-4 rounded-2xl border border-dashed border-ink/15 px-5 py-8 text-center"><MealIcon /><p className="mt-3 font-golden text-lg text-ink">NO MEALS LOGGED</p><p className="mt-1 text-[10px] font-bold text-ink-muted">Your saved estimates appear here</p></div>}
+      </section>
 
-        {meals.length > 0 && (
-          <div className="mt-4 space-y-2">
-            {meals.map((m) => (
-              <div key={m.id} className="flex items-center gap-3 rounded-2xl bg-paper px-3.5 py-3">
-                <span className="flex-1 text-sm font-bold text-ink">{m.dish}</span>
-                <span className="text-sm font-extrabold tabular-nums text-ink">{m.protein}g</span>
-                <button
-                  onClick={() => { removeMeal(m.id); setMeals(todayMeals()); }}
-                  aria-label={`Remove ${m.dish}`}
-                  className="grid h-7 w-7 place-items-center rounded-full text-ink-muted transition active:bg-black/[0.06]"
-                >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="M5 5l14 14M19 5L5 19" /></svg>
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      {deleted && <div className="fixed bottom-24 left-1/2 z-[80] flex w-[calc(100%_-_32px)] max-w-[398px] -translate-x-1/2 items-center rounded-2xl bg-ink px-4 py-3 text-white shadow-lift"><span className="flex-1 truncate text-xs font-bold">Deleted {deleted.dish}</span><button onClick={undoDelete} className="ml-3 text-xs font-black text-[#7FD9AE]">UNDO</button></div>}
     </div>
   );
 }
+
+function normalizeScan(data: Partial<Scan>): Scan { const n = (value: unknown) => Math.max(0, Math.min(5000, Math.round(Number(value) || 0))); return { isFood: true, dish: String(data.dish || "Meal").slice(0, 48), protein: n(data.protein), carbs: n(data.carbs), fat: n(data.fat), kcal: n(data.kcal), confidence: data.confidence === "high" || data.confidence === "low" ? data.confidence : "medium" }; }
+function dayLabel(date: Date) { const now = new Date(); if (date.toDateString() === now.toDateString()) return "TODAY"; const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1); if (date.toDateString() === yesterday.toDateString()) return "YESTERDAY"; return date.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" }).toUpperCase(); }
+function ProteinRing({ pct, known }: { pct: number; known: boolean }) { const r = 39, c = 2 * Math.PI * r; return <div className="relative grid h-24 w-24 place-items-center"><svg className="-rotate-90" width="96" height="96"><circle cx="48" cy="48" r={r} fill="none" stroke="rgba(255,255,255,.1)" strokeWidth="9" /><circle cx="48" cy="48" r={r} fill="none" stroke="#7FD9AE" strokeWidth="9" strokeLinecap="round" strokeDasharray={`${known ? c * pct : 0} ${c}`} /></svg><span className="absolute font-golden text-xl">{known ? `${Math.round(pct * 100)}%` : "—"}</span></div>; }
+function CameraIcon() { return <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7h3l2-2h6l2 2h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z" /><circle cx="12" cy="13" r="4" /></svg>; }
+function MealIcon() { return <svg className="mx-auto" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={SIGNAL.good} strokeWidth="2" strokeLinecap="round"><path d="M4 14h16M6 14a6 6 0 0 1 12 0M12 8V5M3 18h18" /></svg>; }
+function TrashIcon() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13" /></svg>; }

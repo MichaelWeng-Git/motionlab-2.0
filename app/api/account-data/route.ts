@@ -37,9 +37,6 @@ export async function GET(req: Request) {
 
   const { data: stored, error } = await db.from("account_data").select("payload,updated_at").eq("profile_id", profile.id).maybeSingle();
   if (error) return Response.json({ ok: false, error: "account-data-read" }, { status: 502 });
-  if (isNew && !stored) {
-    await db.from("account_data").insert({ profile_id: profile.id, payload: {} });
-  }
   return Response.json({
     ok: true, email: who.email, isNew, hasCloudData: !!stored,
     payload: stored?.payload ?? {}, updatedAt: stored?.updated_at ?? null,
@@ -54,12 +51,31 @@ export async function POST(req: Request) {
   if (!db) return Response.json({ ok: false, error: "sync-not-configured" }, { status: 503 });
   const { data: profile } = await db.from("profiles").select("id").eq("email", who.email).maybeSingle();
   if (!profile) return Response.json({ ok: false, error: "no-profile" }, { status: 404 });
-  const body = await req.json().catch(() => null) as { payload?: unknown } | null;
+  const body = await req.json().catch(() => null) as { payload?: unknown; baseUpdatedAt?: string | null } | null;
   if (!body?.payload || typeof body.payload !== "object" || Array.isArray(body.payload)) return Response.json({ ok: false, error: "bad-payload" }, { status: 400 });
   const encoded = JSON.stringify(body.payload);
   if (encoded.length > 8_000_000) return Response.json({ ok: false, error: "payload-too-large" }, { status: 413 });
   const updatedAt = new Date().toISOString();
-  const { error } = await db.from("account_data").upsert({ profile_id: profile.id, payload: body.payload, updated_at: updatedAt }, { onConflict: "profile_id" });
-  if (error) return Response.json({ ok: false, error: "account-data-write" }, { status: 502 });
+  const { data: current, error: readError } = await db.from("account_data").select("updated_at").eq("profile_id", profile.id).maybeSingle();
+  if (readError) return Response.json({ ok: false, error: "account-data-read" }, { status: 502 });
+  if (current) {
+    if (!body.baseUpdatedAt || body.baseUpdatedAt !== current.updated_at) {
+      return Response.json({ ok: false, error: "cloud-conflict", updatedAt: current.updated_at }, { status: 409 });
+    }
+    // The timestamp predicate makes the write optimistic: if another device
+    // wins between the read above and this update, zero rows are returned.
+    const { data, error } = await db.from("account_data")
+      .update({ payload: body.payload, updated_at: updatedAt })
+      .eq("profile_id", profile.id).eq("updated_at", body.baseUpdatedAt)
+      .select("updated_at").maybeSingle();
+    if (error) return Response.json({ ok: false, error: "account-data-write" }, { status: 502 });
+    if (!data) return Response.json({ ok: false, error: "cloud-conflict" }, { status: 409 });
+  } else {
+    const { error } = await db.from("account_data").insert({ profile_id: profile.id, payload: body.payload, updated_at: updatedAt });
+    if (error) {
+      // A simultaneous first write created the row. Never overwrite it.
+      return Response.json({ ok: false, error: "cloud-conflict" }, { status: 409 });
+    }
+  }
   return Response.json({ ok: true, updatedAt });
 }

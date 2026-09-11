@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { SIcon, type SIconName } from "@/components/SIcon";
 import { routeThumb } from "@/lib/route-thumb";
 import type { LatLng } from "@/components/LiveMap";
+import { distanceUnit, distanceValue, getPreferences, type UnitSystem } from "@/lib/preferences";
 
 // Maps touch `window` — load client-side only. Official Google Maps when the
 // key is set (vector, retina-sharp); Leaflet/tile fallback otherwise.
@@ -19,16 +20,16 @@ const HAS_GKEY = !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY;
 // accuracy-gated GPS fixes; an unavailable signal never becomes fake movement.
 
 type Mode = "gps" | "court" | "pool";
-type Profile = { key: string; label: string; emoji: string; icon: SIconName; mode: Mode; mps: number };
+type Profile = { key: string; label: string; icon: SIconName; mode: Mode; mps: number };
 
 const PROFILES: Profile[] = [
-  { key: "run", label: "Run", emoji: "🏃", icon: "run", mode: "gps", mps: 2.6 },
-  { key: "ride", label: "Ride", emoji: "🚴", icon: "ride", mode: "gps", mps: 6.9 },
-  { key: "tennis", label: "Tennis", emoji: "🎾", icon: "tennis", mode: "court", mps: 0 },
-  { key: "basketball", label: "Basketball", emoji: "🏀", icon: "basketball", mode: "court", mps: 0 },
-  { key: "golf", label: "Golf", emoji: "⛳", icon: "golf", mode: "court", mps: 0 },
-  { key: "lift", label: "Strength", emoji: "🏋️", icon: "strength", mode: "court", mps: 0 },
-  { key: "swim", label: "Swim", emoji: "🏊", icon: "swim", mode: "pool", mps: 1.1 },
+  { key: "run", label: "Run", icon: "run", mode: "gps", mps: 2.6 },
+  { key: "ride", label: "Ride", icon: "ride", mode: "gps", mps: 6.9 },
+  { key: "tennis", label: "Tennis", icon: "tennis", mode: "court", mps: 0 },
+  { key: "basketball", label: "Basketball", icon: "basketball", mode: "court", mps: 0 },
+  { key: "golf", label: "Golf", icon: "golf", mode: "court", mps: 0 },
+  { key: "lift", label: "Strength", icon: "strength", mode: "court", mps: 0 },
+  { key: "swim", label: "Swim", icon: "swim", mode: "pool", mps: 1.1 },
 ];
 
 const DEFAULT_CENTER: LatLng = [31.2304, 121.4737]; // fallback until geolocation resolves
@@ -50,30 +51,32 @@ function haversine(a: LatLng, b: LatLng) {
 
 // data fields per sport — gps uses REAL distance; the 4th tile is the CURRENT
 // pace/speed over the last ~60s (no fabricated cadence/HR numbers)
-function fields(p: Profile, seconds: number, meters: number, rolling?: number | null): { v: string; l: string }[] {
+function fields(p: Profile, seconds: number, meters: number, rolling: number | null | undefined, units: UnitSystem): { v: string; l: string }[] {
   if (p.mode === "gps") {
-    const km = meters / 1000;
+    const distance = distanceValue(meters, units);
+    const unit = distanceUnit(units);
+    const unitMeters = units === "imperial" ? 1609.344 : 1000;
     // plain clock format — 3:12, not 3'12" (everyone reads it instantly)
     const paceFmt = (secPerKm: number) =>
       `${Math.floor(secPerKm / 60)}:${String(Math.round(secPerKm % 60)).padStart(2, "0")}`;
     if (p.key === "ride") {
-      const kmh = seconds > 2 && meters > 1 ? ((meters / seconds) * 3.6).toFixed(1) : "—";
+      const speed = seconds > 2 && meters > 1 ? units === "imperial" ? ((meters / seconds) * 2.23694).toFixed(1) : ((meters / seconds) * 3.6).toFixed(1) : "—";
       return [
         { v: fmtTime(seconds), l: "Time" },
-        { v: km.toFixed(2), l: "Distance · km" },
-        { v: kmh, l: "Avg speed · km/h" },
-        { v: rolling ? (rolling * 3.6).toFixed(1) : "—", l: "Speed · km/h" },
+        { v: distance.toFixed(2), l: `Distance · ${unit}` },
+        { v: speed, l: `Avg speed · ${unit}/h` },
+        { v: rolling ? (rolling * (units === "imperial" ? 2.23694 : 3.6)).toFixed(1) : "—", l: `Speed · ${unit}/h` },
       ];
     }
     let pace = "—";
     if (seconds > 3 && meters > 5) {
-      pace = paceFmt(seconds / km);
+      pace = paceFmt(seconds / distance);
     }
     return [
       { v: fmtTime(seconds), l: "Time" },
-      { v: km.toFixed(2), l: "Distance · km" },
-      { v: pace, l: "Avg pace · /km" },
-      { v: rolling ? paceFmt(1000 / rolling) : "—", l: "Pace · /km" },
+      { v: distance.toFixed(2), l: `Distance · ${unit}` },
+      { v: pace, l: `Avg pace · /${unit}` },
+      { v: rolling ? paceFmt(unitMeters / rolling) : "—", l: `Pace · /${unit}` },
     ];
   }
   if (p.mode === "pool") {
@@ -109,6 +112,7 @@ export default function Activity() {
   const [satellite, setSatellite] = useState(false);
   const [count, setCount] = useState<number | null>(null); // 3 → 2 → 1 → 0 (GO)
   const [settings, setSettings] = useState({ autoPause: true, audioCues: false, screenOn: true });
+  const [units, setUnits] = useState<UnitSystem>("metric");
   const [actName, setActName] = useState("");
 
   // — real location —
@@ -144,6 +148,7 @@ export default function Activity() {
       })
       .catch(() => {});
   }, []);
+  useEffect(() => setUnits(getPreferences().units), []);
   const [path, setPath] = useState<LatLng[]>([]);
   const [meters, setMeters] = useState(0);
   const realGpsRef = useRef(false);
@@ -516,7 +521,7 @@ export default function Activity() {
     const dt = (r[r.length - 1].t - r[0].t) / 1000;
     return dt >= 5 && dm >= 3 ? dm / dt : null;
   })();
-  const f = fields(sport, seconds, meters, rolling);
+  const f = fields(sport, seconds, meters, rolling, units);
   const savedRef = useRef(false);
 
   function pickSport(p: Profile) {
@@ -602,7 +607,6 @@ export default function Activity() {
       all.push({
         name: actName.trim() || defaultName(sport),
         sport: sport.label,
-        emoji: sport.emoji,
         mode: sport.mode,
         seconds,
         meters: Math.round(meters),
@@ -650,7 +654,7 @@ export default function Activity() {
   if (phase === "save") {
     return (
       <div className="animate-fade-up px-5 pt-6">
-        <h1 className="text-2xl font-extrabold tracking-tight">Save activity</h1>
+        <h1 className="font-golden text-[26px] leading-none">Save activity</h1>
 
         <input
           value={actName}
@@ -1308,7 +1312,7 @@ export default function Activity() {
         <>
           <div className="absolute inset-0 z-40 bg-black/40" />
           <div className="absolute inset-0 z-50 grid place-items-center">
-          <div className="w-[280px] animate-pop overflow-hidden rounded-[14px] bg-[#F5F5F5]/95 text-center shadow-2xl backdrop-blur-xl">
+          <div className="w-[280px] animate-pop overflow-hidden rounded-lg bg-[#F5F5F5]/95 text-center shadow-2xl backdrop-blur-xl">
             <div className="px-5 pb-4 pt-5">
               <p className="text-[16px] font-semibold leading-snug text-black">
                 Allow &ldquo;MotionLab 2.0&rdquo; to use your location?

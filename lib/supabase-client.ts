@@ -18,8 +18,15 @@ export function sbBrowser(): SupabaseClient | null {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
-        detectSessionInUrl: true, // magic-link hash tokens are consumed on load
-        flowType: "pkce",
+        // We consume every callback explicitly in completeAuthCallback().
+        // Running Supabase's automatic parser beside exchangeCodeForSession()
+        // races for the same auth lock and can leave /login spinning forever.
+        detectSessionInUrl: false,
+        // Email is frequently requested inside the installed PWA and opened by
+        // Safari/Chrome. PKCE stores its verifier in the requesting browser,
+        // so that perfectly normal cross-context journey cannot complete.
+        // A magic-link hash token is self-contained and still single-use.
+        flowType: "implicit",
       },
     });
   }
@@ -40,11 +47,23 @@ export function hasAuthCallback(): boolean {
 }
 
 // finish whichever callback style arrived; returns true if a session now exists
+let callbackInFlight: Promise<boolean> | null = null;
+
 export async function completeAuthCallback(): Promise<boolean> {
+  // React Strict Mode mounts effects twice in development. A magic-link code
+  // is single-use, so both mounts must share one exchange instead of racing.
+  if (callbackInFlight) return callbackInFlight;
+  callbackInFlight = completeAuthCallbackOnce();
+  return callbackInFlight;
+}
+
+async function completeAuthCallbackOnce(): Promise<boolean> {
   const sb = sbBrowser();
   if (!sb) return false;
   try {
     const url = new URL(window.location.href);
+    const hash = new URLSearchParams(url.hash.replace(/^#/, ""));
+    if (url.searchParams.get("error_description") || hash.get("error_description")) return false;
     const code = url.searchParams.get("code");
     const tokenHash = url.searchParams.get("token_hash");
     const type = url.searchParams.get("type");
@@ -56,6 +75,12 @@ export async function completeAuthCallback(): Promise<boolean> {
         token_hash: tokenHash,
         type: (type as "email" | "magiclink" | "signup" | "recovery") ?? "email",
       });
+    } else if (hash.get("access_token") && hash.get("refresh_token")) {
+      const { error } = await sb.auth.setSession({
+        access_token: hash.get("access_token")!,
+        refresh_token: hash.get("refresh_token")!,
+      });
+      if (error) return false;
     }
     const { data } = await sb.auth.getSession();
     return !!data.session;

@@ -12,7 +12,17 @@ const LOCAL_CLEAR_KEYS = [...ACCOUNT_KEYS, "ml_sessions_backup"] as const;
 
 type Payload = Record<string, unknown>;
 type BootstrapResult = { ok: boolean; isNew: boolean; migrated?: boolean; error?: string };
+export type CloudState = "idle" | "syncing" | "synced" | "offline" | "conflict" | "error";
 const ACCOUNT_BINDING_KEY = "ml_account_email";
+const CLOUD_VERSION_KEY = "ml_cloud_updated_at";
+let currentCloudState: CloudState = "idle";
+
+export function getCloudState(): CloudState { return currentCloudState; }
+
+function cloudState(state: CloudState) {
+  currentCloudState = state;
+  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("ml:cloud-status", { detail: state }));
+}
 
 async function headers(json = false): Promise<Record<string, string>> {
   const out: Record<string, string> = json ? { "Content-Type": "application/json" } : {};
@@ -58,9 +68,23 @@ function hydrate(payload: Payload) {
 }
 
 async function upload(payload: Payload): Promise<boolean> {
-  const response = await fetch("/api/account-data", { method: "POST", headers: await headers(true), body: JSON.stringify({ payload }) });
-  if (!response.ok) return false;
+  cloudState("syncing");
+  // Persist the cloud revision across reloads. Keeping this in sessionStorage
+  // made every freshly opened tab look like an unversioned first writer and
+  // therefore conflict with its own existing cloud row.
+  const baseUpdatedAt = localStorage.getItem(CLOUD_VERSION_KEY);
+  const response = await fetch("/api/account-data", {
+    method: "POST", headers: await headers(true),
+    body: JSON.stringify({ payload, baseUpdatedAt: baseUpdatedAt || null }),
+  });
+  if (!response.ok) {
+    cloudState(response.status === 409 ? "conflict" : navigator.onLine ? "error" : "offline");
+    return false;
+  }
+  const data = await response.json().catch(() => ({}));
+  if (data.updatedAt) localStorage.setItem(CLOUD_VERSION_KEY, data.updatedAt);
   sessionStorage.setItem("ml_cloud_fingerprint", JSON.stringify(payload));
+  cloudState("synced");
   return true;
 }
 
@@ -83,12 +107,17 @@ async function bootstrapAccountDataOnce(): Promise<BootstrapResult> {
       hydrate({});
       localStorage.setItem(ACCOUNT_BINDING_KEY, data.email);
       sessionStorage.setItem("ml_cloud_fingerprint", "{}");
+      localStorage.removeItem(CLOUD_VERSION_KEY);
+      cloudState("synced");
       return { ok: true, isNew: true };
     }
     if (data.hasCloudData) {
       hydrate(data.payload ?? {});
       localStorage.setItem(ACCOUNT_BINDING_KEY, data.email);
       sessionStorage.setItem("ml_cloud_fingerprint", JSON.stringify(data.payload ?? {}));
+      if (data.updatedAt) localStorage.setItem(CLOUD_VERSION_KEY, data.updatedAt);
+      else localStorage.removeItem(CLOUD_VERSION_KEY);
+      cloudState("synced");
       return { ok: true, isNew: false };
     }
     // Existing profile upgrading from the local-only version: migrate the
@@ -121,5 +150,15 @@ export async function syncAccountData(): Promise<boolean> {
   const payload = accountSnapshot();
   const fingerprint = JSON.stringify(payload);
   if (sessionStorage.getItem("ml_cloud_fingerprint") === fingerprint) return true;
-  try { return await upload(payload); } catch { return false; }
+  try { return await upload(payload); }
+  catch {
+    cloudState(typeof navigator !== "undefined" && !navigator.onLine ? "offline" : "error");
+    return false;
+  }
+}
+
+/** Clears the cloud snapshot using the same optimistic write path. */
+export async function syncClearedAccountData(): Promise<boolean> {
+  sessionStorage.removeItem("ml_cloud_fingerprint");
+  return syncAccountData();
 }

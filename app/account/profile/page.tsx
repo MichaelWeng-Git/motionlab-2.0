@@ -80,7 +80,7 @@ export default function ProfileEdit() {
         >
           ←
         </button>
-        <h1 className="text-2xl font-extrabold tracking-tight">Profile</h1>
+        <h1 className="font-golden text-[26px] leading-none">Profile</h1>
       </div>
 
       {/* profile photo entry */}

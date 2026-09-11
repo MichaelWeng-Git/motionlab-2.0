@@ -203,8 +203,8 @@ export default function Weeks() {
           <span className="h-7 w-11 rounded-full bg-white shadow-soft" />
           <span className="h-6 w-24 rounded-lg bg-black/[0.06]" />
         </div>
-        <div className="mt-4 h-[70px] rounded-[26px] bg-white shadow-soft" />
-        <div className="mt-3 h-[150px] rounded-[26px] bg-ink/90" />
+        <div className="mt-4 h-[70px] rounded-2xl bg-white shadow-soft" />
+        <div className="mt-3 h-[150px] rounded-2xl bg-ink/90" />
       </div>
     );
   }
@@ -218,7 +218,7 @@ export default function Weeks() {
         >
           ←
         </button>
-        <h1 className="text-[22px] font-extrabold tracking-tight">Today</h1>
+        <h1 className="font-golden text-[24px] leading-none">Today</h1>
       </div>
 
       {/* week pager — flat, low-profile: it steers, it shouldn't take height */}
@@ -312,7 +312,7 @@ export default function Weeks() {
           decayed), on a cream ground so the porcelain figure and its red heat
           read the way they do on the rest of the app's light surfaces */}
       {dayIntensity && (
-        <div className="mt-4 overflow-hidden rounded-[26px] bg-[#F3F0E8] px-5 py-4 shadow-soft">
+        <div className="mt-4 overflow-hidden rounded-2xl bg-cream px-5 py-4 shadow-soft">
           <p className="font-golden text-[13px] leading-none text-ink">
             {sel.k === keyOf(new Date()) ? "TODAY" : fmtDay(sel.date).split(",")[0].toUpperCase()}&rsquo;S INTENSITY
           </p>

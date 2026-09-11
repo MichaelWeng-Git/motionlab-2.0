@@ -65,34 +65,28 @@ export default function Streak() {
         >
           ←
         </button>
-        <h1 className="text-2xl font-extrabold tracking-tight">Streak</h1>
+        <h1 className="font-golden text-[26px] leading-none">STREAK</h1>
       </div>
 
-      {/* max-streak bubble — a real one: wide and flat, text left, flame right */}
-      <div className="mt-5 flex items-center justify-between rounded-2xl bg-white px-5 py-3.5 shadow-soft">
-        <span className="font-golden text-lg leading-none text-ink">
-          MAX STREAK · <span className="tabular-nums">{best}</span> {best === 1 ? "DAY" : "DAYS"}
-        </span>
-        <Flame size={30} lit={best > 0} level={flameLevel(best)} />
-      </div>
-
-      {/* hero — the flame at its CURRENT level */}
-      <div className="mt-2 rounded-3xl bg-ink p-6 text-center text-white shadow-lift">
-        <div className="flex justify-center">
-          <Flame size={72} lit={streak > 0} level={flameLevel(streak)} />
+      {/* hero — consistency, framed like a training status rather than a toy counter */}
+      <div className="relative mt-5 overflow-hidden rounded-3xl bg-graphite p-5 text-white shadow-lift">
+        <div className="absolute -right-16 -top-20 h-52 w-52 rounded-full bg-[#FF6A16]/15 blur-3xl" />
+        <p className="relative font-golden text-[13px] leading-none text-[#FFB44D]">SHOW-UP STREAK</p>
+        <div className="relative mt-3 flex items-center justify-between">
+          <div><p className="font-golden text-7xl leading-none tabular-nums">{streak}</p><p className="mt-1 text-xs font-bold text-white/50">{streak === 1 ? "day in a row" : "days in a row"}</p></div>
+          <Flame size={92} lit={streak > 0} level={flameLevel(streak)} />
         </div>
-        <p className="mt-2 text-5xl font-extrabold tabular-nums">{streak}</p>
-        <p className="mt-1 text-sm font-semibold text-white/60">{streak === 1 ? "day in a row" : "days in a row"}</p>
+        <div className="relative mt-5 flex items-center justify-between border-t border-white/15 pt-3"><span className="text-[11px] font-bold text-white/65">PERSONAL BEST</span><span className="font-golden text-lg text-white">{best} {best === 1 ? "DAY" : "DAYS"}</span></div>
       </div>
 
       {/* last 7 days */}
-      <div className="mt-4 rounded-3xl bg-white p-4 shadow-soft">
-        <h2 className="font-golden text-2xl leading-none text-ink">LAST 7 DAYS</h2>
-        <div className="mt-3 grid grid-cols-7">
+      <div className="mt-4 rounded-2xl bg-white p-4 shadow-soft">
+        <div className="flex items-end justify-between"><h2 className="font-golden text-xl leading-none text-ink">LAST 7 DAYS</h2><span className="text-[11px] font-bold text-ink-muted">APP CHECK-IN</span></div>
+        <div className="relative mt-4 grid grid-cols-7 before:absolute before:left-[7%] before:right-[7%] before:top-5 before:h-px before:bg-black/10">
           {days.map((d) => (
             <div key={d.key} className="flex flex-col items-center gap-1.5">
               <span
-                className={`grid h-10 w-10 place-items-center rounded-full ${
+                className={`relative z-10 grid h-10 w-10 place-items-center rounded-full ${
                   d.active ? "bg-[#FFF1DC]" : "bg-black/[0.04]"
                 } ${d.today ? "ring-2 ring-ink/70" : ""}`}
               >
@@ -120,8 +114,9 @@ export default function Streak() {
 
       {/* milestones — a timeline; the flame burns hotter at every node, and a
           faded ghost target always waits below the last one */}
-      <div className="mt-4 rounded-3xl bg-white p-5 shadow-soft">
-        <h2 className="font-golden text-2xl leading-none text-ink">MILESTONES</h2>
+      <div className="mt-4 rounded-2xl bg-white p-5 shadow-soft">
+        <p className="text-[11px] font-bold text-ink-muted">CONSISTENCY PATH</p>
+        <h2 className="mt-1 font-golden text-2xl leading-none text-ink">MILESTONES</h2>
         <div className="relative mt-4">
           {/* spine + progress fill */}
           <span className="absolute bottom-6 left-[22px] top-1 w-[3px] rounded-full bg-black/[0.07]" />
@@ -144,7 +139,7 @@ export default function Streak() {
                         : "border-black/5 bg-paper"
                     }`}
                   >
-                    <Flame size={reached ? 24 : 20} lit={reached} level={Math.min(4, i + 1)} />
+                    <MilestoneMark index={i} reached={reached} />
                   </span>
                   <p className="flex-1 text-[15px] font-extrabold text-ink">{m.label}</p>
                   {reached ? (
@@ -162,7 +157,7 @@ export default function Streak() {
             {/* the ghost — a faded glimpse of what comes next */}
             <div className="relative flex items-center gap-4 opacity-40">
               <span className="relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-full border border-dashed border-black/20 bg-paper">
-                <Flame size={20} lit={false} level={4} />
+                <MilestoneMark index={nodes.length} reached={false} />
               </span>
               <p className="flex-1 text-[15px] font-extrabold text-ink">{ghost.n} days</p>
             </div>
@@ -171,6 +166,17 @@ export default function Streak() {
       </div>
     </div>
   );
+}
+
+function MilestoneMark({ index, reached }: { index: number; reached: boolean }) {
+  const color = reached ? "#D66A18" : "#87928B";
+  const kind = Math.min(3, index);
+  return <svg width="27" height="27" viewBox="0 0 32 32" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    {kind === 0 && <><path d="M7 23c5-1 7-5 8-12 4 5 6 8 10 9-2 5-7 7-12 7H7z" /><path d="M8 22h7M13 17l4 2" /></>}
+    {kind === 1 && <><circle cx="16" cy="16" r="10" /><path d="M16 9v14M12 12l4-3 4 3" /></>}
+    {kind === 2 && <><path d="M8 24V11l8-5 8 5v13z" /><path d="m11 18 3 3 7-8" /></>}
+    {kind === 3 && <><path d="m6 12 5 4 5-8 5 8 5-4-2 13H8z" /><path d="M9 25h14" /></>}
+  </svg>;
 }
 
 // a real little Christmas tree — colored tiers, star, ornaments

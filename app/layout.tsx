@@ -1,10 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
+import { PwaRegister } from "@/components/PwaRegister";
 
 export const metadata: Metadata = {
   title: "MotionLab — Your AI movement coach",
   description: "Upload a video of your movement — get plain-language coaching on what to improve.",
+  applicationName: "MotionLab 2.0",
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "MotionLab" },
+  formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
@@ -20,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main>, so the phone-shell width is constant on every OS/browser — no route
           change can ever shift it sideways. */}
       <body className="flex h-dvh justify-center overflow-hidden bg-[#DDE4DF] text-ink antialiased">
+        <PwaRegister />
         {/* `isolate` gives the shell its own stacking context so the -z-10 wave
             paints above the shell's bg-paper fallback but below ALL content;
             `overflow-hidden` clips it to the phone frame (never bleeds outside) */}

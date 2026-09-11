@@ -37,6 +37,12 @@ export function removeMeal(id: string) {
   localStorage.setItem("ml_fuel", JSON.stringify(getMeals().filter((m) => m.id !== id)));
 }
 
+export function restoreMeal(meal: Meal) {
+  if (getMeals().some((m) => m.id === meal.id)) return;
+  const all = [...getMeals(), meal].sort((a, b) => a.date.localeCompare(b.date)).slice(-200);
+  localStorage.setItem("ml_fuel", JSON.stringify(all));
+}
+
 // 1.6 g/kg/day. Null when the user has not given a weight — a target computed
 // against an assumed 65 kg body is a made-up number, not a default.
 export function proteinTarget(): number | null {

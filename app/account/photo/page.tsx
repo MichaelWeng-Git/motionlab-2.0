@@ -98,7 +98,7 @@ export default function ProfilePhoto() {
         >
           ←
         </button>
-        <h1 className="text-2xl font-extrabold tracking-tight">Profile photo</h1>
+        <h1 className="font-golden text-[26px] leading-none">Profile photo</h1>
       </div>
 
       {/* current avatar */}

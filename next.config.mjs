@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Keep the live dev server isolated from `next build`. Both commands use
+  // `.next` by default, so running a production verification while localhost
+  // is open can replace its CSS/JS chunks and leave the browser with unstyled
+  // HTML until the server is restarted.
+  distDir: process.env.NODE_ENV === "development" ? ".next-dev" : ".next",
   webpack: (config, { isServer }) => {
     // onnxruntime-web references Node built-ins it doesn't use in the browser
     config.resolve.fallback = { ...config.resolve.fallback, fs: false, path: false, crypto: false };

@@ -109,6 +109,40 @@ export const MUSCLE_NAMES: Record<MuscleKey, string> = {
   glutes: "Glutes", quads: "Quads", hamstrings: "Hamstrings", calves: "Calves",
 };
 
+export function muscleGroupValue(load: MuscleLoad, group: MuscleKey): number {
+  const rec = load as Record<string, number>;
+  if (group === "core" || group === "back") return Math.max(0, Math.min(1, rec[group] ?? 0));
+  return Math.max(0, Math.min(1, Math.max(rec[`${group}_l`] ?? rec[group] ?? 0, rec[`${group}_r`] ?? rec[group] ?? 0)));
+}
+
+export type MuscleHistoryDay = {
+  date: string;
+  value: number | null;
+  measuredWorkouts: number;
+};
+
+// Daily measured dose for one group. null means there was no measurable
+// muscle evidence that day; it is deliberately different from a measured 0.
+export function getMuscleHistory(group: MuscleKey, days = 14): MuscleHistoryDay[] {
+  const body = readBody();
+  const workouts = buildWorkouts();
+  const now = new Date();
+  now.setHours(12, 0, 0, 0);
+  return Array.from({ length: days }, (_, index) => {
+    const d = new Date(now);
+    d.setDate(now.getDate() - (days - 1 - index));
+    const date = d.toISOString().slice(0, 10);
+    const measured = workouts
+      .filter((w) => w.startedAt.slice(0, 10) === date)
+      .map((w) => workoutMuscleLoad(w, body) as MuscleLoad | null)
+      .filter((load): load is MuscleLoad => !!load && Object.keys(load).length > 0);
+    if (!measured.length) return { date, value: null, measuredWorkouts: 0 };
+    let fresh = 1;
+    for (const load of measured) fresh *= 1 - Math.min(0.85, muscleGroupValue(load, group));
+    return { date, value: +(1 - fresh).toFixed(3), measuredWorkouts: measured.length };
+  });
+}
+
 const ATTR_KEY = "ml_muscle_attr";  // per-session measured loads (diagnostics)
 
 // recovery half-life in hours — big movers repair slower than small groups

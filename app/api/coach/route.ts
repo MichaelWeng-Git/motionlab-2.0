@@ -54,9 +54,6 @@ Respond with STRICT JSON only, matching exactly:
     }
   ],
   "drill": { "title": string, "detail": string },
-  "radar": [                  // EXACTLY 6 dimensions, specific to the recognized sport
-    { "label": string, "value": number }   // label ≤ 14 chars, value 0-100
-  ],
   "proMatch": {               // user vs professional comparison
     "score": number,          // 0-100 "pro match" — how close this form is to pro-level execution of THIS action
     "pro": string,            // ONE real, famous professional athlete whose signature version of THIS action the user's form most resembles (e.g. "Eliud Kipchoge", "Roger Federer")
@@ -87,7 +84,6 @@ Rules:
 - Be specific to THIS video — reference what is visibly happening. Never generic filler.
 - Left/right specifics are gold when the metrics show asymmetry.
 - The drill is one small exercise targeting the "work" tip, doable at home in 5 minutes.
-- The radar has EXACTLY 6 dimensions chosen for THIS sport's fundamentals — e.g. tennis forehand: "Prep", "Footwork", "Contact", "Follow-through", "Balance", "Rhythm"; running: "Posture", "Cadence", "Foot strike", "Arm swing", "Symmetry", "Flow". Pick what matters for the recognized activity. Score each 0-100 based on what you see; be honest, vary the values.
 - Warm, encouraging, zero condescension. English.
 - tip.exercise MUST be picked from the EXERCISE CATALOG list in the user message (copy the id exactly). Choose the drill that most directly fixes THAT tip for THIS user; all three tips must use DIFFERENT exercises. Prefer same-sport entries when they fit, otherwise general ones.
 - tip.when MUST be chosen from the DETECTED key moments listed in the metrics section when any are given — pick the detected moment where that tip's issue is clearest. Only invent a fraction if no detected moments fit.

@@ -98,7 +98,6 @@ export default function Recover() {
                 ...analysis,
                 score: analysis.score, headline: j.report.headline, tips: j.report.tips,
                 drill: j.report.drill, sport: j.report.sport, action: j.report.action,
-                radar: Array.isArray(j.report.radar) ? j.report.radar.slice(0, 6) : undefined,
                 proMatch: j.report.proMatch && Array.isArray(j.report.proMatch.moments) ? j.report.proMatch : undefined,
                 ai: true,
               };

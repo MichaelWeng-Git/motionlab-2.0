@@ -43,7 +43,7 @@ export default function Videos() {
         <Link href="/history" className="grid h-9 w-9 place-items-center rounded-full bg-white text-ink shadow-soft">
           ←
         </Link>
-        <h1 className="text-2xl font-extrabold tracking-tight">Your analyses</h1>
+        <h1 className="font-golden text-[26px] leading-none">Your analyses</h1>
       </div>
 
       {sessions.length === 0 ? (

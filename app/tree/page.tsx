@@ -8,7 +8,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { addBonusCoins, dayKey, getCoinBalance, notifyCoins } from "@/lib/coins";
+import { addBonusCoins, dayKey, getCoinBalance, notifyCoins, spendCoins } from "@/lib/coins";
 import { CoinIcon } from "@/components/Icons";
 import { DailyCoinsTrack } from "@/components/DailyCoinsTrack";
 
@@ -34,7 +34,7 @@ const RARITY_META: Record<Rarity, { label: string; color: string; bg: string }> 
 // silently disagree.
 const PACKS = [
   {
-    key: "deluxe", name: "Frost vault", eyebrow: "BEST CHANCE", sub: "2 ornaments · boosted Epic odds",
+    key: "deluxe", name: "Christmas vault", eyebrow: "HOLIDAY DROP", sub: "2 ornaments · boosted Epic odds",
     cost: 80, rolls: 2, deluxe: true,
     odds: { ball: 35, candy: 20, bell: 20, flake: 15, gift: 10 },
   },
@@ -207,7 +207,7 @@ export default function Tree() {
     setDailyClaims(next);
     localStorage.setItem("ml_daily_claims", JSON.stringify(next));
     localStorage.setItem("ml_daily_claim", dayKey()); // keep the legacy marker in sync
-    addBonusCoins(amount);
+    addBonusCoins(amount, `${k} daily claim`);
     setCoins(getCoinBalance());
     notifyCoins();
   }
@@ -219,10 +219,7 @@ export default function Tree() {
       return;
     }
     const won = Array.from({ length: pack.rolls }, () => rollOrnament(pack));
-    localStorage.setItem(
-      "ml_coins_spent",
-      String((Number(localStorage.getItem("ml_coins_spent") ?? 0) || 0) + pack.cost)
-    );
+    if (!spendCoins(pack.cost, pack.name)) return;
     saveInv([...inv, ...won]); // owned immediately; hung after placement
     setCoins(getCoinBalance());
     notifyCoins();
@@ -303,7 +300,7 @@ export default function Tree() {
         >
           ←
         </button>
-        <h1 className="flex-1 text-2xl font-extrabold tracking-tight">My tree</h1>
+        <h1 className="flex-1 font-golden text-[26px] leading-none">MY TREE</h1>
       </div>
 
       {/* placing/editing: dim + blur EVERYTHING except the tree card */}
@@ -425,25 +422,25 @@ export default function Tree() {
       <DailyCoinsTrack claims={dailyClaims} onClaim={claimDaily} />
 
       {/* SHOP — premium pack shelf with visible, truthful drop rules. */}
-      <div className="relative mt-4 overflow-hidden rounded-[30px] bg-[#10271F] p-4 shadow-lift">
-        <div className="pointer-events-none absolute -right-12 -top-16 h-44 w-44 rounded-full bg-[#2D6B50]/55 blur-2xl" />
+      <div className="relative mt-4 overflow-hidden rounded-3xl bg-graphite p-4 shadow-lift">
+        <div className="pointer-events-none absolute -right-12 -top-16 h-44 w-44 rounded-full bg-signal-good/55 blur-2xl" />
         <div className="relative flex items-start justify-between px-1 pb-4 pt-1">
           <div>
-            <p className="text-[10px] font-black tracking-[0.2em] text-[#9FD2B7]">TREE COLLECTION</p>
+            <p className="font-golden text-[13px] leading-none text-[#9FD2B7]">TREE COLLECTION</p>
             <h2 className="font-golden text-3xl leading-none text-white">PACK SHOP</h2>
             <p className="mt-1 text-xs font-bold text-white/70">{discovered} / 5 ornament types found</p>
           </div>
-          <span className="flex h-9 items-center gap-1.5 rounded-full border border-white/10 bg-white/10 pl-2 pr-3 shadow-soft backdrop-blur">
+          <button onClick={() => router.push("/coins")} aria-label="Open coin history" className="flex h-9 items-center gap-1.5 rounded-full border border-white/10 bg-white/10 pl-2 pr-3 shadow-soft backdrop-blur">
             <CoinIcon size={17} />
             <span className="font-golden text-lg tabular-nums text-white">{coins}</span>
-          </span>
+          </button>
         </div>
 
         <div className="relative space-y-3">
           {PACKS.map((p) => (
             <article
               key={p.key}
-              className={`relative overflow-hidden rounded-[24px] border p-3.5 ${
+              className={`relative overflow-hidden rounded-2xl border p-3.5 ${
                 p.deluxe
                   ? "border-[#F8D46A]/60 bg-gradient-to-br from-[#6F4C13] via-[#A66D10] to-[#50340C]"
                   : "border-white/10 bg-[#E8F0EB]"
@@ -454,7 +451,7 @@ export default function Tree() {
                 <PackArt deluxe={p.deluxe} rolls={p.rolls} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className={`rounded-full px-2 py-1 text-[8px] font-black tracking-[0.15em] ${p.deluxe ? "bg-[#FFE58E] text-[#5A3905]" : "bg-[#315B49] text-white"}`}>
+                    <span className={`rounded-full px-2 py-1 text-[8px] font-black tracking-[0.15em] ${p.deluxe ? "bg-award-gold-pale text-[#5A3905]" : "bg-[#315B49] text-white"}`}>
                       {p.eyebrow}
                     </span>
                     <button
@@ -471,7 +468,7 @@ export default function Tree() {
                     disabled={Boolean(opening) || placing.length > 0}
                     className={`btn-press mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-black transition disabled:opacity-50 ${
                       coins >= p.cost
-                        ? p.deluxe ? "bg-[#FFE58E] text-[#50340C]" : "bg-ink text-white"
+                        ? p.deluxe ? "bg-award-gold-pale text-[#50340C]" : "bg-ink text-white"
                         : p.deluxe ? "bg-black/25 text-white/70" : "bg-ink/10 text-ink-soft"
                     }`}
                   >
@@ -488,7 +485,7 @@ export default function Tree() {
       {/* Pack contents and exact probabilities. */}
       {packInfo && (
         <div className="fixed inset-0 z-[75] flex items-end justify-center bg-ink/60 px-3 backdrop-blur-[3px]" onClick={() => setPackInfo(null)}>
-          <section className="mb-3 w-full max-w-[406px] animate-pop rounded-[30px] bg-[#F7F4EA] p-5 shadow-lift" onClick={(e) => e.stopPropagation()}>
+          <section className="mb-3 w-full max-w-[406px] animate-pop rounded-3xl bg-[#F7F4EA] p-5 shadow-lift" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[10px] font-black tracking-[0.18em] text-ink-soft">DROP RATES · EACH DRAW</p>
@@ -525,11 +522,13 @@ export default function Tree() {
               <span className="pack-burst absolute left-1/2 top-1/2 -ml-20 -mt-20 h-40 w-40 rounded-full bg-[#F5B23D]/70" />
               <div className="pack-wiggle relative">
                 <div
-                  className={`relative grid h-48 w-36 place-items-center rounded-2xl shadow-lift ${
+                  className={`relative grid h-48 w-36 place-items-center overflow-hidden rounded-2xl border-2 shadow-lift ${
                     opening.pack.deluxe ? "bg-gradient-to-b from-[#F5B23D] to-[#C98F1B]" : "bg-gradient-to-b from-volt to-volt-deep"
-                  }`}
+                  } ${opening.pack.deluxe ? "border-award-gold-pale" : "border-[#4F8A6B]"}`}
                 >
+                  {opening.pack.deluxe && <span className="pack-foil pointer-events-none absolute inset-0 opacity-50" />}
                   <MiniPackTree size={2.2} />
+                  <span className="absolute right-2 top-3 grid h-9 min-w-9 place-items-center rounded-full bg-white px-1 font-golden text-lg text-ink shadow-soft">×{opening.pack.rolls}</span>
                   <span className="absolute bottom-2 text-[11px] font-extrabold uppercase tracking-wide text-white/80">
                     {opening.pack.name}
                   </span>
@@ -603,14 +602,14 @@ function MiniPackTree({ size = 1 }: { size?: number }) {
 function PackArt({ deluxe, rolls }: { deluxe: boolean; rolls: number }) {
   return (
     <div className="relative h-[126px] w-[94px] shrink-0">
-      <div className={`absolute inset-x-2 bottom-1 top-2 rotate-[-3deg] overflow-hidden rounded-[18px] border-2 shadow-[0_10px_20px_rgba(0,0,0,0.28)] ${deluxe ? "border-[#FFE58E] bg-gradient-to-b from-[#F4C64E] to-[#B66D09]" : "border-[#4F8A6B] bg-gradient-to-b from-[#244A3A] to-[#10271F]"}`}>
+      <div className={`absolute inset-x-2 bottom-1 top-2 rotate-[-3deg] overflow-hidden rounded-xl border-2 shadow-[0_10px_20px_rgba(0,0,0,0.28)] ${deluxe ? "border-award-gold-pale bg-gradient-to-b from-[#F4C64E] to-[#B66D09]" : "border-[#4F8A6B] bg-gradient-to-b from-[#244A3A] to-graphite"}`}>
         <div className="absolute inset-x-0 top-2 border-t-2 border-dashed border-white/30" />
         <div className="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-white/10">
           <MiniPackTree size={1.25} />
         </div>
         <div className="absolute inset-x-0 bottom-2 text-center text-[8px] font-black tracking-[0.16em] text-white/80">MOTIONLAB</div>
       </div>
-      <span className={`absolute right-0 top-0 grid h-9 min-w-9 place-items-center rounded-full border-2 px-1 font-golden text-lg shadow-soft ${deluxe ? "border-[#FFF2B8] bg-[#FFE58E] text-[#5A3905]" : "border-white bg-[#E3F0E8] text-[#18392D]"}`}>×{rolls}</span>
+      <span className={`absolute right-0 top-0 grid h-9 min-w-9 place-items-center rounded-full border-2 px-1 font-golden text-lg shadow-soft ${deluxe ? "border-[#FFF2B8] bg-award-gold-pale text-[#5A3905]" : "border-white bg-[#E3F0E8] text-[#18392D]"}`}>×{rolls}</span>
     </div>
   );
 }

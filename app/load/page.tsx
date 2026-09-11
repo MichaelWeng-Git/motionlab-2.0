@@ -16,13 +16,14 @@ import {
   computeRecovery, fetchMuscleState, getCachedMuscleState,
   recoveryColor, toLR, type MuscleState,
 } from "@/lib/muscles";
+import { SURFACE } from "@/lib/palette";
 
 const MuscleBody3D = dynamic(() => import("@/components/MuscleBody3D").then((m) => m.MuscleBody3D), {
   ssr: false,
   loading: () => <span className="block" style={{ width: 210 * 0.66, height: 210 }} />,
 });
 
-const INK = "#14181B";
+// the app's one graphite ground — lib/palette SURFACE.graphite
 const MINT = "#7FD9AE";
 
 // Plain words, written out in full — "Right Arm", never "arms_r" or "Arms R".
@@ -78,11 +79,11 @@ export default function LoadPage() {
         >
           ←
         </button>
-        <h1 className="text-[22px] font-extrabold tracking-tight">Load</h1>
+        <h1 className="font-golden text-[24px] leading-none">Load</h1>
       </div>
 
       {!month ? (
-        <div className="mt-3 rounded-[26px] bg-white p-6 text-center shadow-soft">
+        <div className="mt-3 rounded-2xl bg-white p-6 text-center shadow-soft">
           <p className="font-golden text-lg text-ink">NOTHING TO SHOW YET</p>
           <p className="mt-2 text-[13px] font-semibold leading-relaxed text-ink-soft">
             Analyse a video or record a workout and the days start filling in.
@@ -91,7 +92,7 @@ export default function LoadPage() {
       ) : (
         <>
           {/* the SAME dial the Home LOAD tile shows — identical number */}
-          <div className="mt-3 rounded-[26px] bg-white px-5 pb-4 pt-5 shadow-soft">
+          <div className="mt-3 rounded-2xl bg-white px-5 pb-4 pt-5 shadow-soft">
             <div className="mx-auto w-full max-w-[220px]">
               <Gauge
                 pct={month.week / 100}
@@ -111,7 +112,7 @@ export default function LoadPage() {
           </div>
 
           {/* THIS MONTH — one square per day, greener = harder */}
-          <div className="mt-3 rounded-[26px] px-5 pb-5 pt-4 text-white shadow-lift" style={{ background: INK }}>
+          <div className="mt-3 rounded-2xl px-5 pb-5 pt-4 text-white shadow-lift" style={{ background: SURFACE.graphite }}>
             <div className="flex items-baseline justify-between">
               <p className="font-golden text-[15px] leading-none">{MONTH[month.monthIndex]}</p>
               <p className="font-golden text-[15px] leading-none" style={{ color: MINT }}>
@@ -138,7 +139,7 @@ export default function LoadPage() {
                 return (
                   <div
                     key={d.date}
-                    className="grid aspect-square place-items-center rounded-[9px]"
+                    className="grid aspect-square place-items-center rounded-lg"
                     style={{
                       background: trained && dosed
                         ? `rgba(127,217,174,${0.34 + (d.value / month.peakDay) * 0.66})`
@@ -151,7 +152,7 @@ export default function LoadPage() {
                   >
                     <span
                       className="font-golden text-[10px] leading-none"
-                      style={{ color: trained && dosed ? INK : trained ? MINT : future ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.3)" }}
+                      style={{ color: trained && dosed ? SURFACE.graphite : trained ? MINT : future ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.3)" }}
                     >
                       {Number(d.date.slice(8, 10))}
                     </span>
@@ -163,7 +164,7 @@ export default function LoadPage() {
 
           {/* THE BODY RIGHT NOW — identical source to the Home MUSCLES card */}
           {rows.length > 0 && (
-            <div className="mt-3 overflow-hidden rounded-[26px] bg-white px-5 py-4 shadow-soft">
+            <div className="mt-3 overflow-hidden rounded-2xl bg-white px-5 py-4 shadow-soft">
               <div className="flex items-baseline justify-between">
                 <p className="font-golden text-[13px] leading-none text-ink">STILL RECOVERING</p>
                 {picked ? (

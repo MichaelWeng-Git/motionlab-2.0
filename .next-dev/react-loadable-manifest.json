@@ -1,0 +1,58 @@
+{
+  "app/page.tsx -> @/components/MuscleBody3D": {
+    "id": "app/page.tsx -> @/components/MuscleBody3D",
+    "files": [
+      "static/chunks/_app-pages-browser_components_MuscleBody3D_tsx.js"
+    ]
+  },
+  "components/BottomNav.tsx -> @/lib/ensemble": {
+    "id": "components/BottomNav.tsx -> @/lib/ensemble",
+    "files": [
+      "static/chunks/_app-pages-browser_lib_ensemble_ts.js"
+    ]
+  },
+  "components/BottomNav.tsx -> @mediapipe/tasks-vision": {
+    "id": "components/BottomNav.tsx -> @mediapipe/tasks-vision",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_mediapipe_tasks-vision_vision_bundle_mjs.js"
+    ]
+  },
+  "lib/ensemble.ts -> ./track": {
+    "id": "lib/ensemble.ts -> ./track",
+    "files": [
+      "static/chunks/_app-pages-browser_lib_track_ts.js"
+    ]
+  },
+  "lib/ensemble.ts -> @mediapipe/tasks-vision": {
+    "id": "lib/ensemble.ts -> @mediapipe/tasks-vision",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_mediapipe_tasks-vision_vision_bundle_mjs.js"
+    ]
+  },
+  "lib/ensemble.ts -> @tensorflow-models/pose-detection": {
+    "id": "lib/ensemble.ts -> @tensorflow-models/pose-detection",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_tensorflow-models_pose-detection_dist_pose-detection_esm_js.js"
+    ]
+  },
+  "lib/ensemble.ts -> @tensorflow/tfjs-backend-webgl": {
+    "id": "lib/ensemble.ts -> @tensorflow/tfjs-backend-webgl",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_tensorflow_tfjs-backend-webgl_dist_index_js.js"
+    ]
+  },
+  "lib/ensemble.ts -> @tensorflow/tfjs-core": {
+    "id": "lib/ensemble.ts -> @tensorflow/tfjs-core",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_tensorflow_tfjs-core_dist_index_js.js"
+    ]
+  },
+  "node_modules/@react-three/drei/core/VideoTexture.js -> hls.js": {
+    "id": "node_modules/@react-three/drei/core/VideoTexture.js -> hls.js",
+    "files": []
+  },
+  "node_modules/@react-three/drei/web/FaceLandmarker.js -> @mediapipe/tasks-vision": {
+    "id": "node_modules/@react-three/drei/web/FaceLandmarker.js -> @mediapipe/tasks-vision",
+    "files": []
+  }
+}

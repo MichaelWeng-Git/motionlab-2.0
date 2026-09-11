@@ -27,21 +27,21 @@ export type Analysis = {
 };
 
 export const SPORTS = [
-  { key: "swim", label: "Swimming", emoji: "🏊" },
-  { key: "run", label: "Running", emoji: "🏃" },
-  { key: "basketball", label: "Basketball", emoji: "🏀" },
-  { key: "tennis", label: "Tennis", emoji: "🎾" },
-  { key: "golf", label: "Golf", emoji: "⛳" },
-  { key: "yoga", label: "Yoga", emoji: "🧘" },
-  { key: "lift", label: "Strength", emoji: "🏋️" },
-  { key: "dance", label: "Dance", emoji: "💃" },
+  { key: "swim", label: "Swimming", emoji: "" },
+  { key: "run", label: "Running", emoji: "" },
+  { key: "basketball", label: "Basketball", emoji: "" },
+  { key: "tennis", label: "Tennis", emoji: "" },
+  { key: "golf", label: "Golf", emoji: "" },
+  { key: "yoga", label: "Yoga", emoji: "" },
+  { key: "lift", label: "Strength", emoji: "" },
+  { key: "dance", label: "Dance", emoji: "" },
 ];
 
 export const DEMO_ANALYSIS: Analysis = {
   id: "demo",
   sport: "Tennis",
   action: "Forehand",
-  emoji: "🎾",
+  emoji: "",
   date: "Today",
   score: 78,
   headline: "Smooth swing and great rhythm! Work on your balance at contact and you'll improve fast.",
@@ -74,11 +74,11 @@ export const DEMO_ANALYSIS: Analysis = {
 };
 
 export const HISTORY: { id: string; sport: string; emoji: string; action: string; date: string; score: number }[] = [
-  { id: "h5", sport: "Tennis", emoji: "🎾", action: "Forehand", date: "Today", score: 78 },
-  { id: "h4", sport: "Tennis", emoji: "🎾", action: "Forehand", date: "3 days ago", score: 74 },
-  { id: "h3", sport: "Running", emoji: "🏃", action: "Gait", date: "Last week", score: 71 },
-  { id: "h2", sport: "Tennis", emoji: "🎾", action: "Serve", date: "Last week", score: 66 },
-  { id: "h1", sport: "Tennis", emoji: "🎾", action: "Forehand", date: "2 weeks ago", score: 63 },
+  { id: "h5", sport: "Tennis", emoji: "", action: "Forehand", date: "Today", score: 78 },
+  { id: "h4", sport: "Tennis", emoji: "", action: "Forehand", date: "3 days ago", score: 74 },
+  { id: "h3", sport: "Running", emoji: "", action: "Gait", date: "Last week", score: 71 },
+  { id: "h2", sport: "Tennis", emoji: "", action: "Serve", date: "Last week", score: 66 },
+  { id: "h1", sport: "Tennis", emoji: "", action: "Forehand", date: "2 weeks ago", score: 63 },
 ];
 
 export function ratingColor(r: Rating) {

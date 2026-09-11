@@ -8,7 +8,7 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/",
     display: "standalone",
     background_color: "#ECEFEC",
-    theme_color: "#10271F",
+    theme_color: "#17271F",   // tailwind `ink` — the brand anchor
     orientation: "portrait",
     categories: ["fitness", "sports", "health"],
     icons: [

@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { SIcon, type SIconName } from "@/components/SIcon";
 import type { LatLng } from "@/components/LiveMap";
+import { distanceUnit, distanceValue, getPreferences, type UnitSystem } from "@/lib/preferences";
 
 const LeafletMap = dynamic(() => import("@/components/LiveMap").then((m) => m.LiveMap), { ssr: false });
 const GoogleMap = dynamic(() => import("@/components/GoogleLiveMap").then((m) => m.GoogleLiveMap), { ssr: false });
@@ -38,10 +39,12 @@ export default function Activities() {
   const [menuFor, setMenuFor] = useState<number | null>(null);
   const [confirmFor, setConfirmFor] = useState<number | null>(null);
   const [removing, setRemoving] = useState<number | null>(null); // raw index mid-animation
+  const [units, setUnits] = useState<UnitSystem>("metric");
 
   useEffect(() => {
     try {
       setActs(JSON.parse(localStorage.getItem("ml_activities") ?? "[]"));
+      setUnits(getPreferences().units);
     } catch {}
   }, []);
 
@@ -70,7 +73,7 @@ export default function Activities() {
         >
           ←
         </Link>
-        <h1 className="text-2xl font-extrabold tracking-tight">Your activities</h1>
+        <h1 className="font-golden text-[26px] leading-none">Your activities</h1>
       </div>
 
       {display.length === 0 ? (
@@ -94,10 +97,11 @@ export default function Activities() {
           {display.map(({ a, i }) => {
             const mm = String(Math.floor(a.seconds / 60)).padStart(2, "0");
             const ss = String(a.seconds % 60).padStart(2, "0");
-            const stats = a.stats ?? [
+            const storedStats = a.stats ?? [];
+            const stats = [
               { v: `${mm}:${ss}`, l: "Time" },
-              { v: ((a.meters ?? 0) / 1000).toFixed(2), l: "km" },
-              { v: `${Math.floor(a.seconds / 8)}`, l: "Moves" },
+              { v: distanceValue(a.meters ?? 0, units).toFixed(2), l: distanceUnit(units) },
+              storedStats[2] ?? { v: "—", l: "Measured metric" },
             ];
             const isGps = (a.mode ?? "gps") === "gps";
             return (

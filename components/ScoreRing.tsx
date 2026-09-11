@@ -7,7 +7,7 @@ import { useCountUp } from "@/components/AnimatedNumber";
 
 import { qualityColor } from "@/lib/palette";
 
-export function ScoreRing({ score, size = 132 }: { score: number; size?: number }) {
+export function ScoreRing({ score, size = 132, dark = false }: { score: number; size?: number; dark?: boolean }) {
   const stroke = 12;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
@@ -29,7 +29,7 @@ export function ScoreRing({ score, size = 132 }: { score: number; size?: number 
         style={{ background: color, opacity: 0.18 }}
       />
       <svg width={size} height={size} className="relative -rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="rgba(14,31,26,0.07)" strokeWidth={stroke} fill="none" />
+        <circle cx={size / 2} cy={size / 2} r={r} stroke={dark ? "rgba(255,255,255,0.12)" : "rgba(14,31,26,0.07)"} strokeWidth={stroke} fill="none" />
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -42,8 +42,8 @@ export function ScoreRing({ score, size = 132 }: { score: number; size?: number 
         />
       </svg>
       <div className="absolute flex flex-col items-center">
-        <span className="text-4xl font-extrabold tabular-nums tracking-tight">{shown}</span>
-        <span className="text-[11px] font-medium text-ink-muted">out of 100</span>
+        <span className={`font-golden text-4xl tabular-nums tracking-tight ${dark ? "text-white" : "text-ink"}`}>{shown}</span>
+        <span className={`text-[11px] font-medium ${dark ? "text-white/50" : "text-ink-muted"}`}>out of 100</span>
       </div>
     </div>
   );

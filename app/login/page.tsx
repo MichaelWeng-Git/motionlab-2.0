@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { completeAuthCallback, hasAuthCallback, sbBrowser } from "@/lib/supabase-client";
+import { bootstrapAccountData } from "@/lib/cloud-data";
 
 export default function Login() {
   const router = useRouter();
@@ -23,14 +24,22 @@ export default function Login() {
   // email magic link) never flashes the login form before moving on
   const [checking, setChecking] = useState(true);
 
-  function afterLogin(kind: "google" | "email") {
+  async function afterLogin(kind: "google" | "email") {
     localStorage.setItem("ml_auth", kind);
-    // returning user = a profile already exists → restore the gate flag and go
-    // home (NEVER resend them through onboarding: finishing it would overwrite
-    // their profile). Only true first-timers see onboarding.
-    // RETURNING USER — any of these is proof this device has history:
-    // a profile, the onboarding flag, stored analyses, or the mirror backup.
-    // (Training history is NEVER a thing we delete on a login path.)
+    setChecking(true);
+    const cloud = await bootstrapAccountData();
+    if (!cloud.ok) {
+      localStorage.removeItem("ml_auth");
+      setError(cloud.error === "sync-not-configured"
+        ? "Account sync is not configured on the server yet."
+        : "Couldn’t load your account data. Your existing records were not changed. Try again.");
+      setChecking(false);
+      return;
+    }
+
+    // The server-side email record is the authority for new vs returning.
+    // Local storage can belong to a different browser/account and must never
+    // decide identity.
     const has = (k: string) => {
       try {
         const raw = localStorage.getItem(k);
@@ -41,10 +50,7 @@ export default function Login() {
     };
     let hasProfile = false;
     try { hasProfile = !!JSON.parse(localStorage.getItem("ml_profile") ?? "{}").name; } catch {}
-    const returning =
-      hasProfile ||
-      !!localStorage.getItem("ml_onboarded") ||
-      has("ml_sessions") || has("ml_sessions_backup") || has("ml_activities");
+    const returning = !cloud.isNew;
 
     if (returning) {
       localStorage.setItem("ml_onboarded", "1");
@@ -54,7 +60,9 @@ export default function Login() {
       }
       // returning user → the black "Welcome back" veil plays once on Home
       try { sessionStorage.setItem("ml_welcome_back", "1"); } catch {}
-      router.push("/");
+      // An existing email whose onboarding never finished resumes onboarding;
+      // otherwise all cloud-restored data is already in place before Home mounts.
+      router.replace(hasProfile ? "/" : "/onboarding");
     } else {
       // genuinely first time on this device: reset only the GAMIFICATION
       // counters so streaks/coins start at zero. Analyses, activities and
@@ -63,7 +71,7 @@ export default function Login() {
         "ml_login", "ml_daily_claim", "ml_coins_bonus", "ml_coins_spent",
         "ml_ornaments", "ml_streak", "ml_seen_analyze",
       ].forEach((k) => localStorage.removeItem(k));
-      router.push("/onboarding");
+      router.replace("/onboarding");
     }
   }
 
@@ -72,50 +80,54 @@ export default function Login() {
   // the app. The form stays hidden until BOTH checks come back empty.
   useEffect(() => {
     let done = false;
+    let watchdog: ReturnType<typeof setTimeout> | null = null;
     const go = (kind: "google" | "email") => {
       if (done) return;
       done = true;
       afterLogin(kind);
     };
 
-    // A magic link lands here with its tokens in the URL. Consume them FIRST
-    // and keep the spinner up while we do — the form must never flash, and we
-    // must never navigate away before the session exists.
-    const linkCheck = (async () => {
-      if (!hasAuthCallback()) return;
-      const ok = await completeAuthCallback();
-      // strip the tokens so a refresh can't replay them
-      try { window.history.replaceState(null, "", "/login"); } catch {}
-      if (ok) go("email");
-    })();
-
-    const googleCheck = fetch("/api/auth/session")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((s) => {
-        if (s?.user) {
-          if (s.user.name) localStorage.setItem("ml_google_name", s.user.name);
-          go("google");
+    const check = async () => {
+      // Callback handling is deliberately first and sequential. Never call
+      // getSession concurrently with a code exchange on the same auth client.
+      if (hasAuthCallback()) {
+        const ok = await Promise.race([
+          completeAuthCallback(),
+          new Promise<boolean>((resolve) => setTimeout(() => resolve(false), 10_000)),
+        ]);
+        try { window.history.replaceState(null, "", "/login"); } catch {}
+        if (ok) { go("email"); return; }
+        if (!done) {
+          setError("This sign-in link could not be completed. Request a new link and open the newest email.");
+          setChecking(false);
         }
-      })
-      .catch(() => {});
+        return;
+      }
 
-    const emailCheck = (async () => {
       try {
         const { data } = (await sbBrowser()?.auth.getSession()) ?? { data: { session: null } };
-        if (data.session) go("email");
+        if (data.session) { go("email"); return; }
       } catch {}
-    })();
 
-    // the session can also arrive a beat later (detectSessionInUrl finishing,
-    // or the link being opened while this page is already mounted)
-    const sub = sbBrowser()?.auth.onAuthStateChange((_e, session) => {
-      if (session) go("email");
-    });
-
-    Promise.all([linkCheck, googleCheck, emailCheck]).finally(() => {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 5_000);
+        const response = await fetch("/api/auth/session", { signal: controller.signal });
+        clearTimeout(timeout);
+        const session = response.ok ? await response.json() : null;
+        if (session?.user) {
+          if (session.user.name) localStorage.setItem("ml_google_name", session.user.name);
+          go("google"); return;
+        }
+      } catch {}
       if (!done) setChecking(false);
-    });
-    return () => { sub?.data.subscription.unsubscribe(); };
+    };
+
+    check();
+    // Absolute escape hatch: network/auth SDK failure must become an actionable
+    // login screen, never an infinite logo.
+    watchdog = setTimeout(() => { if (!done) { setError("Sign-in is taking too long. Please request a new link."); setChecking(false); } }, 12_000);
+    return () => { if (watchdog) clearTimeout(watchdog); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -208,7 +220,7 @@ export default function Login() {
 
         {/* THE BIG BUBBLE rises fast from below; its pieces then slide in and
             click together — layered shadows give it real depth */}
-        <div className="login-card mt-7 rounded-[32px] bg-white p-6 shadow-[0_10px_24px_-12px_rgba(14,31,26,0.18),0_30px_70px_-24px_rgba(14,31,26,0.35)]">
+        <div className="login-card mt-7 rounded-3xl bg-white p-6 shadow-[0_10px_24px_-12px_rgba(14,31,26,0.18),0_30px_70px_-24px_rgba(14,31,26,0.35)]">
           {phase === "email" ? (
             <>
               <form onSubmit={sendCode} className="space-y-3">

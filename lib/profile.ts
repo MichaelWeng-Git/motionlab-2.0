@@ -1,14 +1,5 @@
 // User profile helpers — single source for avatar/name across the app.
 
-export const AVATAR_EMOJI: Record<string, string> = {
-  tennis: "🎾",
-  run: "🏃",
-  swim: "🏊",
-  ball: "🏀",
-  lift: "🏋️",
-  bolt: "⚡",
-};
-
 export type Profile = {
   name?: string;
   avatar?: string;
@@ -26,10 +17,6 @@ export function getProfile(): Profile {
   } catch {
     return {};
   }
-}
-
-export function avatarEmoji(p: Profile): string {
-  return (p.avatar && AVATAR_EMOJI[p.avatar]) || "👤";
 }
 
 // hand-drawn icon for each avatar choice — replaces Apple emoji everywhere

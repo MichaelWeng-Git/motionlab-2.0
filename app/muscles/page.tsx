@@ -48,13 +48,13 @@ export default function MusclesPage() {
     <div className="stagger px-5 pb-10 pt-3">
       <header className="flex items-center gap-2.5">
         <button onClick={() => router.push("/")} className="flex h-7 w-11 items-center justify-center rounded-full bg-white text-[13px] text-ink shadow-soft active:scale-95">←</button>
-        <h1 className="text-[22px] font-extrabold tracking-tight">Muscles</h1>
+        <h1 className="font-golden text-[24px] leading-none">Muscles</h1>
       </header>
 
       {state === undefined ? (
-        <div className="mt-3 h-[560px] animate-pulse rounded-[28px] bg-white/70" />
+        <div className="mt-3 h-[560px] animate-pulse rounded-2xl bg-white/70" />
       ) : !state || state.measured === 0 ? (
-        <section className="mt-3 overflow-hidden rounded-[28px] bg-[#10271F] p-6 text-white shadow-lift">
+        <section className="mt-3 overflow-hidden rounded-2xl bg-graphite p-6 text-white shadow-lift">
           <p className="text-[10px] font-black tracking-[0.18em] text-[#7FD9AE]">MEASURED FROM MOVEMENT</p>
           <h2 className="mt-12 font-golden text-3xl leading-none">NO MUSCLE DATA YET</h2>
           <p className="mt-3 text-sm font-semibold leading-relaxed text-white/75">Analyse a clear full-body video to measure which muscle groups carried the session.</p>
@@ -63,7 +63,7 @@ export default function MusclesPage() {
         </section>
       ) : (
         <>
-          <section className="relative mt-3 overflow-hidden rounded-[28px] bg-white px-4 pb-4 pt-5 shadow-soft">
+          <section className="relative mt-3 overflow-hidden rounded-2xl bg-white px-4 pb-4 pt-5 shadow-soft">
             <div className="flex items-start justify-between px-1">
               <div>
                 <p className="text-[9px] font-black tracking-[0.18em] text-ink-muted">CURRENT LOAD</p>
@@ -90,7 +90,7 @@ export default function MusclesPage() {
             </div>
           </section>
 
-          <section className="mt-3 rounded-[26px] bg-[#10271F] p-5 text-white shadow-lift">
+          <section className="mt-3 rounded-2xl bg-graphite p-5 text-white shadow-lift">
             <div className="flex items-baseline justify-between">
               <h2 className="font-golden text-lg">14-DAY HISTORY</h2>
               <span className="text-[9px] font-black tracking-wider text-white/45">MEASURED SESSION LOAD</span>
@@ -108,10 +108,10 @@ export default function MusclesPage() {
             {!history.some((d) => d.value != null) && <p className="mt-4 text-center text-xs font-bold text-white/55">No measured sessions for this muscle in the last 14 days</p>}
           </section>
 
-          <section className="mt-3 rounded-[24px] bg-white p-4 shadow-soft">
+          <section className="mt-3 rounded-2xl bg-white p-4 shadow-soft">
             <div className="flex items-center justify-between"><span className="text-xs font-bold text-ink-soft">Measured workouts</span><span className="font-golden text-lg text-ink">{state.measured}</span></div>
             {state.unmeasured > 0 && <div className="mt-3 flex items-center justify-between"><span className="text-xs font-bold text-ink-soft">Without muscle measurement</span><span className="font-golden text-lg text-ink-muted">{state.unmeasured}</span></div>}
-            {state.needsLength > 0 && <p className="mt-3 rounded-xl bg-[#FFF4D6] px-3 py-2 text-center text-[11px] font-bold text-[#8A6217]">Session length is still assumed for {state.needsLength} measured {state.needsLength === 1 ? "workout" : "workouts"}</p>}
+            {state.needsLength > 0 && <p className="mt-3 rounded-xl bg-award-gold-wash px-3 py-2 text-center text-[11px] font-bold text-[#8A6217]">Session length is still assumed for {state.needsLength} measured {state.needsLength === 1 ? "workout" : "workouts"}</p>}
           </section>
         </>
       )}

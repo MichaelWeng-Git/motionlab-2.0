@@ -29,6 +29,32 @@ const config: Config = {
           okay: "#E8A13C",
           work: "#E0523F",
         },
+        // Card grounds. Kept byte-identical to lib/palette SURFACE — Tailwind
+        // classes cannot read a TS constant, so the value lives in both places
+        // and they must not drift.
+        graphite: "#14181B",   // the one dark card ground (TODAY, GoalRing, heroes)
+        cream: "#F3F0E8",      // warm paper — the day-intensity card
+        // Podium ranks and medal tiers. See lib/palette AWARD for the
+        // edge/light shades illustrated medals need.
+        award: {
+          gold: "#E8B23E",
+          "gold-light": "#E8C76A",
+          "gold-pale": "#FFE58E",    // deluxe pack trim
+          "gold-wash": "#FFF4D6",    // palest gold — note/credit row tint
+          silver: "#AFBBB4",
+          bronze: "#C98658",
+        },
+        // Sequential ramp for DENSITY (activity heatmaps, streak calendars) —
+        // "how much", not "how good". The signal scale is categorical and
+        // cannot express this; reaching for it paints red squares on a
+        // calendar, which reads as failure rather than volume.
+        // Mirrors lib/palette HEAT.
+        heat: {
+          1: "#315741",
+          2: "#4D8A5D",
+          3: "#7FCF72",
+          4: "#A8E89B",
+        },
       },
       fontFamily: {
         // small/running text stays on the system stack — Lilita's tight

@@ -15,6 +15,7 @@ import {
 } from "@/lib/friends";
 import { getProfile } from "@/lib/profile";
 import { getStats } from "@/lib/stats";
+import { LevelBadge } from "@/components/XpLevel";
 
 type Tab = "requests" | "friends" | "people";
 
@@ -22,7 +23,9 @@ export default function Friends() {
   const router = useRouter();
   const [st, setSt] = useState<FriendsState | null>(null);
   const [phase, setPhase] = useState<"loading" | "signedout" | "ready">("loading");
-  const [tab, setTab] = useState<Tab | null>(null);
+  const [tab, setTab] = useState<Tab>("friends");
+  const [query, setQuery] = useState("");
+  const [inviteCopied, setInviteCopied] = useState(false);
   const [leaving, setLeaving] = useState<string[]>([]);
   const [requested, setRequested] = useState<string[]>([]); // optimistic
   const [confirmRemove, setConfirmRemove] = useState<Person | null>(null);
@@ -111,10 +114,19 @@ export default function Friends() {
     removeFriend(p.id).then(() => reload());
   }
 
+  async function shareInvite() {
+    const url = `${window.location.origin}/friends`;
+    try {
+      if (navigator.share) await navigator.share({ title: "Train with me on MotionLab", text: "Join my training circle on MotionLab.", url });
+      else { await navigator.clipboard.writeText(url); setInviteCopied(true); window.setTimeout(() => setInviteCopied(false), 1800); }
+    } catch {}
+  }
+
   const incoming = st?.incoming ?? [];
   const friends = st?.friends ?? [];
   const friendIds = new Set(friends.map((f) => f.id));
   const people = (st?.people ?? []).filter((p) => !friendIds.has(p.id));
+  const filteredPeople = people.filter((p) => p.name.toLowerCase().includes(query.trim().toLowerCase()));
   const outgoing = new Set([...(st?.outgoing ?? []), ...requested]);
 
   const bubbles: { key: Tab; label: string; count: number; icon: React.ReactNode }[] = [
@@ -144,7 +156,7 @@ export default function Friends() {
         >
           ←
         </button>
-        <h1 className="text-2xl font-extrabold tracking-tight">Friends</h1>
+        <h1 className="font-golden text-[26px] leading-none">Friends</h1>
       </div>
 
       {phase === "loading" && (
@@ -168,26 +180,32 @@ export default function Friends() {
 
       {phase === "ready" && (
         <>
-          {/* three category bubbles in one horizontal row */}
-          <div className="mt-4 grid grid-cols-3 gap-2.5">
+          <section className="relative mt-4 overflow-hidden rounded-3xl bg-graphite p-5 text-white shadow-lift">
+            <div className="absolute -right-20 -top-24 h-60 w-60 rounded-full bg-signal-good/60 blur-3xl" />
+            <p className="relative text-[9px] font-black tracking-[0.2em] text-[#7FD9AE]">YOUR TRAINING CIRCLE</p>
+            <div className="relative mt-3 flex items-end justify-between"><div><p className="font-golden text-6xl leading-none">{friends.length}</p><p className="mt-1 text-xs font-bold text-white/50">{friends.length === 1 ? "training friend" : "training friends"}</p></div><button onClick={shareInvite} className="btn-press rounded-full bg-white px-4 py-3 text-[10px] font-black text-ink">{inviteCopied ? "LINK COPIED" : "INVITE A FRIEND"}</button></div>
+            {incoming.length > 0 && <button onClick={() => setTab("requests")} className="relative mt-5 flex w-full items-center justify-between rounded-2xl bg-white/[0.08] px-4 py-3"><span className="text-xs font-black">Friend requests</span><span className="grid h-6 min-w-6 place-items-center rounded-full bg-signal-work px-1 text-[10px] font-black">{incoming.length}</span></button>}
+          </section>
+
+          {/* compact sport-app segmented navigation */}
+          <div className="mt-3 grid grid-cols-3 rounded-2xl bg-white p-1 shadow-soft">
             {bubbles.map((b) => {
               const on = tab === b.key;
               return (
                 <button
                   key={b.key}
                   onClick={() => {
-                    setTab(tab === b.key ? null : b.key);
+                    setTab(b.key);
                     if (b.key === "friends") {
                       setNewFriends(0);
                       localStorage.removeItem("ml_new_friends");
                     }
                   }}
-                  className={`press relative flex flex-col items-center gap-1.5 rounded-2xl border px-2 py-3.5 text-center shadow-soft transition ${
-                    on ? "border-ink bg-ink text-white" : "border-black/5 bg-white text-ink"
+                  className={`press relative flex items-center justify-center gap-1.5 rounded-xl px-2 py-2.5 text-center transition ${
+                    on ? "bg-ink text-white" : "text-ink-muted"
                   }`}
                 >
-                  <span className={on ? "text-volt-glow" : "text-volt-deep"}>{b.icon}</span>
-                  <span className="text-[11px] font-bold leading-tight">{b.label}</span>
+                  <span className="text-[10px] font-black leading-tight">{b.key === "requests" ? "REQUESTS" : b.key === "friends" ? "FRIENDS" : "DISCOVER"}</span>
                   {b.count > 0 && (
                     <span className="absolute right-2 top-2 grid h-5 min-w-5 place-items-center rounded-full bg-signal-work px-1 text-[10px] font-extrabold text-white">
                       {b.count}
@@ -201,15 +219,14 @@ export default function Friends() {
           {tab === "requests" && (
             <section className="mt-4 space-y-2">
               {incoming.length === 0 && (
-                <p className="rounded-2xl bg-white p-4 text-center text-[13px] font-bold text-ink-soft shadow-soft">
-                  No requests right now.
-                </p>
+                <FriendEmpty kind="requests" onInvite={shareInvite} />
               )}
               {incoming.map(({ friendshipId, person }) => (
                 <div key={friendshipId} className="flex items-center gap-3 rounded-2xl bg-white p-3.5 shadow-soft">
                   <PersonAvatar p={person} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-bold">{person.name}</p>
+                    <div className="mt-1"><LevelBadge xp={person.xp} compact /></div>
                   </div>
                   <button
                     onClick={() => onRespond(friendshipId, true)}
@@ -231,14 +248,12 @@ export default function Friends() {
           {tab === "friends" && (
             <section className="mt-4 space-y-2">
               {friends.length === 0 && (
-                <p className="rounded-2xl bg-white p-4 text-center text-[13px] font-bold text-ink-soft shadow-soft">
-                  No friends yet — find people in the third bubble.
-                </p>
+                <FriendEmpty kind="friends" onInvite={shareInvite} />
               )}
               {friends.map((p) => (
                 <div key={p.id} className="flex items-center gap-3 rounded-2xl bg-white p-3.5 shadow-soft">
                   <PersonAvatar p={p} />
-                  <p className="min-w-0 flex-1 truncate text-sm font-bold">{p.name}</p>
+                  <div className="min-w-0 flex-1"><p className="truncate text-sm font-bold">{p.name}</p><div className="mt-1"><LevelBadge xp={p.xp} compact /></div></div>
                   <button
                     onClick={() => setConfirmRemove(p)}
                     className="rounded-xl bg-white px-4 py-2 text-xs font-bold text-ink-muted transition active:scale-95"
@@ -252,12 +267,9 @@ export default function Friends() {
 
           {tab === "people" && (
             <section className="mt-4 space-y-2">
-              {people.length === 0 && (
-                <p className="rounded-2xl bg-white p-4 text-center text-[13px] font-bold text-ink-soft shadow-soft">
-                  No one else here yet — invite your friends to MotionLab!
-                </p>
-              )}
-              {people.map((p) => {
+              <label className="flex items-center gap-2 rounded-2xl bg-white px-4 py-3 shadow-soft"><SearchIcon size={17} /><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search athletes by name" className="min-w-0 flex-1 bg-transparent text-sm font-bold text-ink outline-none placeholder:text-ink-muted" /></label>
+              {filteredPeople.length === 0 && <FriendEmpty kind={query ? "search" : "people"} onInvite={shareInvite} />}
+              {filteredPeople.map((p) => {
                 const isLeaving = leaving.includes(p.id);
                 const isRequested = outgoing.has(p.id);
                 return (
@@ -269,7 +281,7 @@ export default function Friends() {
                     style={isLeaving ? { animationDelay: "0.45s" } : undefined}
                   >
                     <PersonAvatar p={p} />
-                    <p className="min-w-0 flex-1 truncate text-sm font-bold">{p.name}</p>
+                    <div className="min-w-0 flex-1"><p className="truncate text-sm font-bold">{p.name}</p><div className="mt-1"><LevelBadge xp={p.xp} compact /></div></div>
                     {isLeaving ? (
                       <span className="animate-pop rounded-xl bg-signal-good px-4 py-2 text-xs font-bold text-white">Added ✓</span>
                     ) : isRequested ? (
@@ -320,4 +332,14 @@ export default function Friends() {
       )}
     </div>
   );
+}
+
+function FriendEmpty({ kind, onInvite }: { kind: "requests" | "friends" | "people" | "search"; onInvite: () => void }) {
+  const copy = {
+    requests: ["NO REQUESTS", "New training requests will appear here."],
+    friends: ["BUILD YOUR CIRCLE", "Invite someone you already train with."],
+    people: ["NO ATHLETES TO DISCOVER", "Share MotionLab with your training group."],
+    search: ["NO MATCHES", "Try another athlete name."],
+  }[kind];
+  return <div className="rounded-2xl border border-dashed border-ink/15 bg-white px-5 py-8 text-center"><span className="mx-auto grid h-11 w-11 place-items-center rounded-2xl bg-volt-mist text-signal-good"><FriendsIcon size={21} /></span><p className="mt-3 font-golden text-lg text-ink">{copy[0]}</p><p className="mt-1 text-[10px] font-bold text-ink-muted">{copy[1]}</p>{kind !== "requests" && kind !== "search" && <button onClick={onInvite} className="mt-4 rounded-full bg-ink px-4 py-2.5 text-[10px] font-black text-white">INVITE FRIEND</button>}</div>;
 }

@@ -1,6 +1,5 @@
 -- MotionLab friends backend — run once in Supabase Dashboard → SQL Editor.
--- Cloud stores ONLY: email (identity), display name, avatar choice, XP, privacy flag.
--- Videos and reports never leave the user's device.
+-- Identity/social profile plus a private account data snapshot.
 
 create table if not exists profiles (
   id uuid primary key default gen_random_uuid(),
@@ -24,15 +23,25 @@ create table if not exists friendships (
 alter table profiles enable row level security;
 alter table friendships enable row level security;
 
--- prototype-grade policies: the app talks to these tables through its own
--- server routes (identity enforced by Google sign-in there)
-create policy "app read profiles"    on profiles    for select using (true);
-create policy "app insert profiles"  on profiles    for insert with check (true);
-create policy "app update profiles"  on profiles    for update using (true);
-create policy "app read friendships"   on friendships for select using (true);
-create policy "app insert friendships" on friendships for insert with check (true);
-create policy "app update friendships" on friendships for update using (true);
-create policy "app delete friendships" on friendships for delete using (true);
+-- v3 routes use the server-only service role. Remove the old prototype public
+-- policies so possessing the browser anon key cannot enumerate or edit users.
+drop policy if exists "app read profiles" on profiles;
+drop policy if exists "app insert profiles" on profiles;
+drop policy if exists "app update profiles" on profiles;
+drop policy if exists "app read friendships" on friendships;
+drop policy if exists "app insert friendships" on friendships;
+drop policy if exists "app update friendships" on friendships;
+drop policy if exists "app delete friendships" on friendships;
 
 -- v2: small data-URL profile photo shown to friends (run this if upgrading)
 alter table profiles add column if not exists photo text;
+
+-- v3: account-owned training data. There are deliberately NO anon/authenticated
+-- policies on this table. Only the app server's SUPABASE_SERVICE_ROLE_KEY may
+-- read or write it after verifying the caller's email/session.
+create table if not exists account_data (
+  profile_id uuid primary key references profiles(id) on delete cascade,
+  payload jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+alter table account_data enable row level security;

@@ -307,7 +307,7 @@ export default function Home() {
     try { claims = JSON.parse(localStorage.getItem("ml_ring_claims") ?? "{}"); } catch {}
     claims[tk] = [...(claims[tk] ?? []), r.key];
     localStorage.setItem("ml_ring_claims", JSON.stringify(claims));
-    addBonusCoins(RING_COIN);
+    addBonusCoins(RING_COIN, `${r.label} goal`);
     setRingQueue((q) => q.slice(1));
   }
 
@@ -464,7 +464,7 @@ export default function Home() {
         {/* MUSCLES — the AI-read body, spinnable, standing tall on the right */}
         <div className="h-full" ref={musclesRef}>
           <div className="gk-card flex h-full flex-col overflow-hidden p-4 pb-3">
-            <div className="flex items-center justify-center gap-2">
+            <Link href="/muscles" className="flex items-center justify-center gap-2">
               <span className="grid h-7 w-7 place-items-center rounded-lg" style={{ background: "#62D98B24" }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2E9E5B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="4.5" r="2.2" />
@@ -472,7 +472,7 @@ export default function Home() {
                 </svg>
               </span>
               <h2 className="font-golden text-lg leading-none text-ink">MUSCLES</h2>
-            </div>
+            </Link>
             <div className="flex flex-1 items-center justify-center pt-2">
               {has3d ? (
                 <MuscleBody3D height={252} dolly={0.95} load={muscles?.load ?? {}} prevLoad={prevLoad} fadeIn={freshAnalysis} />
@@ -503,7 +503,7 @@ export default function Home() {
           LOAD = how much, CHARGE = how ready. */}
       {charge && (
         <section className="mt-4" ref={chargeRef}>
-          <div className="gk-card p-5">
+          <Link href="/charge" className="gk-card block w-full p-5 text-left transition active:scale-[0.99]">
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-2.5">
                 <span className="grid h-8 w-8 place-items-center rounded-xl" style={{ background: `${CHARGE_META[charge.state].color}1F` }}>
@@ -538,7 +538,7 @@ export default function Home() {
                 {charge.assumedWorkouts} {charge.assumedWorkouts === 1 ? "session assumes" : "sessions assume"} {DEFAULT_SESSION_MIN} min
               </p>
             )}
-          </div>
+          </Link>
         </section>
       )}
 
@@ -651,7 +651,7 @@ export default function Home() {
       {introStep !== null && introRect && (
         <div className="fixed inset-0 z-[80]" onClick={nextIntro}>
           <div
-            className="absolute rounded-[28px] transition-all duration-500"
+            className="absolute rounded-2xl transition-all duration-500"
             style={{
               top: introRect.top - 6,
               left: introRect.left - 6,

@@ -9,8 +9,9 @@ import { useEffect, useState } from "react";
 import { getSessions } from "@/lib/stats";
 import { buildFormProfile, CAP_META, CAP_ORDER, type FormProfile } from "@/lib/form";
 import type { AnalysisResult } from "@/lib/analysis";
+import { SURFACE } from "@/lib/palette";
 
-const INK = "#14181B";
+// the app's one graphite ground — lib/palette SURFACE.graphite
 const MINT = "#7FD9AE";
 const DEEP = "#2E9E6B";
 
@@ -75,7 +76,7 @@ export default function FormPage() {
         >
           ←
         </button>
-        <h1 className="text-[22px] font-extrabold tracking-tight">Form</h1>
+        <h1 className="font-golden text-[24px] leading-none">Form</h1>
       </div>
 
       {!p || p.form == null ? (
@@ -88,7 +89,7 @@ export default function FormPage() {
       ) : (
         <>
           {/* hero: the hexagon IS the athlete */}
-          <div className="mt-3 overflow-hidden rounded-[26px] px-5 py-5 text-white shadow-lift" style={{ background: INK }}>
+          <div className="mt-3 overflow-hidden rounded-2xl px-5 py-5 text-white shadow-lift" style={{ background: SURFACE.graphite }}>
             <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/22 to-transparent" />
             <div className="flex items-baseline justify-between">
               <span className="font-golden text-[13px] text-white/55">ATHLETIC PROFILE</span>
@@ -116,7 +117,7 @@ export default function FormPage() {
           )}
 
           {/* every capacity: value, trend, and what it actually measures */}
-          <div className="mt-3 rounded-[26px] bg-white p-4 shadow-soft">
+          <div className="mt-3 rounded-2xl bg-white p-4 shadow-soft">
             {ranked.map((c, i) => (
               <button
                 key={c.key}

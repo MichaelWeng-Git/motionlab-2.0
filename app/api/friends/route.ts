@@ -7,7 +7,7 @@ export const maxDuration = 15;
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { sb } from "@/lib/supabase-server";
+import { sb, sbAdmin } from "@/lib/supabase-server";
 
 type ProfileRow = {
   id: string;
@@ -35,7 +35,7 @@ const pub = (p: ProfileRow) => ({
 });
 
 async function me(email: string) {
-  const db = sb()!;
+  const db = sbAdmin()!;
   const { data } = await db.from("profiles").select("*").eq("email", email).maybeSingle();
   return (data as ProfileRow | null) ?? null;
 }
@@ -56,7 +56,7 @@ async function callerEmail(req: Request): Promise<{ email: string | null; name: 
 }
 
 export async function GET(req: Request) {
-  const db = sb();
+  const db = sbAdmin();
   if (!db) return Response.json({ ok: false, error: "no-backend" }, { status: 500 });
   const { email, name } = await callerEmail(req);
   if (!email) return Response.json({ ok: false, error: "unauthenticated" }, { status: 401 });
@@ -103,7 +103,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const db = sb();
+  const db = sbAdmin();
   if (!db) return Response.json({ ok: false, error: "no-backend" }, { status: 500 });
   const { email, name: sessionName } = await callerEmail(req);
   if (!email) return Response.json({ ok: false, error: "unauthenticated" }, { status: 401 });

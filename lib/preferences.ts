@@ -24,12 +24,14 @@ export const distanceUnit = (units: UnitSystem) => units === "imperial" ? "mi" :
 
 export const EXPORT_KEYS = [
   "ml_sessions", "ml_activities", "ml_fuel", "ml_profile", "ml_goals",
-  "ml_goals_history", "ml_muscle_attr", "ml_coin_ledger", "ml_coin_bonus",
-  "ml_pack_collection", "ml_preferences",
+  "ml_goals_history", "ml_muscle_attr", "ml_coin_ledger", "ml_coins_bonus",
+  "ml_coins_spent", "ml_ornaments", "ml_daily_claims", "ml_ring_claims",
+  "ml_streak", "ml_preferences", "ml_medals_seen",
 ] as const;
 
 export const TRAINING_KEYS = [
   "ml_sessions", "ml_sessions_backup", "ml_activities", "ml_fuel", "ml_goals",
-  "ml_goals_history", "ml_muscle_attr", "ml_coin_ledger", "ml_coin_bonus",
-  "ml_pack_collection", "ml_rec_checkpoint",
+  "ml_goals_history", "ml_muscle_attr", "ml_coin_ledger", "ml_coins_bonus",
+  "ml_coins_spent", "ml_ornaments", "ml_daily_claims", "ml_daily_claim",
+  "ml_ring_claims", "ml_streak", "ml_medals_seen", "ml_rec_checkpoint",
 ] as const;
