@@ -13,6 +13,7 @@ import { GOAL_ARCS, GoalCardShell, GoalRing, GoalRows } from "@/components/GoalR
 import { Gauge } from "@/components/Gauge";
 import dynamic from "next/dynamic";
 import { getDayIntensity, getDayMuscleLoad, MUSCLE_NAMES, type MuscleKey, type MuscleLoad } from "@/lib/muscles";
+import { dayKey } from "@/lib/coins";
 
 // the 3D body ships only on demand (heavy three.js + model)
 // the 3D body ships on demand, but its SLOT is reserved from the first paint —
@@ -26,11 +27,7 @@ import { TriBar } from "@/components/TriBar";
 
 type Act = { name?: string; sport?: string; seconds?: number; meters?: number; date: string };
 
-const keyOf = (d: Date) => {
-  const z = new Date(d);
-  z.setMinutes(z.getMinutes() - z.getTimezoneOffset());
-  return z.toISOString().slice(0, 10);
-};
+const keyOf = dayKey;
 function mondayOf(d: Date) {
   const m = new Date(d);
   m.setDate(d.getDate() - ((d.getDay() + 6) % 7));
@@ -93,12 +90,12 @@ export default function Weeks() {
       return m.get(k)!;
     };
     for (const s of sessions) {
-      const d = get(s.date.slice(0, 10));
+      const d = get(dayKey(new Date(s.date)));
       d.ana += 1;
       d.items.push({ kind: "ana", title: s.sport ?? "Practice", detail: s.action ?? undefined, sub: `Score ${s.score}` });
     }
     for (const a of acts) {
-      const d = get(a.date.slice(0, 10));
+      const d = get(dayKey(new Date(a.date)));
       d.wo += 1;
       const mins = Math.round((a.seconds ?? 0) / 60);
       d.minutes += mins;
@@ -176,6 +173,26 @@ export default function Weeks() {
   ];
   const weekLabel = weekOffset === 0 ? "This Week" : weekOffset === 1 ? "Last Week" : `${fmtShort(weekMonday)} – ${fmtShort(weekDays[6].date)}`;
 
+  const twelveWeekStart = mondayOf(new Date(now));
+  twelveWeekStart.setDate(twelveWeekStart.getDate() - 11 * 7);
+  const twelveWeeks = Array.from({ length: 12 }, (_, week) =>
+    Array.from({ length: 7 }, (_, day) => {
+      const date = new Date(twelveWeekStart);
+      date.setDate(date.getDate() + week * 7 + day);
+      const k = dayKey(date);
+      const data = byDay.get(k);
+      const target = resolveGoals(goalHist, k);
+      const completion = Math.min(1, (
+        Math.min(1, (data?.minutes ?? 0) / Math.max(1, target.minutes)) +
+        Math.min(1, (data?.ana ?? 0) / Math.max(1, target.dayAnalyses)) +
+        Math.min(1, (data?.wo ?? 0) / Math.max(1, target.dayWorkouts))
+      ) / 3);
+      return { date, k, completion, active: Boolean(data?.items.length), future: date > now };
+    })
+  );
+  const activeDays12 = twelveWeeks.flat().filter((d) => d.active).length;
+  const heatClass = (v: number) => v >= 0.85 ? "bg-heat-4" : v >= 0.55 ? "bg-heat-3" : v >= 0.25 ? "bg-heat-2" : "bg-heat-1";
+
   function setGoal<K extends keyof Goals>(k: K, v: number) {
     // build from what is CURRENTLY stored, never from possibly-stale state —
     // otherwise editing one field writes back an old value for the others
@@ -218,8 +235,34 @@ export default function Weeks() {
         >
           ←
         </button>
-        <h1 className="font-golden text-[24px] leading-none">Today</h1>
+        <h1 className="font-golden text-[24px] leading-none">12 WEEKS</h1>
       </div>
+
+      <section className="mt-4 overflow-hidden rounded-3xl bg-graphite p-5 shadow-lift">
+        <div className="flex items-end justify-between">
+          <div>
+            <p className="font-golden text-[34px] leading-none text-white">{activeDays12}</p>
+            <p className="mt-1 text-[12px] font-bold text-white/60">ACTIVE DAYS</p>
+          </div>
+          <p className="text-right text-[12px] font-bold leading-snug text-white/55">Your training rhythm<br />at a glance</p>
+        </div>
+        <div className="mt-5 grid grid-cols-12 gap-1.5" aria-label={`${activeDays12} active days in the last 12 weeks`}>
+          {twelveWeeks.map((week, wi) => (
+            <div key={wi} className="grid gap-1.5">
+              {week.map((day) => (
+                <span
+                  key={day.k}
+                  title={`${fmtDay(day.date)}${day.active ? " · active" : ""}`}
+                  className={`aspect-square rounded-[4px] ${day.future ? "bg-white/[0.04]" : day.active ? heatClass(day.completion) : "bg-white/10"}`}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+        <div className="mt-3 flex justify-between text-[11px] font-bold text-white/40">
+          <span>12 WEEKS AGO</span><span>NOW</span>
+        </div>
+      </section>
 
       {/* week pager — flat, low-profile: it steers, it shouldn't take height */}
       <div className="mt-3 flex items-center justify-center gap-1">
