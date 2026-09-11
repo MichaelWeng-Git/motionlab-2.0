@@ -232,9 +232,9 @@ Unblocked once P0 is clear. Each still obeys the rules at the top.
 |---|---|
 | 6 | CHARGE detail/explainer page |
 | 7 | Muscle detail page — tap a body group → its load + history |
-| 9 | Analyze upload flow polish (stages, cancel, big files) |
+| 9 | Analyze redesign (stronger upload entry, clear stages, cancel/retry, big-file handling) |
 | 10 | Report page hierarchy (score hero, radar, drills) |
-| 11 | FUEL page (protein vs 1.6 g/kg, meal history, delete) |
+| 11 | FUEL / Food redesign (recognition entry, result confirmation, protein target, meal history, delete) |
 | 12 | XP structure (level curve, badge, avatar ring) |
 | 13 | Coins economy loop (earn audit, spend, history) |
 | 14 | Medals redesign (stroke-SVG art, tiers, unlock anim) |
@@ -249,5 +249,23 @@ Unblocked once P0 is clear. Each still obeys the rules at the top.
 | 23 | Loading skeletons + route transition audit |
 | 24 | PWA (manifest, icons, splash, offline shell, install) |
 
-Server-side sync is not on either list and is the real prerequisite for other
-people using this: all training data is browser-local today.
+### Design handoff notes — 2026-09-11
+
+- **Analyze (#9):** the pipeline exists, but the current page feels visually
+  thin and unfinished. Redesign the whole first-use journey, not just its
+  colours: give the upload/capture decision a clear hero, make progress feel
+  substantial, keep the current measured stage status visible, and provide
+  obvious cancel/retry/recovery states. Do not alter the analysis pipeline or
+  pretend an unfinished stage has completed.
+- **FUEL / Food (#11):** food-photo recognition and stored meal history exist,
+  but the current presentation is not the target design. Rework the capture
+  entry, editable recognition result, daily protein progress and history as one
+  understandable flow. Estimates must stay labelled as estimates; missing
+  body weight must keep the protein target empty rather than inventing one.
+- **Pack shop (#15):** functional purchase, truthful drop rates, inventory,
+  tear-open sequence and tree placement exist. The remaining work is a genuine
+  GameKit-quality packaging and reveal redesign, not another flat shop card.
+- **Account records:** `lib/cloud-data.ts`, `components/CloudSync.tsx` and
+  `/api/account-data` now implement account-owned JSON snapshot sync. Deployment
+  still depends on `SUPABASE_SERVICE_ROLE_KEY` and the `account_data` table from
+  `supabase-setup.sql`; verify cross-browser restore before calling it complete.
