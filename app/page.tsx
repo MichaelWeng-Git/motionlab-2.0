@@ -62,9 +62,6 @@ export default function Home() {
   // LOAD tile and the /load page read the SAME calendar, so tapping through
   // never shows a different number in a different unit
   const [loadMonth, setLoadMonth] = useState<LoadMonth | null>(null);
-  const [formSpark, setFormSpark] = useState<number[]>([]);
-  // last analyses with their dates, for the FORM bar chart (score + weekday)
-  const [formRecent, setFormRecent] = useState<{ score: number; date: string }[]>([]);
   // THE form number + curve come from the same profile the /form page renders,
   // so the surface and the detail can never disagree
   const [formProfile, setFormProfile] = useState<FormProfile | null>(null);
@@ -223,12 +220,9 @@ export default function Home() {
         setWeek({ total: thisWk });
         try { setLoadMonth(buildLoadMonth()); } catch {}
 
-        // FORM inputs: recent analyses oldest → newest (scores for the metric,
-        // score+date for the bar chart)
-        const chrono = sessions.slice().sort((a, b) => a.date.localeCompare(b.date));
-        setFormSpark(chrono.map((s) => s.score).slice(-5));
+        // One source for the card and /form: number, delta, link condition and
+        // hexagon all consume this exact profile object.
         try { setFormProfile(buildFormProfile(sessions as never)); } catch {}
-        setFormRecent(chrono.slice(-3).map((s) => ({ score: s.score, date: s.date })));
 
         // a COMPLETED ring pays out once per day — queue any unclaimed ones
         const g = getGoals();
@@ -321,11 +315,8 @@ export default function Home() {
     { label: "Workouts", value: today.wo, target: goals.dayWorkouts, unit: "", color: RING_COLORS.workouts },
   ];
 
-  // FORM: recency-weighted technique score; trend = latest vs the one before
-  const form = formSpark.length
-    ? Math.round(formSpark.reduce((a, s, i) => a + s * (i + 1), 0) / formSpark.reduce((a, _, i) => a + i + 1, 0))
-    : null;
-  const formTrend = formSpark.length >= 2 ? formSpark[formSpark.length - 1] - formSpark[formSpark.length - 2] : 0;
+  const form = formProfile?.form ?? null;
+  const formTrend = formProfile?.delta ?? 0;
   // LOAD: this week's minutes against a weekly target (daily goal × 7)
   const loadDelta =
     loadMonth && loadMonth.lastWeek > 0
