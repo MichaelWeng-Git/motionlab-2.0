@@ -3,6 +3,9 @@
 A map of this repository for coding agents. Read this first; the code is the
 source of truth for anything not covered here.
 
+**Design values live in [docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md)** —
+radius, type, elevation, colour, measured from this codebase.
+
 **The plan of work lives in [docs/CHECKLIST.md](docs/CHECKLIST.md)** — merged
 P0/P1 backlog and the owner's 24-point list, one item per commit, each with the
 review prompt to run after it ships.
@@ -53,7 +56,7 @@ when both values are individually correct. Card surface colour counts too — th
 | 3D | three.js + @react-three/fiber + drei |
 | On-device ML | onnxruntime-web, @mediapipe/tasks-vision, @tensorflow-models/pose-detection |
 | Auth | NextAuth (Google) + Supabase email OTP |
-| Server data | Supabase (`profiles`, `friendships` only) |
+| Server data | Supabase (`profiles`, `friendships`, private `account_data`) |
 | Cloud AI | OpenAI (coach/assistant/fuel), fal.ai (SAM 3D Body) |
 
 Dev server runs on **port 3100**. Layout is a phone frame, `max-w-[430px]`.
@@ -164,8 +167,9 @@ Key routes: `/` (Home), `/analyze` (upload + pipeline), `/report/[id]`,
 `/load`, `/form`, `/weeks`, `/activity` (GPS recorder), `/fuel`, `/tree`,
 `/streak`, `/friends`, `/leaderboard`, `/account/*`, `/onboarding`, `/login`.
 
-**All training data is browser-local.** Supabase stores only `profiles` and
-`friendships`. Nothing else survives clearing site data — see Known gaps.
+Training data is written locally first and synchronized as a private per-account
+snapshot in Supabase `account_data`. Login hydrates local storage before the app
+mounts: an existing email restores its snapshot; a never-seen email starts empty.
 
 ### localStorage keys (never clear these casually)
 
@@ -195,10 +199,12 @@ There is **no `/api/muscles`** — it was deleted deliberately. See Decisions.
 
 ### Supabase
 
-Two tables only:
+Three tables:
 
 - `profiles` — `id`, `email`, `name`, plus avatar fields. Upserted on `email`.
 - `friendships` — `requester`, `addressee`, status.
+- `account_data` — private JSONB snapshot keyed by `profiles.id`; accessible only
+  through server routes using the service-role key.
 
 Browser code never queries Supabase directly for friends data; it goes through
 `/api/friends` so identity is always server-verified. `lib/supabase-client.ts`
@@ -214,6 +220,7 @@ GOOGLE_CLIENT_ID          server-only
 GOOGLE_CLIENT_SECRET      server-only
 NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY    server-only
 NEXT_PUBLIC_GOOGLE_MAPS_KEY
 ```
 
@@ -427,8 +434,8 @@ actual VO2max number, and needs no new model.
 
 ## Known gaps / technical debt
 
-- **No server-side sync.** All training data is browser-local. This is the
-  blocker before real users; Supabase has no tables for it yet.
+- Account sync uses a compact full snapshot and last-write-wins semantics. A
+  future multi-device conflict layer should add revisions/tombstones.
 - **`app/activity/page.tsx` fabricates GPS movement** when no real fix is
   available (`Math.random()` heading, ~line 508). The result is saved as real
   distance and pace. It is flagged `demo: true` but should stop accumulating
