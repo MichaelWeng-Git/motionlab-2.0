@@ -8,7 +8,7 @@
 // Consequence: every new workout STACKS — soreness always rises after a
 // session and recovery always drops, then heals with time.
 
-import { buildWorkouts, readBody, workoutMuscleLoad, type Workout } from "./workouts";
+import { buildWorkouts, DEFAULT_SESSION_MIN, readBody, workoutMuscleLoad, type Workout } from "./workouts";
 
 // These moved to lib/workouts (the pairing rule and the duration resolution now
 // live with the model they belong to). Re-exported so app/ callers are unaffected.
@@ -62,11 +62,6 @@ export type MuscleState = {
   needsLength: number;
 };
 
-// Recovery can only be stated when every recent session's dose is known.
-export function recoveryKnown(st: MuscleState | null | undefined): boolean {
-  return !!st && st.measured > 0 && st.needsLength === 0;
-}
-
 // How much each muscle counts toward WHOLE-BODY readiness — proportional to
 // its share of body mass / role in big movements (de Leva-derived, same source
 // as lib/biomech). Trashed quads matter far more than trashed calves.
@@ -102,6 +97,37 @@ export function computeRecovery(load: MuscleLoad | null | undefined): number {
   const weightedAvg = wsum > 0 ? sum / wsum : 0;
   const fatigue = Math.min(1, 0.35 * worst + 0.65 * weightedAvg);
   return Math.round((1 - fatigue) * 100);
+}
+
+// The one interpretation of current recovery for every surface. Consumers do
+// not inspect MuscleState counters or call computeRecovery themselves.
+export type RecoveryState =
+  | { kind: "known"; pct: number; load: MuscleLoad }
+  | { kind: "assumed-duration"; pct: number; load: MuscleLoad; assumedWorkouts: number }
+  | { kind: "unmeasured"; unmeasuredWorkouts: number }
+  | { kind: "empty" };
+
+export function getRecoveryState(state: MuscleState | null | undefined = computeMuscleState()): RecoveryState {
+  if (!state) return { kind: "empty" };
+  if (state.measured === 0) {
+    return state.unmeasured > 0
+      ? { kind: "unmeasured", unmeasuredWorkouts: state.unmeasured }
+      : { kind: "empty" };
+  }
+  const pct = computeRecovery(state.load);
+  return state.needsLength > 0
+    ? { kind: "assumed-duration", pct, load: state.load, assumedWorkouts: state.needsLength }
+    : { kind: "known", pct, load: state.load };
+}
+
+/** Identical athlete-facing state copy everywhere, including assistant context. */
+export function recoveryStateText(state: RecoveryState): string {
+  switch (state.kind) {
+    case "known": return "Recovery";
+    case "assumed-duration": return `Recovery · ${DEFAULT_SESSION_MIN} min assumed`;
+    case "unmeasured": return `${state.unmeasuredWorkouts} recent ${state.unmeasuredWorkouts === 1 ? "workout has" : "workouts have"} no measurable muscle data`;
+    case "empty": return "No recent training";
+  }
 }
 
 export const MUSCLE_NAMES: Record<MuscleKey, string> = {

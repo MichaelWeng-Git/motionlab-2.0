@@ -5,14 +5,16 @@ import { useRouter } from "next/navigation";
 import { BoltCell } from "@/components/BoltCell";
 import { CHARGE_META, getChargeDetail, type ChargeDetail } from "@/lib/charge";
 import { DEFAULT_SESSION_MIN } from "@/lib/workouts";
+import { getRecoveryState, recoveryStateText, type RecoveryState } from "@/lib/muscles";
 
 const DAY = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
 export default function ChargePage() {
   const router = useRouter();
   const [detail, setDetail] = useState<ChargeDetail | null | undefined>(undefined);
+  const [recovery, setRecovery] = useState<RecoveryState | null>(null);
 
-  useEffect(() => setDetail(getChargeDetail()), []);
+  useEffect(() => { setDetail(getChargeDetail()); setRecovery(getRecoveryState()); }, []);
 
   if (detail === undefined) {
     return <div className="px-5 pt-5"><div className="h-[310px] animate-pulse rounded-2xl bg-white/70" /></div>;
@@ -87,6 +89,7 @@ export default function ChargePage() {
               <Signal label="Acute : chronic" value={detail.ratio == null ? "Baseline still forming" : `${detail.ratio.toFixed(2)} ×`} active={detail.ratio != null && detail.ratio >= 1.3} />
             </div>
             {detail.assumedWorkouts > 0 && <p className="mt-4 rounded-xl bg-award-gold-wash px-3 py-2 text-center text-[11px] font-bold text-[#8A6217]">{detail.assumedWorkouts} {detail.assumedWorkouts === 1 ? "session uses" : "sessions use"} the editable {DEFAULT_SESSION_MIN} min assumption</p>}
+            {recovery && <p className="mt-3 text-center text-[11px] font-bold text-ink-muted">{recoveryStateText(recovery)}{recovery.kind === "known" || recovery.kind === "assumed-duration" ? ` · ${recovery.pct}%` : ""}</p>}
           </section>
         </>
       )}

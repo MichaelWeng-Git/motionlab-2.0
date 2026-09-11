@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MuscleSpin } from "@/components/MuscleMap";
 import {
-  MUSCLE_NAMES, computeMuscleState, getMuscleHistory, muscleGroupValue,
+  MUSCLE_NAMES, computeMuscleState, getMuscleHistory, getRecoveryState, recoveryStateText, muscleGroupValue,
   type MuscleHistoryDay, type MuscleKey, type MuscleLoad, type MuscleState,
 } from "@/lib/muscles";
 import { intensityColor } from "@/lib/palette";
@@ -37,6 +37,7 @@ export default function MusclesPage() {
   }, [selected, state]);
 
   const current = state ? muscleGroupValue(state.load, selected) : 0;
+  const recovery = getRecoveryState(state);
   const isolated = useMemo<MuscleLoad>(() => {
     if (!state) return {};
     const rec = state.load as Record<string, number>;
@@ -53,13 +54,13 @@ export default function MusclesPage() {
 
       {state === undefined ? (
         <div className="mt-3 h-[560px] animate-pulse rounded-2xl bg-white/70" />
-      ) : !state || state.measured === 0 ? (
+      ) : !state || recovery.kind === "empty" || recovery.kind === "unmeasured" ? (
         <section className="mt-3 overflow-hidden rounded-2xl bg-graphite p-6 text-white shadow-lift">
           <p className="text-[10px] font-black tracking-[0.18em] text-[#7FD9AE]">MEASURED FROM MOVEMENT</p>
           <h2 className="mt-12 font-golden text-3xl leading-none">NO MUSCLE DATA YET</h2>
           <p className="mt-3 text-sm font-semibold leading-relaxed text-white/75">Analyse a clear full-body video to measure which muscle groups carried the session.</p>
           <button onClick={() => router.push("/analyze")} className="btn-press mt-6 w-full rounded-full bg-white py-3 text-sm font-black text-ink">Analyse movement</button>
-          {state?.unmeasured ? <p className="mt-3 text-center text-[10px] font-bold text-white/50">{state.unmeasured} recent {state.unmeasured === 1 ? "workout has" : "workouts have"} no measurable muscle data</p> : null}
+          <p className="mt-3 text-center text-[10px] font-bold text-white/50">{recoveryStateText(recovery)}</p>
         </section>
       ) : (
         <>
@@ -109,9 +110,10 @@ export default function MusclesPage() {
           </section>
 
           <section className="mt-3 rounded-2xl bg-white p-4 shadow-soft">
+            <div className="mb-3 flex items-center justify-between"><span className="text-xs font-bold text-ink-soft">{recoveryStateText(recovery)}</span><span className="font-golden text-lg text-ink">{recovery.kind === "known" || recovery.kind === "assumed-duration" ? `${recovery.pct}%` : "—"}</span></div>
             <div className="flex items-center justify-between"><span className="text-xs font-bold text-ink-soft">Measured workouts</span><span className="font-golden text-lg text-ink">{state.measured}</span></div>
             {state.unmeasured > 0 && <div className="mt-3 flex items-center justify-between"><span className="text-xs font-bold text-ink-soft">Without muscle measurement</span><span className="font-golden text-lg text-ink-muted">{state.unmeasured}</span></div>}
-            {state.needsLength > 0 && <p className="mt-3 rounded-xl bg-award-gold-wash px-3 py-2 text-center text-[11px] font-bold text-[#8A6217]">Session length is still assumed for {state.needsLength} measured {state.needsLength === 1 ? "workout" : "workouts"}</p>}
+            {recovery.kind === "assumed-duration" && <p className="mt-3 rounded-xl bg-award-gold-wash px-3 py-2 text-center text-[11px] font-bold text-[#8A6217]">{recoveryStateText(recovery)} for {recovery.assumedWorkouts} measured {recovery.assumedWorkouts === 1 ? "workout" : "workouts"}</p>}
           </section>
         </>
       )}

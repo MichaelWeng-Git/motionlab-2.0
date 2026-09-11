@@ -13,7 +13,7 @@ import dynamic from "next/dynamic";
 import { buildLoadMonth, loadColor, type LoadMonth } from "@/lib/fitness";
 import { Gauge } from "@/components/Gauge";
 import {
-  computeRecovery, fetchMuscleState, getCachedMuscleState,
+  fetchMuscleState, getCachedMuscleState, getRecoveryState, recoveryStateText,
   recoveryColor, toLR, type MuscleState,
 } from "@/lib/muscles";
 import { SURFACE } from "@/lib/palette";
@@ -62,7 +62,7 @@ export default function LoadPage() {
   const rows = load
     ? (Object.entries(toLR(load)) as [string, number][]).filter(([, v]) => v > 0.02).sort((a, b) => b[1] - a[1])
     : [];
-  const recovery = load ? computeRecovery(load) : null;
+  const recovery = getRecoveryState(muscles);
   // tapping a row isolates that muscle on the body; tapping again shows all
   const bodyLoad = picked ? { [picked]: load?.[picked as keyof typeof load] ?? 1 } : (load ?? {});
 
@@ -166,13 +166,13 @@ export default function LoadPage() {
           {rows.length > 0 && (
             <div className="mt-3 overflow-hidden rounded-2xl bg-white px-5 py-4 shadow-soft">
               <div className="flex items-baseline justify-between">
-                <p className="font-golden text-[13px] leading-none text-ink">STILL RECOVERING</p>
+                <p className="font-golden text-[13px] leading-none text-ink">{recoveryStateText(recovery).toUpperCase()}</p>
                 {picked ? (
                   <button onClick={() => setPicked(null)} className="text-[11px] font-bold text-ink-muted underline-offset-2 hover:underline">
                     show all
                   </button>
-                ) : recovery !== null ? (
-                  <p className="font-golden text-[13px] leading-none" style={{ color: recoveryColor(recovery) }}>{recovery}%</p>
+                ) : recovery.kind === "known" || recovery.kind === "assumed-duration" ? (
+                  <p className="font-golden text-[13px] leading-none" style={{ color: recoveryColor(recovery.pct) }}>{recovery.pct}%</p>
                 ) : null}
               </div>
               <div className="mt-1 flex justify-center">
@@ -202,6 +202,11 @@ export default function LoadPage() {
                   );
                 })}
               </div>
+            </div>
+          )}
+          {rows.length === 0 && muscles && (
+            <div className="mt-3 rounded-2xl bg-white p-5 text-center shadow-soft">
+              <p className="text-[13px] font-semibold text-ink-soft">{recoveryStateText(recovery)}</p>
             </div>
           )}
         </>

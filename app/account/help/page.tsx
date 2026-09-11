@@ -5,7 +5,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { computeMuscleState, computeRecovery } from "@/lib/muscles";
+import { computeMuscleState, getRecoveryState, recoveryStateText } from "@/lib/muscles";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -17,8 +17,8 @@ function buildContext() {
     // the SAME function every screen calls — the assistant must never quote a
     // recovery number the user cannot see on the page
     const ai = computeMuscleState();
-    const load = ai?.load ?? null;
-    const recoveryPct = load ? computeRecovery(load) : null;
+    const recovery = getRecoveryState(ai);
+    const load = recovery.kind === "known" || recovery.kind === "assumed-duration" ? recovery.load : null;
     const prof = JSON.parse(localStorage.getItem("ml_profile") ?? "{}") as { weight?: number; height?: number };
     type Sess = { sport?: string; action?: string; score?: number; date?: string; report?: { biomech?: { reps?: unknown[]; tempo?: { avgRepS?: number | null } } } };
     const sessions = (JSON.parse(localStorage.getItem("ml_sessions") ?? "[]") as Sess[]).slice(-5).map((s) => ({
@@ -34,7 +34,8 @@ function buildContext() {
       weightKg: prof.weight ?? null,
       heightCm: prof.height ?? null,
       muscleLoad: load,
-      recoveryPct,
+      recovery,
+      recoveryText: recoveryStateText(recovery),
       protein48h,
       proteinTargetPerDay: prof.weight ? Math.round(prof.weight * 1.6) : null,
       recentSessions: sessions,

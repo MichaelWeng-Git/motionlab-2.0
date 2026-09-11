@@ -23,7 +23,7 @@ import { fetchFriends, iconOf, syncMe, type Person } from "@/lib/friends";
 import { getGoals, RING_COLORS, DEFAULT_GOALS, type Goals } from "@/lib/goals";
 import { getCharge, CHARGE_META, type Charge } from "@/lib/charge";
 import { touchDailyStreak } from "@/lib/streak";
-import { computeRecovery, DEFAULT_SESSION_MIN, fetchMuscleState, getCachedMuscleState, recoveryColor, type MuscleState } from "@/lib/muscles";
+import { DEFAULT_SESSION_MIN, fetchMuscleState, getCachedMuscleState, getRecoveryState, recoveryColor, recoveryStateText, type MuscleState, type RecoveryState } from "@/lib/muscles";
 import { buildLoadMonth, loadColor, type LoadMonth } from "@/lib/fitness";
 import { SIGNAL } from "@/lib/palette";
 import { buildFormProfile, CAP_ORDER, type FormProfile } from "@/lib/form";
@@ -74,6 +74,7 @@ export default function Home() {
   // MUSCLES: the AI model's read of what the body worked (lib/muscles —
   // real analyses + meals in, per-muscle load out; null = nothing to show)
   const [muscles, setMuscles] = useState<MuscleState | null>(null);
+  const recovery = getRecoveryState(muscles);
   // true-3D body is the default; only fall back to the flat figures if the
   // model is genuinely missing. Optimistic so the old images never flash in.
   const [has3d, setHas3d] = useState(true);
@@ -483,15 +484,14 @@ export default function Home() {
             {/* WHOOP-style recovery bar — one strip. Full green = fully
                 recovered = clean body; it drains and reddens exactly as the
                 muscles above light up (both derive from the same real loads). */}
-            {muscles && muscles.measured > 0 ? (
+            {recovery.kind === "known" || recovery.kind === "assumed-duration" ? (
               <RecoveryBar
-                load={muscles.load}
+                recovery={recovery}
                 animate={freshAnalysis}
-                assumed={muscles.needsLength > 0}
               />
             ) : (
               <p className="mt-1.5 text-center text-[11px] font-bold text-ink-soft">
-                {muscles ? "No measured sessions yet" : "Reading your sessions…"}
+                {muscles ? recoveryStateText(recovery) : "Reading your sessions…"}
               </p>
             )}
           </div>
@@ -756,10 +756,9 @@ function FitLine({ y0, y1 }: { y0: number; y1: number }) {
 // hard bands): pure red at ≤25, red→amber to 50, amber→green to 90 — so 70%
 // reads yellow-green, not full green. The 100→value drain plays ONLY right
 // after a new analysis (animate); ordinary visits show the value directly.
-function RecoveryBar({ load, animate, assumed }: { load: import("@/lib/muscles").MuscleLoad; animate: boolean; assumed: boolean }) {
+function RecoveryBar({ recovery, animate }: { recovery: Extract<RecoveryState, { kind: "known" | "assumed-duration" }>; animate: boolean }) {
+  const { load, pct: target } = recovery;
   const hasData = Object.keys(load).length > 0;
-  // ONE formula, shared with the assistant and every other reader
-  const target = computeRecovery(load);
 
   // the drain CONTINUES from wherever recovery stood last time (63 → 57),
   // never restarting from 100 — only the very first analysis starts at 100
@@ -793,7 +792,7 @@ function RecoveryBar({ load, animate, assumed }: { load: import("@/lib/muscles")
     <div className="mt-1.5">
       <div className="flex items-baseline justify-between">
         <span className="text-[10px] font-bold uppercase tracking-wide text-ink-muted">
-          {assumed ? "Recovery · 30 min assumed" : "Recovery"}
+          {recoveryStateText(recovery)}
         </span>
         <span className="font-golden text-[13px] leading-none tabular-nums" style={{ color }}>{shown}%</span>
       </div>
