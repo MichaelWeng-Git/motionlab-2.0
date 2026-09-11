@@ -334,7 +334,7 @@ export default function Home() {
       {/* greeting — pure text; every control lives in the top bar's right
           cluster, so nothing floats loose down here */}
       <div className="animate-fade-up">
-        <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-ink-muted">
+        <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-signal-good">
           {new Date().toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}
         </p>
         <h1 className="mt-0.5 text-[26px] font-extrabold tracking-tight">{name ? `Hey, ${name}` : "Hey there"}</h1>
@@ -426,7 +426,7 @@ export default function Home() {
             );
           })()}
         </Link>
-        <Link href="/load" className="gk-card block flex-1 p-5 transition active:scale-[0.98]">
+        <Link href="/load" className="gk-card block flex-1 !bg-paper p-5 transition active:scale-[0.98]">
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-2">
               <span className="grid h-7 w-7 place-items-center rounded-lg" style={{ background: `${SIGNAL.good}1C` }}>
@@ -455,7 +455,7 @@ export default function Home() {
 
         {/* MUSCLES — the AI-read body, spinnable, standing tall on the right */}
         <div className="h-full" ref={musclesRef}>
-          <div className="gk-card flex h-full flex-col overflow-hidden p-4 pb-3">
+          <div className="gk-card flex h-full flex-col overflow-hidden !bg-volt-mist p-4 pb-3">
             <Link href="/muscles" className="flex items-center justify-center gap-2">
               <span className="grid h-7 w-7 place-items-center rounded-lg" style={{ background: "#62D98B24" }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2E9E5B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -536,7 +536,7 @@ export default function Home() {
       {/* LEADERBOARD — after your own status (every pro app ranks social
           below self); past 3 rows the 4th sits fogged behind "More" */}
       <section className="mt-4">
-        <div className="gk-card overflow-hidden">
+        <div className="gk-card overflow-hidden !bg-cream">
           <div className="flex items-center justify-between px-5 pb-2 pt-4">
             <span className="flex items-center gap-2.5">
               <span className="grid h-8 w-8 place-items-center rounded-xl" style={{ background: "#E8A13C24" }}>
