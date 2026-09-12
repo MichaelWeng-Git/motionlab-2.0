@@ -1,0 +1,68 @@
+"use client";
+
+import Link from "next/link";
+import dynamic from "next/dynamic";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { findActivity, type StoredActivity } from "@/lib/activities";
+import { distanceUnit, distanceValue, getPreferences, type UnitSystem } from "@/lib/preferences";
+
+const RouteMap = dynamic(() => import("@/components/LiveMap").then((module) => module.LiveMap), { ssr: false });
+
+export default function ActivityDetailPage() {
+  const { id } = useParams<{ id: string }>();
+  const [activity, setActivity] = useState<StoredActivity | null | undefined>(undefined);
+  const [units, setUnits] = useState<UnitSystem>("metric");
+
+  useEffect(() => {
+    setActivity(findActivity(id)?.activity ?? null);
+    setUnits(getPreferences().units);
+  }, [id]);
+
+  if (activity === undefined) return <div className="px-5 pt-6"><div className="h-[520px] animate-pulse rounded-2xl bg-white/70" /></div>;
+  if (!activity) return <div className="px-5 pt-8"><Link href="/activities" className="grid h-9 w-9 place-items-center rounded-full bg-white shadow-soft">←</Link><section className="mt-6 rounded-2xl bg-white p-6 text-center shadow-soft"><h1 className="font-golden text-[24px] leading-none">ACTIVITY NOT FOUND</h1><Link href="/activities" className="mt-5 inline-flex rounded-full bg-ink px-5 py-3 text-sm font-bold text-white">Back to activities</Link></section></div>;
+
+  const isGps = activity.mode === "gps";
+  const hasRoute = isGps && !!activity.path && activity.path.length > 1;
+  const distance = distanceValue(activity.meters ?? 0, units);
+  const unit = distanceUnit(units);
+  const paceSeconds = activity.meters && activity.meters > 0 ? activity.seconds / distance : null;
+  const pace = paceSeconds != null && Number.isFinite(paceSeconds) ? `${Math.floor(paceSeconds / 60)}:${String(Math.round(paceSeconds % 60)).padStart(2, "0")}` : null;
+  const isRide = activity.sport === "Ride" || activity.sport === "Cycling";
+  const averageSpeed = activity.meters && activity.seconds > 0
+    ? ((activity.meters / activity.seconds) * (units === "imperial" ? 2.23694 : 3.6)).toFixed(1)
+    : null;
+  const duration = `${Math.floor(activity.seconds / 60)}:${String(activity.seconds % 60).padStart(2, "0")}`;
+
+  return <div className="stagger pb-10">
+    <header className="flex items-center gap-3 px-5 pt-6"><Link href="/activities" className="grid h-9 w-9 place-items-center rounded-full bg-white shadow-soft">←</Link><div className="min-w-0"><p className="text-[11px] font-black uppercase tracking-[0.16em] text-ink-muted">{activity.sport}</p><h1 className="truncate font-golden text-[24px] leading-none">{activity.name ?? activity.sport}</h1></div></header>
+
+    <section className="mt-4 overflow-hidden bg-graphite text-white shadow-lift">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {activity.thumb ? <img src={activity.thumb} alt="Recorded route" className="h-64 w-full object-cover" /> : hasRoute ? <RouteMap center={activity.path![0]} path={activity.path!} fit interactive={false} className="h-64 w-full" /> : <div className="grid h-40 place-items-center"><p className="text-sm font-bold text-white/60">{isGps ? "No GPS route was recorded" : "Timed activity"}</p></div>}
+      <div className="px-5 py-5"><p className="text-sm font-semibold text-white/65">{new Date(activity.date).toLocaleString(undefined, { weekday: "long", day: "numeric", month: "long", hour: "numeric", minute: "2-digit" })}</p><div className={`mt-5 grid ${isGps ? "grid-cols-3" : "grid-cols-1"}`}>
+        <Metric value={duration} label="TIME" />
+        {isGps && <Metric value={(activity.meters ?? 0) > 0 ? distance.toFixed(2) : "—"} unit={unit.toUpperCase()} label="DISTANCE" />}
+        {isGps && <Metric value={isRide ? averageSpeed ?? "—" : pace ?? "—"} unit={isRide ? `${unit}/H` : `/${unit}`} label={isRide ? "AVG SPEED" : "AVG PACE"} />}
+      </div></div>
+    </section>
+
+    {(activity.exertion != null || activity.elevGain != null || activity.kcal != null) && <section className="mx-5 mt-4 rounded-2xl bg-white p-5 shadow-soft"><h2 className="font-golden text-[18px] leading-none">SESSION DETAILS</h2><div className="mt-4 grid grid-cols-3 gap-2">
+      {activity.exertion != null && <SmallMetric value={`${activity.exertion}/10`} label="Effort" />}
+      {activity.elevGain != null && isGps && <SmallMetric value={`${Math.round(activity.elevGain)} m`} label="Elevation" />}
+      {activity.kcal != null && <SmallMetric value={`${Math.round(activity.kcal)}`} label="Est. kcal" />}
+    </div></section>}
+
+    {activity.splits && activity.splits.length > 0 && <section className="mx-5 mt-4 rounded-2xl bg-white p-5 shadow-soft"><h2 className="font-golden text-[18px] leading-none">SPLITS</h2><div className="mt-3 divide-y divide-black/5">{activity.splits.map((split) => <div key={split.km} className="flex items-center justify-between py-3"><span className="text-sm font-bold text-ink">KM {split.km}</span><span className="font-golden text-lg text-ink">{Math.floor(split.seconds / 60)}:{String(split.seconds % 60).padStart(2, "0")}</span></div>)}</div></section>}
+
+    {activity.description && <section className="mx-5 mt-4 rounded-2xl bg-cream p-5 shadow-soft"><h2 className="font-golden text-[18px] leading-none">NOTES</h2><p className="mt-3 text-[13px] font-semibold leading-relaxed text-ink">{activity.description}</p></section>}
+  </div>;
+}
+
+function Metric({ value, unit, label }: { value: string; unit?: string; label: string }) {
+  return <div className="text-center"><p className="font-golden text-[28px] leading-none">{value}{unit && <span className="ml-1 font-sans text-[11px] font-bold text-white/55">{unit}</span>}</p><p className="mt-2 text-[11px] font-black tracking-[0.12em] text-white/45">{label}</p></div>;
+}
+
+function SmallMetric({ value, label }: { value: string; label: string }) {
+  return <div className="rounded-xl bg-paper px-2 py-3 text-center"><p className="font-golden text-xl leading-none text-ink">{value}</p><p className="mt-1 text-[11px] font-bold text-ink-muted">{label}</p></div>;
+}

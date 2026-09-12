@@ -5,6 +5,35 @@
 
 const KEY = "ml_activities";
 
+export type StoredActivity = {
+  id?: string;
+  name?: string;
+  sport: string;
+  mode?: "gps" | "court" | "pool";
+  seconds: number;
+  meters?: number;
+  description?: string | null;
+  exertion?: number;
+  privacy?: "everyone" | "followers" | "private";
+  splits?: { km: number; seconds: number }[] | null;
+  elevGain?: number;
+  kcal?: number | null;
+  path?: [number, number][] | null;
+  thumb?: string;
+  demo?: boolean;
+  date: string;
+};
+
+export function activityId(activity: StoredActivity, index: number): string {
+  return activity.id ?? `legacy-${index}`;
+}
+
+export function findActivity(id: string): { activity: StoredActivity; index: number } | null {
+  const activities = readActivities<StoredActivity>();
+  const index = activities.findIndex((activity, itemIndex) => activityId(activity, itemIndex) === id);
+  return index >= 0 ? { activity: activities[index], index } : null;
+}
+
 export function readActivities<T = Record<string, unknown>>(): T[] {
   try {
     const value = JSON.parse(localStorage.getItem(KEY) ?? "[]");

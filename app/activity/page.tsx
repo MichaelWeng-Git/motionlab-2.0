@@ -583,6 +583,7 @@ export default function Activity() {
     setSaveError(false);
     try {
       addActivity({
+        id: crypto.randomUUID(),
         name: actName.trim() || defaultName(sport),
         sport: sport.label,
         mode: sport.mode,

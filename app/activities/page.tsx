@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { SIcon, type SIconName } from "@/components/SIcon";
 import type { LatLng } from "@/components/LiveMap";
 import { distanceUnit, distanceValue, getPreferences, type UnitSystem } from "@/lib/preferences";
-import { deleteActivity, readActivities } from "@/lib/activities";
+import { activityId, deleteActivity, readActivities, type StoredActivity } from "@/lib/activities";
 
 const LeafletMap = dynamic(() => import("@/components/LiveMap").then((m) => m.LiveMap), { ssr: false });
 
@@ -18,19 +18,9 @@ const SPORT_ICON: Record<string, SIconName> = {
 const iconFor = (sport: string): SIconName =>
   SPORT_ICON[sport] ?? SPORT_ICON[Object.keys(SPORT_ICON).find((k) => sport.includes(k)) ?? ""] ?? "run";
 
-type Act = {
-  name?: string;
-  sport: string;
+type Act = StoredActivity & {
   emoji?: string;
-  mode?: string;
-  seconds: number;
-  meters?: number;
   stats?: { v: string; l: string }[];
-  privacy?: string;
-  path?: LatLng[] | null;
-  thumb?: string;
-  demo?: boolean;   // route was simulated, not GPS-recorded — must stay visible
-  date: string;
 };
 
 export default function Activities() {
@@ -139,8 +129,8 @@ export default function Activities() {
                   )}
                 </div>
 
-                {/* route */}
-                <div className="mt-3 h-40 overflow-hidden">
+                {/* route + measured summary open the full activity record */}
+                <Link href={`/activities/${activityId(a, i)}`} className="mt-3 block h-40 overflow-hidden">
                   {isGps && a.thumb ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={a.thumb} alt="Route" className="h-full w-full object-cover" />
@@ -157,16 +147,16 @@ export default function Activities() {
                       <SIcon name={iconFor(a.sport)} size={44} className="relative" />
                     </div>
                   )}
-                </div>
+                </Link>
 
-                <div className="grid grid-cols-3 divide-x divide-black/5 py-3.5">
+                <Link href={`/activities/${activityId(a, i)}`} className="grid grid-cols-3 divide-x divide-black/5 py-3.5">
                   {stats.slice(0, 3).map((s) => (
                     <div key={s.l} className="text-center">
                       <p className="text-lg font-extrabold tabular-nums">{s.v}</p>
                       <p className="mt-0.5 text-[11px] font-bold uppercase tracking-widest text-ink-muted">{s.l}</p>
                     </div>
                   ))}
-                </div>
+                </Link>
               </div>
             );
           })}
