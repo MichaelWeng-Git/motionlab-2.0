@@ -283,7 +283,7 @@ export default function Activity() {
 
   // Locate after the user allowed us. Real fix → GPS Ready (their true position).
   // If the browser cannot provide a fix, keep distance unavailable.
-  function attemptLocate(onReady?: () => void) {
+  function attemptLocate(onReady?: () => void, showBlockingError = true) {
     setGps("locating");
     if (!("geolocation" in navigator)) { setGps("off"); setSheet("noLocation"); return; }
     navigator.geolocation.getCurrentPosition(
@@ -293,7 +293,10 @@ export default function Activity() {
         setGps("ready");
         onReady?.();
       },
-      () => { setGps("off"); setSheet("noLocation"); },
+      () => {
+        if (showBlockingError) { setGps("off"); setSheet("noLocation"); }
+        else setGpsLost(true);
+      },
       { enableHighAccuracy: true, maximumAge: 0, timeout: 12000 }
     );
   }
@@ -653,7 +656,7 @@ export default function Activity() {
 
         <div className="mt-4 overflow-hidden rounded-3xl shadow-soft">
           {isGps && path.length > 1 ? (
-            <LiveMap center={path[0]} path={path} fit interactive={false} className="h-44 w-full" />
+            <LeafletMap center={path[0]} path={path} fit interactive={false} className="h-44 w-full" />
           ) : (
             <div className="relative grid h-28 place-items-center bg-ink">
               <div className="absolute inset-0 bg-ink" />
@@ -878,7 +881,7 @@ export default function Activity() {
             <button
               onClick={() => {
                 // fresh GPS fix first; falls back to the latest path point
-                attemptLocate();
+                attemptLocate(undefined, phase !== "live");
                 setCenter((c) => [...(path[path.length - 1] ?? c)] as LatLng);
               }}
               className="grid h-11 w-11 place-items-center rounded-full bg-white text-ink shadow-soft transition active:scale-95"
@@ -1165,7 +1168,7 @@ export default function Activity() {
                 Save activity
               </button>
               <button
-                onClick={() => { setSheet(null); setPaused(false); }}
+                onClick={() => { setSheet(null); setPaused(false); setAutoPaused(false); slowSinceRef.current = null; }}
                 className="btn-press w-full rounded-full bg-ink py-3.5 text-[15px] font-bold text-white transition"
               >
                 Resume
