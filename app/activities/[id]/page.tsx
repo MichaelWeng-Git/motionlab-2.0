@@ -22,7 +22,8 @@ export default function ActivityDetailPage() {
   if (activity === undefined) return <div className="px-5 pt-6"><div className="h-[520px] animate-pulse rounded-2xl bg-white/70" /></div>;
   if (!activity) return <div className="px-5 pt-8"><Link href="/activities" className="grid h-9 w-9 place-items-center rounded-full bg-white shadow-soft">←</Link><section className="mt-6 rounded-2xl bg-white p-6 text-center shadow-soft"><h1 className="font-golden text-[24px] leading-none">ACTIVITY NOT FOUND</h1><Link href="/activities" className="mt-5 inline-flex rounded-full bg-ink px-5 py-3 text-sm font-bold text-white">Back to activities</Link></section></div>;
 
-  const isGps = activity.mode === "gps";
+  const isGps = activity.mode === "gps" || (!activity.mode && (!!activity.path?.length || (activity.meters ?? 0) > 0));
+  const hasMeasuredElevation = activity.elevMeasured === true || (activity.elevGain ?? 0) > 0;
   const hasRoute = isGps && !!activity.path && activity.path.length > 1;
   const distance = distanceValue(activity.meters ?? 0, units);
   const unit = distanceUnit(units);
@@ -47,9 +48,9 @@ export default function ActivityDetailPage() {
       </div></div>
     </section>
 
-    {(activity.exertion != null || activity.elevGain != null || activity.kcal != null) && <section className="mx-5 mt-4 rounded-2xl bg-white p-5 shadow-soft"><h2 className="font-golden text-[18px] leading-none">SESSION DETAILS</h2><div className="mt-4 grid grid-cols-3 gap-2">
+    {(activity.exertion != null || hasMeasuredElevation || activity.kcal != null) && <section className="mx-5 mt-4 rounded-2xl bg-white p-5 shadow-soft"><h2 className="font-golden text-[18px] leading-none">SESSION DETAILS</h2><div className="mt-4 grid grid-cols-3 gap-2">
       {activity.exertion != null && <SmallMetric value={`${activity.exertion}/10`} label="Effort" />}
-      {activity.elevGain != null && isGps && <SmallMetric value={`${Math.round(activity.elevGain)} m`} label="Elevation" />}
+      {hasMeasuredElevation && isGps && <SmallMetric value={`${Math.round(activity.elevGain ?? 0)} m`} label="Elevation" />}
       {activity.kcal != null && <SmallMetric value={`${Math.round(activity.kcal)}`} label="Est. kcal" />}
     </div></section>}
 

@@ -17,6 +17,7 @@ export type StoredActivity = {
   privacy?: "everyone" | "followers" | "private";
   splits?: { km: number; seconds: number }[] | null;
   elevGain?: number;
+  elevMeasured?: boolean;
   kcal?: number | null;
   path?: [number, number][] | null;
   thumb?: string;

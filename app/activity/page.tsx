@@ -144,6 +144,7 @@ export default function Activity() {
   const splitAnchorRef = useRef({ dist: 0, sec: 0 });
   const [elevGain, setElevGain] = useState(0);
   const elevRef = useRef<{ ref: number | null; win: number[] }>({ ref: null, win: [] });
+  const elevationMeasuredRef = useRef(false);
   const [kcal, setKcal] = useState(0);
   const weightRef = useRef<number | null>(null);
   const smoothSpeedRef = useRef(0); // exp-smoothed m/s for auto-pause decisions
@@ -205,6 +206,7 @@ export default function Activity() {
   // elevation gain: smoothed altitude + 10m hysteresis (Strava's GPS-only rule)
   function recordAltitude(alt: number | null, altAcc: number | null) {
     if (alt == null || (altAcc != null && altAcc > 15)) return;
+    elevationMeasuredRef.current = true;
     const e = elevRef.current;
     e.win.push(alt);
     if (e.win.length > 7) e.win.shift();
@@ -221,7 +223,7 @@ export default function Activity() {
       localStorage.setItem("ml_rec_checkpoint", JSON.stringify({
         sport: sport.key, sec: secondsRef.current, meters: metersRef.current,
         path: pathRef.current, splits: splitsRef.current, anchor: splitAnchorRef.current,
-        kcal: kcalRef.current, elev: elevGainRef.current, ts: Date.now(),
+        kcal: kcalRef.current, elev: elevGainRef.current, elevMeasured: elevationMeasuredRef.current, ts: Date.now(),
       }));
     } catch {}
   }
@@ -237,6 +239,7 @@ export default function Activity() {
       splitAnchorRef.current = c.anchor ?? { dist: (c.splits?.length ?? 0) * 1000, sec: c.sec };
       setKcal(c.kcal ?? 0);
       setElevGain(c.elev ?? 0);
+      elevationMeasuredRef.current = c.elevMeasured === true || c.elev > 0;
       savedRef.current = false;
       setSheet(null);
       setPhase("live");
@@ -519,6 +522,7 @@ export default function Activity() {
     splitAnchorRef.current = { dist: 0, sec: 0 };
     setElevGain(0);
     elevRef.current = { ref: null, win: [] };
+    elevationMeasuredRef.current = false;
     setKcal(0);
     setGpsLost(false);
     setShowSplits(false);
@@ -581,9 +585,10 @@ export default function Activity() {
     if (savedRef.current) return;
     savedRef.current = true;
     setSaveError(false);
+    const id = crypto.randomUUID();
     try {
       addActivity({
-        id: crypto.randomUUID(),
+        id,
         name: actName.trim() || defaultName(sport),
         sport: sport.label,
         mode: sport.mode,
@@ -594,7 +599,8 @@ export default function Activity() {
         exertion,
         privacy: visibility,
         splits: splits.length ? splits : null,
-        elevGain: Math.round(elevGain),
+        elevGain: elevationMeasuredRef.current ? Math.round(elevGain) : undefined,
+        elevMeasured: elevationMeasuredRef.current,
         kcal: hasCalorieEstimate ? Math.round(kcal) : null,
         path: isGps ? path : null,
         thumb: isGps ? routeThumb(path) : undefined, // static — shows instantly in the list
@@ -607,8 +613,7 @@ export default function Activity() {
     }
     localStorage.removeItem("ml_rec_checkpoint");
     speak("Activity saved");
-    // saved — straight home, no detour through the activities list
-    router.push("/");
+    router.push(`/activities/${id}`);
   }
 
   function discard() {
@@ -629,6 +634,7 @@ export default function Activity() {
     splitsRef.current = [];
     setKcal(0);
     setElevGain(0);
+    elevationMeasuredRef.current = false;
     setDesc("");
   }
 
