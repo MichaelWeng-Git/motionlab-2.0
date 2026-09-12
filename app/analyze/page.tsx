@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { recordSession } from "@/lib/stats";
-import { clearAnalysis, computeAnalysis, saveAnalysis, setReplay, type Frame } from "@/lib/analysis";
+import { clearAnalysis, computeAnalysis, saveAnalysis, setReplay, type AnalysisResult, type Frame } from "@/lib/analysis";
 import { clearReplayDb, saveReplayDb } from "@/lib/replay-db";
 import { refinePose } from "@/lib/pose-post";
 import { createEnsemble, probePeople, type PersonSeed } from "@/lib/ensemble";
@@ -11,11 +11,12 @@ import { createLifter } from "@/lib/lift3d";
 import { createRefiner, spreadRefinement } from "@/lib/pose2d-refine";
 import { drawSkeleton } from "@/lib/draw";
 import { SIGNAL } from "@/lib/palette";
+import { DEFAULT_SESSION_MIN, sessionSecondsOf } from "@/lib/workouts";
 
 // Real skeleton tracking: MediaPipe Pose runs in the browser, frame by frame,
 // drawing the skeleton over the user's actual video. No servers, no API keys.
 
-type Step = "pick" | "who" | "processing" | "error" | "notsport";
+type Step = "pick" | "who" | "processing" | "duration" | "error" | "notsport";
 
 const STAGES = [
   { label: "Preparing video", detail: "Models load on this device" },
@@ -42,11 +43,30 @@ export default function Analyze() {
   const requestAbortRef = useRef<AbortController | null>(null);
   const [fileMeta, setFileMeta] = useState<{ name: string; bytes: number } | null>(null);
   const [cloudEnabled, setCloudEnabled] = useState(false);
+  const [sessionMinutes, setSessionMinutes] = useState(DEFAULT_SESSION_MIN);
+  const pendingRef = useRef<{ final: AnalysisResult; cover?: string } | null>(null);
 
   const pickedFileRef = useRef<File | null>(null);
   const seedRef = useRef<PersonSeed | null>(null);
   const [picker, setPicker] = useState<{ img: string; people: PersonSeed[] } | null>(null);
   const [pickerT, setPickerT] = useState(0); // the timestamp the picker frame came from
+
+  function finishAnalysis(minutes?: number) {
+    const pending = pendingRef.current;
+    if (!pending) return;
+    recordSession({
+      sport: pending.final.sport ?? "Practice",
+      action: pending.final.action ?? "Session",
+      score: pending.final.score,
+      cover: pending.cover,
+      sessionSeconds: minutes && minutes > 0 ? Math.round(minutes * 60) : undefined,
+      report: pending.final,
+    });
+    pendingRef.current = null;
+    import("@/lib/muscles").then((m) => m.fetchMuscleState().catch(() => {})).catch(() => {});
+    try { sessionStorage.setItem("ml_reveal_pending", "1"); } catch {}
+    router.push("/report/latest");
+  }
 
   function onFilePicked(file: File) {
     if (!file.type.startsWith("video/")) {
@@ -81,6 +101,7 @@ export default function Analyze() {
     if (videoUrl) URL.revokeObjectURL(videoUrl);
     setVideoUrl(null);
     setFileMeta(null);
+    pendingRef.current = null;
   }
 
   useEffect(() => () => {
@@ -415,22 +436,21 @@ export default function Analyze() {
           const backup = pickedFileRef.current ?? (await fetch(videoUrl).then((r) => r.blob()).catch(() => null));
           if (backup) saveReplayDb(backup, framesWithBody).catch(() => {});
         } catch {}
-        // store the FULL report per session so any past analysis can be reopened
-        recordSession({
-          sport: final.sport ?? "Practice",
-          action: final.action ?? "Session",
-          score: final.score,
-          cover,
-          report: final,
-        });
-        // warm the muscle model NOW (while the user reads the report) so the
-        // home page's red-fade + recovery-drain start the instant they return
-        import("@/lib/muscles").then((m) => m.fetchMuscleState().catch(() => {})).catch(() => {});
-        // one-shot flag: the NEXT home visit (back from this report) plays the
-        // white→red fade + recovery drain; ordinary tab switches never do
-        try { sessionStorage.setItem("ml_reveal_pending", "1"); } catch {}
+        pendingRef.current = { final, cover };
         setProgress(100);
-        setTimeout(() => router.push("/report/latest"), 600);
+        // A paired GPS workout already supplies a real duration. Otherwise ask
+        // before saving, so Home/LOAD/Recovery get the right first frame.
+        let activities: { sport?: string; seconds?: number; date: string }[] = [];
+        try { activities = JSON.parse(localStorage.getItem("ml_activities") ?? "[]"); } catch {}
+        const pairedDuration = sessionSecondsOf({
+          id: "pending", date: new Date().toISOString(), sport: final.sport,
+          action: final.action, report: final,
+        }, activities);
+        if (pairedDuration) finishAnalysis();
+        else {
+          setSessionMinutes(DEFAULT_SESSION_MIN);
+          setStep("duration");
+        }
       } catch (e) {
         if (!active()) return;
         console.error(e);
@@ -656,6 +676,36 @@ export default function Analyze() {
           </div>
         </section>
       </div>
+
+      {step === "duration" && (
+        <div className="animate-fade-up px-5 pt-5">
+          <p className="text-[11px] font-black tracking-[0.2em] text-signal-good">ANALYSIS COMPLETE</p>
+          <h1 className="mt-2 font-golden text-4xl leading-none text-ink">HOW LONG DID<br />YOU TRAIN?</h1>
+          <section className="mt-6 rounded-3xl bg-graphite p-5 text-white shadow-lift">
+            <p className="text-[12px] font-bold leading-relaxed text-white/65">The video is a sample. Your answer sets the session load and recovery from the first screen.</p>
+            <label className="mt-5 flex items-end justify-center gap-2" htmlFor="session-minutes">
+              <input
+                id="session-minutes"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={360}
+                value={sessionMinutes}
+                onChange={(e) => setSessionMinutes(Math.max(1, Math.min(360, Number(e.target.value) || 1)))}
+                className="w-28 border-b border-white/25 bg-transparent text-center font-golden text-6xl leading-none text-white"
+              />
+              <span className="pb-1 font-golden text-xl text-white/55">MIN</span>
+            </label>
+            <div className="mt-5 grid grid-cols-4 gap-2">
+              {[20, 30, 45, 60].map((minutes) => (
+                <button key={minutes} onClick={() => setSessionMinutes(minutes)} className={`rounded-full py-2 text-[12px] font-extrabold ${sessionMinutes === minutes ? "bg-white text-ink" : "bg-white/10 text-white/70"}`}>{minutes}</button>
+              ))}
+            </div>
+          </section>
+          <button onClick={() => finishAnalysis(sessionMinutes)} className="btn-press mt-4 w-full rounded-full bg-ink py-4 text-[15px] font-extrabold text-white">SAVE {sessionMinutes} MIN SESSION</button>
+          <button onClick={() => finishAnalysis()} className="mt-3 w-full py-3 text-[12px] font-bold text-ink-muted">Skip — use the visible {DEFAULT_SESSION_MIN} min assumption</button>
+        </div>
+      )}
 
       {step === "notsport" && (
         <div className="animate-pop px-5 pt-6 text-center">
