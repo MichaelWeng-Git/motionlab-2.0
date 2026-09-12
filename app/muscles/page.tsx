@@ -5,8 +5,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MuscleSpin } from "@/components/MuscleMap";
 import {
-  MUSCLE_NAMES, computeMuscleState, getMuscleHistory, getRecoveryState, recoveryStateText, muscleGroupValue,
-  type MuscleHistoryDay, type MuscleKey, type MuscleLoad, type MuscleState,
+  MUSCLE_NAMES, computeMuscleState, getMuscleContributors, getMuscleHistory, getRecoveryState, recoveryStateText, muscleGroupValue,
+  type MuscleContributor, type MuscleHistoryDay, type MuscleKey, type MuscleLoad, type MuscleState,
 } from "@/lib/muscles";
 import { intensityColor } from "@/lib/palette";
 
@@ -20,6 +20,7 @@ export default function MusclesPage() {
   const [state, setState] = useState<MuscleState | null | undefined>(undefined);
   const [selected, setSelected] = useState<MuscleKey>("quads");
   const [history, setHistory] = useState<MuscleHistoryDay[]>([]);
+  const [contributors, setContributors] = useState<MuscleContributor[]>([]);
   const [has3d, setHas3d] = useState(false);
 
   useEffect(() => {
@@ -33,7 +34,10 @@ export default function MusclesPage() {
   }, []);
 
   useEffect(() => {
-    if (state) setHistory(getMuscleHistory(selected));
+    if (state) {
+      setHistory(getMuscleHistory(selected));
+      setContributors(getMuscleContributors(selected));
+    }
   }, [selected, state]);
 
   const current = state ? muscleGroupValue(state.load, selected) : 0;
@@ -107,6 +111,33 @@ export default function MusclesPage() {
               })}
             </div>
             {!history.some((d) => d.value != null) && <p className="mt-4 text-center text-xs font-bold text-white/55">No measured sessions for this muscle in the last 14 days</p>}
+          </section>
+
+          <section className="mt-3 rounded-2xl bg-white p-5 shadow-soft">
+            <div className="flex items-baseline justify-between">
+              <h2 className="font-golden text-lg text-ink">WHAT LOADED IT</h2>
+              <span className="text-[11px] font-black tracking-wider text-ink-muted">LAST 14 DAYS</span>
+            </div>
+            {contributors.length ? (
+              <div className="mt-3 divide-y divide-black/[0.06]">
+                {contributors.slice(0, 6).map((item) => {
+                  const duration = item.durationS ? `${Math.round(item.durationS / 60)} min` : "30 min assumed";
+                  const row = (
+                    <div className="flex items-center gap-3 py-3">
+                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-paper font-golden text-lg" style={{ color: intensityColor(item.value * 100) }}>{Math.round(item.value * 100)}</span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-extrabold text-ink">{item.sport}{item.action ? ` · ${item.action}` : ""}</span>
+                        <span className="mt-0.5 block text-[11px] font-bold text-ink-muted">{new Date(item.date).toLocaleDateString(undefined, { month: "short", day: "numeric" })} · {duration}</span>
+                      </span>
+                      {item.reportId && <span className="font-golden text-lg text-ink-muted">›</span>}
+                    </div>
+                  );
+                  return item.reportId ? <button key={item.id} onClick={() => router.push(`/report/${item.reportId}`)} className="block w-full text-left">{row}</button> : <div key={item.id}>{row}</div>;
+                })}
+              </div>
+            ) : (
+              <p className="mt-4 rounded-2xl bg-paper px-4 py-5 text-center text-[12px] font-bold text-ink-muted">No measured {MUSCLE_NAMES[selected].toLowerCase()} load in the last 14 days.</p>
+            )}
           </section>
 
           <section className="mt-3 rounded-2xl bg-white p-4 shadow-soft">

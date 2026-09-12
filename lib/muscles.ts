@@ -148,6 +148,17 @@ export type MuscleHistoryDay = {
   measuredWorkouts: number;
 };
 
+export type MuscleContributor = {
+  id: string;
+  reportId: string | null;
+  date: string;
+  sport: string;
+  action?: string;
+  value: number;
+  durationS: number | null;
+  durationSource: Workout["durationSource"];
+};
+
 // Daily measured dose for one group. null means there was no measurable
 // muscle evidence that day; it is deliberately different from a measured 0.
 export function getMuscleHistory(group: MuscleKey, days = 14): MuscleHistoryDay[] {
@@ -168,6 +179,29 @@ export function getMuscleHistory(group: MuscleKey, days = 14): MuscleHistoryDay[
     for (const load of measured) fresh *= 1 - Math.min(0.85, muscleGroupValue(load, group));
     return { date, value: +(1 - fresh).toFixed(3), measuredWorkouts: measured.length };
   });
+}
+
+export function getMuscleContributors(group: MuscleKey, days = 14): MuscleContributor[] {
+  const body = readBody();
+  const cutoff = Date.now() - days * 86400e3;
+  return buildWorkouts()
+    .filter((workout) => new Date(workout.startedAt).getTime() >= cutoff)
+    .map((workout) => {
+      const load = workoutMuscleLoad(workout, body) as MuscleLoad | null;
+      const value = load ? muscleGroupValue(load, group) : 0;
+      return {
+        id: workout.id,
+        reportId: workout.clips[0]?.id ?? null,
+        date: workout.startedAt,
+        sport: workout.sport,
+        action: workout.action,
+        value,
+        durationS: workout.durationS,
+        durationSource: workout.durationSource,
+      };
+    })
+    .filter((item) => item.value > 0)
+    .sort((a, b) => b.date.localeCompare(a.date));
 }
 
 const ATTR_KEY = "ml_muscle_attr";  // per-session measured loads (diagnostics)
