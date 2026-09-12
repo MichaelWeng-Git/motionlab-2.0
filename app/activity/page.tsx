@@ -184,6 +184,7 @@ export default function Activity() {
   const [desc, setDesc] = useState("");
   const [exertion, setExertion] = useState(5);
   const [visibility, setVisibility] = useState<"everyone" | "followers" | "private">("followers");
+  const [saveError, setSaveError] = useState(false);
   // live mirrors so interval callbacks & checkpoints read fresh values
   const secondsRef = useRef(0);
   const metersRef = useRef(0);
@@ -599,6 +600,7 @@ export default function Activity() {
   function persist() {
     if (savedRef.current) return;
     savedRef.current = true;
+    setSaveError(false);
     try {
       addActivity({
         name: actName.trim() || defaultName(sport),
@@ -617,7 +619,11 @@ export default function Activity() {
         thumb: isGps ? routeThumb(path) : undefined, // static — shows instantly in the list
         date: new Date().toISOString(),
       });
-    } catch {}
+    } catch {
+      savedRef.current = false;
+      setSaveError(true);
+      return;
+    }
     localStorage.removeItem("ml_rec_checkpoint");
     speak("Activity saved");
     // saved — straight home, no detour through the activities list
@@ -750,6 +756,7 @@ export default function Activity() {
         )}
 
         <div className="mt-6 space-y-3 pb-8">
+          {saveError && <div role="alert" className="rounded-2xl bg-signal-work/10 px-4 py-3 text-sm font-bold text-signal-work">Couldn’t save this activity. Your recovery copy is still safe—free some browser storage and try again.</div>}
           <button
             onClick={persist}
             className="w-full rounded-full bg-signal-good py-4 text-[15px] font-extrabold text-white shadow-lift transition active:scale-[0.98]"
