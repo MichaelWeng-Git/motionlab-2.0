@@ -29,6 +29,7 @@ export function CloudSync() {
     const onVisibility = () => { if (document.visibilityState === "hidden") syncAccountData(); };
     const onOnline = () => { retryMs = 2_000; schedule(); };
     window.addEventListener("ml:sessions", schedule);
+    window.addEventListener("ml:activities", schedule);
     window.addEventListener("ml:profile", schedule);
     window.addEventListener("ml:preferences", schedule);
     document.addEventListener("visibilitychange", onVisibility);
@@ -46,6 +47,7 @@ export function CloudSync() {
       if (timer) clearTimeout(timer);
       if (interval) clearInterval(interval);
       window.removeEventListener("ml:sessions", schedule);
+      window.removeEventListener("ml:activities", schedule);
       window.removeEventListener("ml:profile", schedule);
       window.removeEventListener("ml:preferences", schedule);
       document.removeEventListener("visibilitychange", onVisibility);

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { SIcon, type SIconName } from "@/components/SIcon";
 import type { LatLng } from "@/components/LiveMap";
 import { distanceUnit, distanceValue, getPreferences, type UnitSystem } from "@/lib/preferences";
+import { deleteActivity, readActivities } from "@/lib/activities";
 
 const LeafletMap = dynamic(() => import("@/components/LiveMap").then((m) => m.LiveMap), { ssr: false });
 const GoogleMap = dynamic(() => import("@/components/GoogleLiveMap").then((m) => m.GoogleLiveMap), { ssr: false });
@@ -43,7 +44,7 @@ export default function Activities() {
 
   useEffect(() => {
     try {
-      setActs(JSON.parse(localStorage.getItem("ml_activities") ?? "[]"));
+      setActs(readActivities<Act>());
       setUnits(getPreferences().units);
     } catch {}
   }, []);
@@ -55,7 +56,7 @@ export default function Activities() {
     setTimeout(() => {
       setActs((prev) => {
         const next = prev.filter((_, i) => i !== idx);
-        localStorage.setItem("ml_activities", JSON.stringify(next));
+        deleteActivity(idx);
         return next;
       });
       setRemoving(null);

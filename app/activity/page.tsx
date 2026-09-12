@@ -7,6 +7,7 @@ import { SIcon, type SIconName } from "@/components/SIcon";
 import { routeThumb } from "@/lib/route-thumb";
 import type { LatLng } from "@/components/LiveMap";
 import { distanceUnit, distanceValue, getPreferences, type UnitSystem } from "@/lib/preferences";
+import { addActivity } from "@/lib/activities";
 
 // Maps touch `window` — load client-side only. Official Google Maps when the
 // key is set (vector, retina-sharp); Leaflet/tile fallback otherwise.
@@ -605,8 +606,7 @@ export default function Activity() {
     if (savedRef.current) return;
     savedRef.current = true;
     try {
-      const all = JSON.parse(localStorage.getItem("ml_activities") ?? "[]");
-      all.push({
+      addActivity({
         name: actName.trim() || defaultName(sport),
         sport: sport.label,
         mode: sport.mode,
@@ -623,7 +623,6 @@ export default function Activity() {
         thumb: isGps ? routeThumb(path) : undefined, // static — shows instantly in the list
         date: new Date().toISOString(),
       });
-      localStorage.setItem("ml_activities", JSON.stringify(all));
     } catch {}
     localStorage.removeItem("ml_rec_checkpoint");
     speak("Activity saved");
