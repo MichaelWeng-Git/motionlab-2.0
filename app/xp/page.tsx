@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSessions } from "@/lib/stats";
 import { XP_REWARDS, levelForXp, nextTier, xpForLevel, xpFromCounts } from "@/lib/xp";
+import { dayKey } from "@/lib/date";
 
 type XpData = { xp: number; analyses: number; workouts: number; activeDays: number };
 
@@ -14,7 +15,7 @@ export default function XpPage() {
     const sessions = getSessions();
     let activities: { date: string }[] = [];
     try { activities = JSON.parse(localStorage.getItem("ml_activities") ?? "[]"); } catch {}
-    const activeDays = new Set([...sessions.map((s) => s.date), ...activities.map((a) => a.date)].map((d) => d.slice(0, 10))).size;
+    const activeDays = new Set([...sessions.map((s) => s.date), ...activities.map((a) => a.date)].map((d) => dayKey(d))).size;
     const xp = xpFromCounts(sessions.length, activities.length, activeDays);
     setData({ xp, analyses: sessions.length, workouts: activities.length, activeDays });
   }, []);

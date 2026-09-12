@@ -12,6 +12,7 @@
 
 import { legacyDemand, loadFromDemand } from "./biomech";
 import { buildWorkouts, readBody, workoutMuscleLoad } from "./workouts";
+import { dayKey } from "./date";
 import type { AnalysisResult } from "./analysis";
 
 export type DayCell = {
@@ -52,8 +53,6 @@ const WINDOW_MS = 7 * 86400e3;
 export { intensityColor as loadColor } from "./palette";
 
 
-const dayKey = (d: Date) => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-
 export function buildLoadMonth(): LoadMonth | null {
   // ONE entry per training. Before P0-1 this loop ran twice — once over
   // ml_sessions, once over ml_activities — so a filmed recorded run was added
@@ -76,7 +75,7 @@ export function buildLoadMonth(): LoadMonth | null {
   const weekStartMs = Date.now() - 7 * 86400e3;
 
   for (const w of workouts) {
-    const k = w.startedAt.slice(0, 10);
+    const k = dayKey(w.startedAt);
 
     // the dose the CLIPS measured, if any
     const ml = workoutMuscleLoad(w, body);

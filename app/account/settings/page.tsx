@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { EXPORT_KEYS, TRAINING_KEYS, getPreferences, savePreferences, type Preferences } from "@/lib/preferences";
 import { syncClearedAccountData } from "@/lib/cloud-data";
+import { dayKey } from "@/lib/date";
 
 export default function SettingsPage() {
   const [prefs, setPrefs] = useState<Preferences>({ units: "metric", trainingReminders: false, recoveryAlerts: false });
@@ -45,7 +46,7 @@ export default function SettingsPage() {
     const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), version: 1, data }, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = `motionlab-export-${new Date().toISOString().slice(0, 10)}.json`; a.click();
+    a.href = url; a.download = `motionlab-export-${dayKey()}.json`; a.click();
     URL.revokeObjectURL(url);
     setNotice("Export downloaded.");
   }

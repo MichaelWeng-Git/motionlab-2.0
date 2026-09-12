@@ -1,4 +1,5 @@
 import { xpFromCounts } from "./xp";
+import { dayKey } from "./date";
 
 // Real (local) data layer for the prototype.
 // Every number in the UI derives from recorded analysis sessions.
@@ -126,15 +127,15 @@ export function getStats(): Stats {
   const thisWeek = sessions.filter((s) => new Date(s.date) >= startOfWeek);
   // analyses AND recorded workouts both count as "being active"
   const dayKeys = new Set([
-    ...sessions.map((s) => s.date.slice(0, 10)),
-    ...activityDates.map((d) => d.slice(0, 10)),
+    ...sessions.map((s) => dayKey(s.date)),
+    ...activityDates.map((d) => dayKey(d)),
   ]);
 
   // streak: consecutive days ending today/yesterday with >=1 session
   let streak = 0;
   const d = new Date(now);
-  if (!dayKeys.has(d.toISOString().slice(0, 10))) d.setDate(d.getDate() - 1); // allow "yesterday" start
-  while (dayKeys.has(d.toISOString().slice(0, 10))) {
+  if (!dayKeys.has(dayKey(d))) d.setDate(d.getDate() - 1); // allow "yesterday" start
+  while (dayKeys.has(dayKey(d))) {
     streak++;
     d.setDate(d.getDate() - 1);
   }
@@ -152,7 +153,7 @@ export function getStats(): Stats {
     weekCount: thisWeek.length,
     daysActiveThisWeek: new Set(
       [...thisWeek.map((s) => s.date), ...activityDates.filter((d) => new Date(d) >= startOfWeek)].map((d) =>
-        d.slice(0, 10)
+        dayKey(d)
       )
     ).size,
     streakDays: streak,

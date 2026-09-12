@@ -17,6 +17,7 @@ import {
   recoveryColor, toLR, type MuscleState,
 } from "@/lib/muscles";
 import { SURFACE } from "@/lib/palette";
+import { dayKey } from "@/lib/date";
 
 const MuscleBody3D = dynamic(() => import("@/components/MuscleBody3D").then((m) => m.MuscleBody3D), {
   ssr: false,
@@ -41,10 +42,7 @@ const niceName = (k: string) => {
 const MONTH = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY",
   "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
 const WEEKDAYS = ["M", "T", "W", "T", "F", "S", "S"];
-const todayISO = () => {
-  const d = new Date();
-  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-};
+const todayISO = () => dayKey();
 
 export default function LoadPage() {
   const router = useRouter();

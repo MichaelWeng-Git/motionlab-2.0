@@ -73,7 +73,7 @@ export default function Weeks() {
     let j = localStorage.getItem("ml_joined");
     if (!j) {
       const firsts = [...ss.map((s) => s.date), ...a.map((x) => x.date)].sort();
-      j = (firsts[0] ?? new Date().toISOString()).slice(0, 10);
+      j = dayKey(firsts[0] ?? new Date());
       localStorage.setItem("ml_joined", j);
     }
     setJoined(new Date(j + "T00:00:00"));

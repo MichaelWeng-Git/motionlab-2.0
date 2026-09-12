@@ -9,6 +9,7 @@
 // session and recovery always drops, then heals with time.
 
 import { buildWorkouts, DEFAULT_SESSION_MIN, readBody, workoutMuscleLoad, type Workout } from "./workouts";
+import { dayKey } from "./date";
 
 // These moved to lib/workouts (the pairing rule and the duration resolution now
 // live with the model they belong to). Re-exported so app/ callers are unaffected.
@@ -157,9 +158,9 @@ export function getMuscleHistory(group: MuscleKey, days = 14): MuscleHistoryDay[
   return Array.from({ length: days }, (_, index) => {
     const d = new Date(now);
     d.setDate(now.getDate() - (days - 1 - index));
-    const date = d.toISOString().slice(0, 10);
+    const date = dayKey(d);
     const measured = workouts
-      .filter((w) => w.startedAt.slice(0, 10) === date)
+      .filter((w) => dayKey(w.startedAt) === date)
       .map((w) => workoutMuscleLoad(w, body) as MuscleLoad | null)
       .filter((load): load is MuscleLoad => !!load && Object.keys(load).length > 0);
     if (!measured.length) return { date, value: null, measuredWorkouts: 0 };
@@ -344,7 +345,7 @@ export function getDayMuscleLoad(dayISO: string): MuscleLoad {
   const body = readBody();
   // Same Workout model as the live reader, so the two views of one session can
   // never disagree — and a filmed recorded run counts once here too.
-  const day = buildWorkouts().filter((w: Workout) => w.startedAt.slice(0, 10) === dayISO);
+  const day = buildWorkouts().filter((w: Workout) => dayKey(w.startedAt) === dayISO);
   if (!day.length) return {};
 
   const load: MuscleLoad = {};

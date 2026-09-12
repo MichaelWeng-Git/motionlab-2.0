@@ -4,6 +4,8 @@
 //             − coins spent on packs (ml_coins_spent)
 
 import { getSessions } from "@/lib/stats";
+import { dayKey } from "@/lib/date";
+export { dayKey } from "@/lib/date";
 
 export const DAILY_COIN = 10;
 export const RING_COIN = 10; // reward for completing one daily ring
@@ -52,7 +54,7 @@ export function getCoinBalance(): number {
   try {
     const acts = JSON.parse(localStorage.getItem("ml_activities") ?? "[]") as { date: string }[];
     const days = new Set(
-      [...getSessions().map((s) => s.date), ...acts.map((a) => a.date)].map((d) => d.slice(0, 10))
+      [...getSessions().map((s) => s.date), ...acts.map((a) => a.date)].map((d) => dayKey(d))
     ).size;
     const spent = Number(localStorage.getItem("ml_coins_spent") ?? 0) || 0;
     return Math.max(0, days * DAILY_COIN + getBonusCoins() - spent);
@@ -71,7 +73,7 @@ export function getCoinHistory(): CoinTransaction[] {
   try {
     const acts = JSON.parse(localStorage.getItem("ml_activities") ?? "[]") as { date: string }[];
     for (const date of [...getSessions().map((s) => s.date), ...acts.map((a) => a.date)]) {
-      const day = date.slice(0, 10);
+      const day = dayKey(date);
       if (!active.has(day) || date < active.get(day)!) active.set(day, date);
     }
   } catch {}
@@ -89,6 +91,3 @@ export function getCoinHistory(): CoinTransaction[] {
   if (legacySpend) legacy.push({ id: "legacy:spend", date: "", amount: -legacySpend, label: "Previous pack spending", kind: "spend" });
   return [...activityRows, ...rows, ...legacy].sort((a, b) => b.date.localeCompare(a.date));
 }
-
-export const dayKey = (d: Date = new Date()) =>
-  new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);

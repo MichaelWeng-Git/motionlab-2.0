@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Flame, flameLevel } from "@/components/Flame";
 import { getStreakInfo } from "@/lib/streak";
+import { dayKey } from "@/lib/date";
 
 // milestone timeline — grows forever: base nodes, +10 days at a time once
 // you pass the end, and always ONE faded "ghost" target below to chase
@@ -46,7 +47,7 @@ export default function Streak() {
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
-      const key = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+      const key = dayKey(d);
       out.push({ label: "SMTWTFS"[d.getDay()], key, active: info.litDays.has(key), today: i === 0 });
     }
     setDays(out);

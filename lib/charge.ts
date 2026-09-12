@@ -27,6 +27,7 @@ export type ChargeDetail = Charge & {
 
 import { SIGNAL } from "./palette";
 import { buildWorkouts, DEFAULT_SESSION_MIN } from "./workouts";
+import { dayKey } from "./date";
 
 export const CHARGE_META: Record<ChargeState, { word: string; action: string; color: string }> = {
   primed: { word: "PRIMED", action: "PUSH TODAY", color: SIGNAL.good },
@@ -151,7 +152,7 @@ export function getChargeDetail(): ChargeDetail | null {
       date.setDate(today.getDate() - offset);
       const window = d.mins.slice(offset, offset + 28);
       return {
-        date: date.toISOString().slice(0, 10),
+        date: dayKey(date),
         minutes: Math.round(d.mins[offset] ?? 0),
         charge: window.some((v) => v > 0) ? compute(window).value : null,
       };
