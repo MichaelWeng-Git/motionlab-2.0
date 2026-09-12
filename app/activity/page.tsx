@@ -21,16 +21,16 @@ const HAS_GKEY = !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY;
 // accuracy-gated GPS fixes; an unavailable signal never becomes fake movement.
 
 type Mode = "gps" | "court" | "pool";
-type Profile = { key: string; label: string; icon: SIconName; mode: Mode; mps: number };
+type Profile = { key: string; label: string; icon: SIconName; mode: Mode };
 
 const PROFILES: Profile[] = [
-  { key: "run", label: "Run", icon: "run", mode: "gps", mps: 2.6 },
-  { key: "ride", label: "Ride", icon: "ride", mode: "gps", mps: 6.9 },
-  { key: "tennis", label: "Tennis", icon: "tennis", mode: "court", mps: 0 },
-  { key: "basketball", label: "Basketball", icon: "basketball", mode: "court", mps: 0 },
-  { key: "golf", label: "Golf", icon: "golf", mode: "court", mps: 0 },
-  { key: "lift", label: "Strength", icon: "strength", mode: "court", mps: 0 },
-  { key: "swim", label: "Swim", icon: "swim", mode: "pool", mps: 1.1 },
+  { key: "run", label: "Run", icon: "run", mode: "gps" },
+  { key: "ride", label: "Ride", icon: "ride", mode: "gps" },
+  { key: "tennis", label: "Tennis", icon: "tennis", mode: "court" },
+  { key: "basketball", label: "Basketball", icon: "basketball", mode: "court" },
+  { key: "golf", label: "Golf", icon: "golf", mode: "court" },
+  { key: "lift", label: "Strength", icon: "strength", mode: "court" },
+  { key: "swim", label: "Swim", icon: "swim", mode: "pool" },
 ];
 
 const DEFAULT_CENTER: LatLng = [31.2304, 121.4737]; // fallback until geolocation resolves
@@ -331,13 +331,6 @@ export default function Activity() {
     setSheet("noLocation");
   }
 
-  function appendPoint(ll: LatLng) {
-    setPath((prev) => {
-      if (prev.length) setMeters((m) => m + haversine(prev[prev.length - 1], ll));
-      return [...prev, ll];
-    });
-  }
-
   // real GPS takes over when available. Strava-grade hygiene:
   // high-accuracy fixes only, jitter gate scaled by reported accuracy, and a
   // per-sport speed cap so a bad fix can never teleport the path.
@@ -501,8 +494,6 @@ export default function Activity() {
         const vkmh = smoothSpeedRef.current * 3.6;
         const met = Math.max(1, 1.02 * vkmh);
         setKcal((k) => k + (met * bodyWeight) / 3600);
-      } else if (bodyWeight != null && sport.mode !== "gps") {
-        setKcal((k) => k + (6 * bodyWeight) / 3600); // court/pool ≈ MET 6
       }
       // real fixes stopped arriving → tell the athlete
       if (sport.mode === "gps" && realGpsRef.current && Date.now() - lastFixAtRef.current > 10_000) {
@@ -525,6 +516,7 @@ export default function Activity() {
     return dt >= 5 && dm >= 3 ? dm / dt : null;
   })();
   const f = fields(sport, seconds, meters, rolling, units);
+  const hasCalorieEstimate = isGps && realGpsRef.current && weightRef.current != null;
   const savedRef = useRef(false);
 
   function pickSport(p: Profile) {
@@ -536,7 +528,9 @@ export default function Activity() {
   function beginRecording() {
     setSeconds(0);
     setMeters(0);
-    setPath([center]);
+    // A map/IP center is not a recorded route point. The route starts only
+    // after watchPosition supplies an accuracy-gated real GPS fix.
+    setPath([]);
     setPaused(false);
     setAutoPaused(false);
     setSplits([]);
@@ -618,7 +612,7 @@ export default function Activity() {
         privacy: visibility,
         splits: splits.length ? splits : null,
         elevGain: Math.round(elevGain),
-        kcal: weightRef.current != null ? Math.round(kcal) : null,
+        kcal: hasCalorieEstimate ? Math.round(kcal) : null,
         path: isGps ? path : null,
         thumb: isGps ? routeThumb(path) : undefined, // static — shows instantly in the list
         date: new Date().toISOString(),
@@ -684,7 +678,7 @@ export default function Activity() {
           {/* second stat row: the numbers Strava shows under the big three */}
           <div className="flex items-center justify-center gap-5 bg-white pb-3 text-[11px] font-bold text-ink-muted">
             {isGps && <span>↑ {Math.round(elevGain)} m elev</span>}
-            <span>{weightRef.current != null ? `${Math.round(kcal)} est. kcal` : "Calories unavailable"}</span>
+            <span>{hasCalorieEstimate ? `${Math.round(kcal)} est. kcal` : "Calories unavailable"}</span>
           </div>
         </div>
 
@@ -1048,7 +1042,7 @@ export default function Activity() {
                     { ...f[0], s: "md" },
                     { ...f[1], s: "hero" },
                     { ...f[2], s: "lg" },
-                    { v: weightRef.current != null ? `${Math.round(kcal)}` : "—", l: "Est. calories", s: "md" },
+                    { v: hasCalorieEstimate ? `${Math.round(kcal)}` : "—", l: "Est. calories", s: "md" },
                   ];
               const cls = { md: "text-4xl", lg: "text-6xl", hero: "text-[84px]" };
               return stack.map((m) => (
