@@ -36,7 +36,7 @@ const PROFILES: Profile[] = [
 const DEFAULT_CENTER: LatLng = [31.2304, 121.4737]; // fallback until geolocation resolves
 
 type Phase = "ready" | "live" | "save";
-type Sheet = null | "picker" | "sensors" | "settings" | "confirm" | "discardConfirm" | "noLocation" | "iosLocation" | "mapType" | "resume";
+type Sheet = null | "picker" | "settings" | "confirm" | "discardConfirm" | "noLocation" | "iosLocation" | "mapType" | "resume";
 
 const fmtTime = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
@@ -901,37 +901,19 @@ export default function Activity() {
         }`}
       >
         {phase === "ready" && (
-          <div className="px-5 pt-4">
+          <div className="px-5 pt-3">
             <div className="mx-auto h-1 w-10 rounded-full bg-black/10" />
-            <div className="mt-4 flex items-center justify-between px-2">
-              <button
-                onClick={() => setSheet("picker")}
-                className="flex w-[84px] flex-col items-center gap-1.5 rounded-2xl bg-white px-2 py-2.5 shadow-soft transition active:scale-95"
-              >
-                <SIcon name={sport.icon} size={34} />
-                <span className="text-[11px] font-bold text-ink">{sport.label}</span>
-              </button>
-              <button
-                onClick={start}
-                className="grid h-[84px] w-[84px] place-items-center rounded-full bg-volt text-[15px] font-extrabold uppercase tracking-wide text-volt-ink shadow-lift transition active:scale-95"
-              >
-                Start
-              </button>
-              <button
-                onClick={() => setSheet("sensors")}
-                className="relative flex w-[84px] flex-col items-center gap-1 rounded-2xl bg-white px-2 py-2.5 shadow-soft transition active:scale-95"
-              >
-                <HeartIcon />
-                <span className="text-[11px] font-bold text-ink">Sensors</span>
-                {isGps && (
-                  <span
-                    className={`absolute right-2 top-2 h-2 w-2 rounded-full ${
-                      gps === "ready" ? "bg-signal-good" : gps === "locating" ? "bg-signal-okay" : "bg-black/20"
-                    }`}
-                  />
-                )}
-              </button>
+            <button onClick={() => setSheet("picker")} className="mt-3 flex w-full items-center gap-3 rounded-2xl bg-white px-4 py-3 text-left shadow-soft transition active:scale-[0.99]">
+              <SIcon name={sport.icon} size={38} />
+              <span className="min-w-0 flex-1"><span className="block text-[11px] font-black uppercase tracking-[0.16em] text-ink-muted">ACTIVITY</span><span className="mt-0.5 block text-lg font-extrabold text-ink">{sport.label}</span></span>
+              <span className="font-golden text-2xl text-ink">›</span>
+            </button>
+            <div className="mt-3 flex items-center gap-3 px-1">
+              <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${!isGps || gps === "ready" ? "bg-signal-good" : gps === "locating" ? "bg-signal-okay" : "bg-signal-work"}`} />
+              <span className="min-w-0 flex-1 text-sm font-bold text-ink">{!isGps ? "Timer ready · distance unavailable" : gps === "ready" ? acc != null ? `GPS ready · ±${acc} m` : "GPS ready" : gps === "locating" ? "Finding your GPS signal…" : "Location needed to record distance"}</span>
+              {isGps && gps !== "ready" && <button onClick={() => allowLocation(true)} className="shrink-0 text-xs font-black text-volt-deep">ENABLE</button>}
             </div>
+            <button onClick={start} className="btn-press mt-4 w-full rounded-full bg-volt py-4 text-[15px] font-black uppercase tracking-[0.1em] text-volt-ink shadow-lift">START {sport.label.toUpperCase()}</button>
           </div>
         )}
 
@@ -1140,37 +1122,6 @@ export default function Activity() {
                 {sport.key === p.key && <CheckIcon />}
               </button>
             ))}
-          </div>
-        </div>
-      )}
-
-      {sheet === "sensors" && (
-        <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-up rounded-t-3xl bg-paper p-5 pb-28 shadow-lift">
-          <div className="mx-auto h-1 w-10 rounded-full bg-black/10" />
-          <p className="mt-4 text-base font-extrabold">Sensors</p>
-          <div className="mt-3 space-y-2">
-            {/* GPS — the sensor we actually have */}
-            <div className="flex items-center gap-3.5 rounded-2xl bg-white px-4 py-3.5 shadow-soft">
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-volt-mist"><LocateIcon /></span>
-              <span className="flex-1">
-                <span className="block text-sm font-bold">GPS</span>
-                <span className="block text-[11px] font-semibold text-ink-muted">
-                  {gps === "ready"
-                    ? acc != null ? `Strong signal · ±${acc}m` : "Connected"
-                    : gps === "locating" ? "Acquiring signal…" : gps === "off" ? "Location off" : "Idle"}
-                </span>
-              </span>
-              <span className={`h-2.5 w-2.5 rounded-full ${gps === "ready" ? "bg-signal-good" : gps === "locating" ? "bg-signal-okay" : "bg-black/20"}`} />
-            </div>
-            {/* external sensors — pair here, Strava-style */}
-            <div className="flex items-center gap-3.5 rounded-2xl bg-white px-4 py-3.5 shadow-soft">
-              <span className="grid h-10 w-10 animate-pulse place-items-center rounded-full bg-signal-work/10 text-signal-work"><HeartIcon /></span>
-              <span className="flex-1 text-sm font-bold">Heart rate</span>
-            </div>
-            <div className="flex items-center gap-3.5 rounded-2xl bg-white px-4 py-3.5 shadow-soft opacity-60">
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-black/5"><CadenceIcon /></span>
-              <span className="flex-1 text-sm font-bold">Cadence</span>
-            </div>
           </div>
         </div>
       )}
@@ -1436,22 +1387,6 @@ function LocateIcon() {
       <circle cx="12" cy="12" r="7" />
       <circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" />
       <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
-    </svg>
-  );
-}
-function HeartIcon() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 21s-7.5-4.7-10-9.3C.3 8.6 2.2 5 5.7 5c2 0 3.4 1.1 4.3 2.6h4C14.9 6.1 16.3 5 18.3 5c3.5 0 5.4 3.6 3.7 6.7C19.5 16.3 12 21 12 21z" />
-    </svg>
-  );
-}
-function CadenceIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="8" />
-      <path d="M12 12 15.5 9" />
-      <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" />
     </svg>
   );
 }
