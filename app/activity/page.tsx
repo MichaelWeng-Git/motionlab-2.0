@@ -33,7 +33,7 @@ const PROFILES: Profile[] = [
   { key: "swim", label: "Swim", icon: "swim", mode: "pool" },
 ];
 
-const DEFAULT_CENTER: LatLng = [31.2304, 121.4737]; // fallback until geolocation resolves
+const EMPTY_CENTER: LatLng = [0, 0]; // never presented as the athlete's location
 
 type Phase = "ready" | "live" | "save";
 type Sheet = null | "picker" | "settings" | "confirm" | "discardConfirm" | "noLocation" | "iosLocation" | "mapType" | "resume";
@@ -119,16 +119,7 @@ export default function Activity() {
   // — real location —
   // Permission is requested on the user's FIRST Start (native browser prompt).
   // Denied → GPS sports can't be recorded (court/pool sports still work).
-  const [center, setCenter] = useState<LatLng>(() => {
-    // last known region as the FIRST paint — the map never visibly jumps
-    if (typeof window !== "undefined") {
-      try {
-        const c = JSON.parse(localStorage.getItem("ml_ip_center") ?? "null");
-        if (Array.isArray(c) && c.length === 2) return c as LatLng;
-      } catch {}
-    }
-    return DEFAULT_CENTER;
-  });
+  const [center, setCenter] = useState<LatLng>(EMPTY_CENTER);
   const [gps, setGps] = useState<"unknown" | "locating" | "ready" | "off">("unknown");
   // Google Maps died (billing/network/adblock) → swap to Leaflet, never a gray box
   const [gmapDead, setGmapDead] = useState(false);
@@ -136,21 +127,6 @@ export default function Activity() {
   const [mapAttempt, setMapAttempt] = useState(0);
   const LiveMap = HAS_GKEY && !gmapDead ? GoogleMap : LeafletMap;
 
-  // rough region lock BEFORE any GPS: center the map on the user's actual
-  // city by IP (Strava-style "you open the map where you are"), replaced by
-  // the real fix the moment geolocation answers
-  const hasRealCenterRef = useRef(false);
-  useEffect(() => {
-    fetch("https://ipapi.co/json/")
-      .then((r) => r.json())
-      .then((j) => {
-        if (j?.latitude && j?.longitude) {
-          localStorage.setItem("ml_ip_center", JSON.stringify([j.latitude, j.longitude]));
-          if (!hasRealCenterRef.current) setCenter([j.latitude, j.longitude]);
-        }
-      })
-      .catch(() => {});
-  }, []);
   useEffect(() => setUnits(getPreferences().units), []);
   const [path, setPath] = useState<LatLng[]>([]);
   const [meters, setMeters] = useState(0);
@@ -308,9 +284,14 @@ export default function Activity() {
     setGps("locating");
     if (!("geolocation" in navigator)) { setGps("off"); setSheet("noLocation"); return; }
     navigator.geolocation.getCurrentPosition(
-      (p) => { hasRealCenterRef.current = true; setCenter([p.coords.latitude, p.coords.longitude]); setGps("ready"); onReady?.(); },
+      (p) => {
+        setCenter([p.coords.latitude, p.coords.longitude]);
+        setAcc(Math.round(p.coords.accuracy));
+        setGps("ready");
+        onReady?.();
+      },
       () => { setGps("off"); setSheet("noLocation"); },
-      { enableHighAccuracy: true, timeout: 8000 }
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 12000 }
     );
   }
 
@@ -385,7 +366,6 @@ export default function Activity() {
                   });
                 }
               }
-              hasRealCenterRef.current = true;
               setCenter(ll);
               return [...prev, ll];
             });
@@ -423,7 +403,6 @@ export default function Activity() {
             recordDistance(nm);
             return nm;
           });
-          hasRealCenterRef.current = true;
           setCenter(ll); // map follows the athlete
           return [...prev, ll];
         });
@@ -518,6 +497,7 @@ export default function Activity() {
   })();
   const f = fields(sport, seconds, meters, rolling, units);
   const hasCalorieEstimate = isGps && realGpsRef.current && weightRef.current != null;
+  const hasRealMapPosition = gps === "ready" || path.length > 0;
   const savedRef = useRef(false);
 
   function pickSport(p: Profile) {
@@ -783,7 +763,7 @@ export default function Activity() {
   return (
     <div className="relative -mb-28 min-h-0 w-full flex-1 overflow-hidden">
       {/* real map / court backdrop */}
-      {isGps ? (
+      {isGps && hasRealMapPosition ? (
         <LiveMap
           key={`${gmapDead ? "leaflet" : "google"}-${mapAttempt}`}
           center={center}
@@ -798,9 +778,10 @@ export default function Activity() {
         />
       ) : (
         <div className="relative h-full w-full bg-ink">
-          <div className="absolute inset-0 bg-[radial-gradient(120%_70%_at_50%_0%,#1e2a45_0%,#17271F_60%)]" />
+          <div className="absolute inset-0 bg-graphite" />
           <div className="absolute inset-0 grain opacity-25" />
-          <div className="absolute inset-0 grid place-items-center pb-40 opacity-25"><SIcon name={sport.icon} size={110} /></div>
+          <div className="absolute inset-0 grid place-items-center pb-40 opacity-25"><SIcon name={isGps ? "run" : sport.icon} size={110} /></div>
+          {isGps && <div className="absolute inset-x-0 top-[30%] text-center text-white"><span className="mx-auto block h-3 w-3 animate-pulse rounded-full bg-volt shadow-lift" /><p className="mt-4 font-golden text-xl">FINDING YOUR POSITION</p></div>}
         </div>
       )}
 
