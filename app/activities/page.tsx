@@ -9,8 +9,6 @@ import { distanceUnit, distanceValue, getPreferences, type UnitSystem } from "@/
 import { deleteActivity, readActivities } from "@/lib/activities";
 
 const LeafletMap = dynamic(() => import("@/components/LiveMap").then((m) => m.LiveMap), { ssr: false });
-const GoogleMap = dynamic(() => import("@/components/GoogleLiveMap").then((m) => m.GoogleLiveMap), { ssr: false });
-const LiveMap = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY ? GoogleMap : LeafletMap;
 
 const SPORT_ICON: Record<string, SIconName> = {
   Run: "run", Running: "run", Walk: "run", Walking: "run", Ride: "ride", Cycling: "ride",
@@ -147,7 +145,7 @@ export default function Activities() {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={a.thumb} alt="Route" className="h-full w-full object-cover" />
                   ) : isGps && a.path && a.path.length > 1 ? (
-                    <LiveMap center={a.path[0]} path={a.path} fit interactive={false} className="h-full w-full" />
+                    <LeafletMap center={a.path[0]} path={a.path} fit interactive={false} className="h-full w-full" />
                   ) : isGps ? (
                     <div className="relative grid h-full place-items-center bg-ink">
                       <div className="absolute inset-0 bg-ink" />
