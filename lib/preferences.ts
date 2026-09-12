@@ -3,18 +3,27 @@ export type Preferences = {
   units: UnitSystem;
   trainingReminders: boolean;
   recoveryAlerts: boolean;
+  cloud3d: boolean;
 };
 
 const KEY = "ml_preferences";
-const defaults: Preferences = { units: "metric", trainingReminders: false, recoveryAlerts: false };
+const LEGACY_CLOUD_KEY = "ml_cloud3d";
+const defaults: Preferences = { units: "metric", trainingReminders: false, recoveryAlerts: false, cloud3d: false };
 
 export function getPreferences(): Preferences {
-  try { return { ...defaults, ...JSON.parse(localStorage.getItem(KEY) ?? "{}") }; }
+  try {
+    const stored = JSON.parse(localStorage.getItem(KEY) ?? "{}") as Partial<Preferences>;
+    const cloud3d = typeof stored.cloud3d === "boolean"
+      ? stored.cloud3d
+      : localStorage.getItem(LEGACY_CLOUD_KEY) === "on";
+    return { ...defaults, ...stored, cloud3d };
+  }
   catch { return defaults; }
 }
 
 export function savePreferences(value: Preferences) {
   localStorage.setItem(KEY, JSON.stringify(value));
+  localStorage.removeItem(LEGACY_CLOUD_KEY);
   window.dispatchEvent(new Event("ml:preferences"));
 }
 

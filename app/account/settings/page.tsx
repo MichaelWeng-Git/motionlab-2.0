@@ -7,7 +7,7 @@ import { syncClearedAccountData } from "@/lib/cloud-data";
 import { dayKey } from "@/lib/date";
 
 export default function SettingsPage() {
-  const [prefs, setPrefs] = useState<Preferences>({ units: "metric", trainingReminders: false, recoveryAlerts: false });
+  const [prefs, setPrefs] = useState<Preferences>({ units: "metric", trainingReminders: false, recoveryAlerts: false, cloud3d: false });
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleteText, setDeleteText] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
@@ -75,6 +75,20 @@ export default function SettingsPage() {
 
       <section className="mt-5"><h2 className="font-golden text-xl">NOTIFICATIONS</h2><div className="mt-2 overflow-hidden rounded-2xl bg-white shadow-soft">
         {[{ key: "trainingReminders" as const, title: "Training reminders", hint: "A nudge on planned training days" }, { key: "recoveryAlerts" as const, title: "Recovery ready", hint: "When your body is ready to go again" }].map((item, i) => <button key={item.key} onClick={() => toggleNotification(item.key)} className={`flex w-full items-center gap-3 px-4 py-4 text-left ${i ? "border-t border-black/5" : ""}`}><span className="flex-1"><span className="block text-sm font-extrabold">{item.title}</span><span className="mt-0.5 block text-[11px] font-bold text-ink-muted">{item.hint}</span></span><span className={`relative h-7 w-12 rounded-full transition ${prefs[item.key] ? "bg-volt-deep" : "bg-black/15"}`}><i className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-all ${prefs[item.key] ? "left-6" : "left-1"}`} /></span></button>)}
+      </div></section>
+
+      <section className="mt-5"><h2 className="font-golden text-xl">VIDEO PRIVACY</h2><div className="mt-2 overflow-hidden rounded-2xl bg-white shadow-soft">
+        <div className="px-4 py-4">
+          <p className="text-sm font-extrabold">Your full video stays on this device</p>
+          <div className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 text-xs font-bold text-ink-muted">
+            <span className="font-golden text-lg leading-none text-ink">3</span><span>screenshots go to the AI coach for activity recognition and coaching notes.</span>
+            <span className="font-golden text-lg leading-none text-ink">0</span><span>video files are uploaded or stored by MotionLab.</span>
+          </div>
+        </div>
+        <button onClick={() => update({ cloud3d: !prefs.cloud3d })} className="flex w-full items-center gap-3 border-t border-black/5 px-4 py-4 text-left">
+          <span className="flex-1"><span className="block text-sm font-extrabold">Cloud 3D refinement</span><span className="mt-0.5 block text-xs font-bold text-ink-muted">Sends 4–12 extra sampled screenshots to refine torso posture</span></span>
+          <span className={`relative h-7 w-12 shrink-0 rounded-full transition ${prefs.cloud3d ? "bg-volt-deep" : "bg-black/15"}`}><i className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-all ${prefs.cloud3d ? "left-6" : "left-1"}`} /></span>
+        </button>
       </div></section>
 
       <section className="mt-5"><h2 className="font-golden text-xl">YOUR DATA</h2><div className="mt-2 overflow-hidden rounded-2xl bg-white shadow-soft">

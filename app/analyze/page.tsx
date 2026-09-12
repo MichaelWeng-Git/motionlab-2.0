@@ -12,6 +12,7 @@ import { createRefiner, spreadRefinement } from "@/lib/pose2d-refine";
 import { drawSkeleton } from "@/lib/draw";
 import { SIGNAL } from "@/lib/palette";
 import { DEFAULT_SESSION_MIN, sessionSecondsOf } from "@/lib/workouts";
+import { getPreferences } from "@/lib/preferences";
 
 // Real skeleton tracking: MediaPipe Pose runs in the browser, frame by frame,
 // drawing the skeleton over the user's actual video. No servers, no API keys.
@@ -81,7 +82,7 @@ export default function Analyze() {
     seedRef.current = null;
     setPicker(null);
     setFileMeta({ name: file.name, bytes: file.size });
-    try { setCloudEnabled(localStorage.getItem("ml_cloud3d") === "on"); } catch { setCloudEnabled(false); }
+    try { setCloudEnabled(getPreferences().cloud3d); } catch { setCloudEnabled(false); }
     setVideoUrl(URL.createObjectURL(file));
     setStage(0);
     setProgress(0);
@@ -312,7 +313,7 @@ export default function Analyze() {
         setProgress(80);
         await tick();
         let useCloud = false; // still frames leave the device only after explicit opt-in
-        try { useCloud = localStorage.getItem("ml_cloud3d") === "on"; } catch {}
+        try { useCloud = getPreferences().cloud3d; } catch {}
         if (useCloud) {
           try {
             const { sam3dFuse } = await import("@/lib/sam3d");
