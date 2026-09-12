@@ -1,7 +1,8 @@
 "use client";
 
-// Real map (Leaflet + OpenStreetMap / Esri satellite).
-// Swappable to Google Maps later — only the tile URLs change.
+// Real fallback map (Leaflet + official public OpenStreetMap / Esri tiles).
+// This must not depend on Google: it is the recovery path when the Google SDK,
+// billing, key restrictions, or an ad blocker prevents Google Maps loading.
 
 import { useEffect, useRef } from "react";
 import L from "leaflet";
@@ -9,16 +10,14 @@ import "leaflet/dist/leaflet.css";
 
 export type LatLng = [number, number];
 
-// Google tiles, English labels, retina-sharp. (Production swaps to the official
-// Google Maps SDK with an API key — same component, different loader.)
 const TILES = {
   map: {
-    url: "https://mt{s}.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}",
-    credit: "© Google",
+    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    credit: "© OpenStreetMap",
   },
   satellite: {
-    url: "https://mt{s}.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}", // hybrid: imagery + labels
-    credit: "© Google",
+    url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    credit: "© Esri",
   },
 };
 
@@ -31,7 +30,6 @@ export function LiveMap({
   fit = false,
   interactive = true,
   className = "",
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onFail,
 }: {
   center: LatLng;
@@ -51,6 +49,8 @@ export function LiveMap({
   const planRef = useRef<L.Polyline | null>(null);
   const dotRef = useRef<L.Marker | null>(null);
   const startRef = useRef<L.CircleMarker | null>(null);
+  const onFailRef = useRef(onFail);
+  onFailRef.current = onFail;
 
   // init once
   useEffect(() => {
@@ -114,12 +114,18 @@ export function LiveMap({
     if (!map) return;
     baseRef.current?.remove();
     const t = satellite ? TILES.satellite : TILES.map;
-    baseRef.current = L.tileLayer(t.url, {
+    let failedTiles = 0;
+    const layer = L.tileLayer(t.url, {
       maxZoom: 20,
       minZoom: 3,
-      subdomains: "0123",
+      subdomains: satellite ? undefined : "abc",
       detectRetina: true, // crisp on high-DPI screens
-    }).addTo(map);
+    });
+    layer.on("tileerror", () => {
+      failedTiles += 1;
+      if (failedTiles === 6) onFailRef.current?.();
+    });
+    baseRef.current = layer.addTo(map);
     baseRef.current.bringToBack();
   }, [satellite]);
 

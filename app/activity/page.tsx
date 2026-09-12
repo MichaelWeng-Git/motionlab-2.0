@@ -131,6 +131,8 @@ export default function Activity() {
   const [gps, setGps] = useState<"unknown" | "locating" | "ready" | "off">("unknown");
   // Google Maps died (billing/network/adblock) → swap to Leaflet, never a gray box
   const [gmapDead, setGmapDead] = useState(false);
+  const [mapUnavailable, setMapUnavailable] = useState(false);
+  const [mapAttempt, setMapAttempt] = useState(0);
   const LiveMap = HAS_GKEY && !gmapDead ? GoogleMap : LeafletMap;
 
   // rough region lock BEFORE any GPS: center the map on the user's actual
@@ -783,18 +785,30 @@ export default function Activity() {
       {/* real map / court backdrop */}
       {isGps ? (
         <LiveMap
+          key={`${gmapDead ? "leaflet" : "google"}-${mapAttempt}`}
           center={center}
           path={phase === "live" ? path : []}
           satellite={satellite}
           follow={phase === "live"}
           className="h-full w-full"
-          onFail={() => setGmapDead(true)}
+          onFail={() => {
+            if (HAS_GKEY && !gmapDead) setGmapDead(true);
+            else setMapUnavailable(true);
+          }}
         />
       ) : (
         <div className="relative h-full w-full bg-ink">
           <div className="absolute inset-0 bg-[radial-gradient(120%_70%_at_50%_0%,#1e2a45_0%,#17271F_60%)]" />
           <div className="absolute inset-0 grain opacity-25" />
           <div className="absolute inset-0 grid place-items-center pb-40 opacity-25"><SIcon name={sport.icon} size={110} /></div>
+        </div>
+      )}
+
+      {isGps && mapUnavailable && (
+        <div className="absolute inset-x-5 top-20 z-20 rounded-3xl bg-graphite p-5 text-white shadow-lift">
+          <p className="font-golden text-xl leading-none">MAP IS OFFLINE</p>
+          <p className="mt-2 text-sm font-semibold text-white/70">GPS recording still works. Reconnect to load the map tiles.</p>
+          <button onClick={() => { setMapUnavailable(false); setMapAttempt((n) => n + 1); }} className="mt-4 rounded-full bg-volt px-5 py-2.5 text-xs font-black text-volt-ink">TRY MAP AGAIN</button>
         </div>
       )}
 
