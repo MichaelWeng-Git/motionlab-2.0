@@ -30,6 +30,14 @@ const KEY = "ml_sessions";
 // write (all writes go through this module) or on cross-tab changes.
 let cache: Session[] | null = null;
 
+function writeSessions(sessions: Session[], notify = true) {
+  const json = JSON.stringify(sessions);
+  localStorage.setItem(KEY, json);
+  try { localStorage.setItem(KEY + "_backup", json); } catch {}
+  cache = null;
+  if (notify && typeof window !== "undefined") window.dispatchEvent(new Event("ml:sessions"));
+}
+
 if (typeof window !== "undefined") {
   window.addEventListener("storage", (e) => {
     if (e.key === KEY) cache = null;
@@ -43,7 +51,11 @@ export function getSessions(): Session[] {
       // primary gone but the mirror survives → restore from it
       if (!cache) {
         cache = JSON.parse(localStorage.getItem(KEY + "_backup") ?? "[]");
-        if (cache!.length) try { localStorage.setItem(KEY, JSON.stringify(cache)); } catch {}
+        if (cache!.length) try {
+          const restored = cache!;
+          writeSessions(restored, false);
+          cache = restored;
+        } catch {}
       }
     } catch {
       cache = [];
@@ -57,6 +69,16 @@ export function getSession(id: string): Session | null {
   return getSessions().find((s) => s.id === id) ?? null;
 }
 
+export function restoreSessionsFromBackup(): boolean {
+  if (localStorage.getItem(KEY)) return false;
+  try {
+    const backup = JSON.parse(localStorage.getItem(KEY + "_backup") ?? "[]") as Session[];
+    if (!Array.isArray(backup) || !backup.length) return false;
+    writeSessions(backup);
+    return true;
+  } catch { return false; }
+}
+
 // Patch one stored session in place (session length, etc). Returns false when
 // the id is gone, so callers can tell the difference from a silent no-op.
 export function updateSession(id: string, patch: Partial<Session>): boolean {
@@ -64,17 +86,12 @@ export function updateSession(id: string, patch: Partial<Session>): boolean {
   const i = all.findIndex((s) => s.id === id);
   if (i < 0) return false;
   all[i] = { ...all[i], ...patch };
-  const json = JSON.stringify(all);
-  localStorage.setItem(KEY, json);
-  try { localStorage.setItem(KEY + "_backup", json); } catch {}
-  cache = null;
-  window.dispatchEvent(new Event("ml:sessions"));
+  writeSessions(all);
   return true;
 }
 
 export function deleteSession(id: string) {
-  localStorage.setItem(KEY, JSON.stringify(getSessions().filter((s) => s.id !== id)));
-  cache = null;
+  writeSessions(getSessions().filter((s) => s.id !== id));
 }
 
 // returns the new session's id
@@ -84,12 +101,7 @@ export function recordSession(s: Omit<Session, "id" | "date">): string {
   all.push({ ...s, id, date: new Date().toISOString() });
   // keep storage lean — only the newest ~20 sessions retain heavy covers
   const trimmed = all.map((x, i) => (i < all.length - 20 ? { ...x, cover: undefined } : x));
-  const json = JSON.stringify(trimmed);
-  localStorage.setItem(KEY, json);
-  // mirror copy — a session must survive the primary key being wiped by
-  // accident; getSessions falls back to this if the primary is missing
-  try { localStorage.setItem(KEY + "_backup", json); } catch {}
-  cache = null;
+  writeSessions(trimmed);
   return id;
 }
 

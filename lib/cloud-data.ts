@@ -58,7 +58,7 @@ function compactValue(key: string, value: unknown): unknown {
 export function accountSnapshot(): Payload {
   const payload: Payload = {};
   for (const key of ACCOUNT_KEYS) {
-    const raw = localStorage.getItem(key);
+    const raw = localStorage.getItem(key) ?? (key === "ml_sessions" ? localStorage.getItem("ml_sessions_backup") : null);
     if (raw == null) continue;
     try { payload[key] = compactValue(key, JSON.parse(raw)); }
     catch { payload[key] = raw; }

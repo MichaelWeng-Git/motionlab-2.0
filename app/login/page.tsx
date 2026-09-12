@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { completeAuthCallback, hasAuthCallback, sbBrowser } from "@/lib/supabase-client";
 import { bootstrapAccountData } from "@/lib/cloud-data";
+import { restoreSessionsFromBackup } from "@/lib/stats";
 
 export default function Login() {
   const router = useRouter();
@@ -55,9 +56,7 @@ export default function Login() {
     if (returning) {
       localStorage.setItem("ml_onboarded", "1");
       // primary list wiped but the mirror survived → restore it now
-      if (!has("ml_sessions") && has("ml_sessions_backup")) {
-        try { localStorage.setItem("ml_sessions", localStorage.getItem("ml_sessions_backup")!); } catch {}
-      }
+      if (!has("ml_sessions") && has("ml_sessions_backup")) restoreSessionsFromBackup();
       // returning user → the black "Welcome back" veil plays once on Home
       try { sessionStorage.setItem("ml_welcome_back", "1"); } catch {}
       // An existing email whose onboarding never finished resumes onboarding;
