@@ -6,7 +6,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CONNECTIONS, type Frame } from "@/lib/analysis";
-import { drawSkeleton } from "@/lib/draw";
+import { drawPoseDebug, drawSkeleton } from "@/lib/draw";
 
 const SPEEDS = [
   { v: 1, label: "1×" },
@@ -23,6 +23,7 @@ export function VideoReplay({
   timeRef: timeRefProp,
   marker,
   seekRef,
+  debugControls = false,
 }: {
   videoUrl: string;
   frames: Frame[];
@@ -34,6 +35,7 @@ export function VideoReplay({
   // its moment — joint dot + direction arrow + a short cue. No second person.
   marker?: { landmark: number; dir?: "up" | "forward" | "back" | "down"; cue: string; when: number } | null;
   seekRef?: { current: number | null }; // set to a 0-1 fraction to make the video jump there (consumed once)
+  debugControls?: boolean;              // developer-only; enabled by ?debug=pose on the report
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -45,10 +47,12 @@ export function VideoReplay({
   const setSpeed = (v: number) => { setSpeedState(v); onSpeedChange?.(v); };
   const [duration, setDuration] = useState(0);
   const [showFocus, setShowFocus] = useState(false); // Focus ring/label retired from the UI
+  const [debugPose, setDebugPose] = useState(false);
 
   const focusOnRef = useRef(showFocus); focusOnRef.current = showFocus;
   const focusRef = useRef(focus); focusRef.current = focus;
   const markerRef = useRef(marker); markerRef.current = marker;
+  const debugPoseRef = useRef(debugPose); debugPoseRef.current = debugPose;
 
   function frameAt(t: number): Frame | null {
     if (!frames.length) return null;
@@ -100,7 +104,8 @@ export function VideoReplay({
       const f = frameAt(t);
       if (f && f.lm.length && Math.abs(f.t - t) < 0.25) {
         // one view only: the skeleton (the Trail/Skeleton toggle was cut)
-        drawSkeleton(ctx, f.lm, w, h);
+        if (debugPoseRef.current) drawPoseDebug(ctx, f.lm, w, h);
+        else drawSkeleton(ctx, f.lm, w, h);
 
         // ——— Onform-style focus annotation ———
         const fc = focusRef.current;
@@ -299,6 +304,16 @@ export function VideoReplay({
         </div>
 
       </div>
+
+      {debugControls && (
+        <div className="mt-3 rounded-2xl bg-graphite px-4 py-3 text-white">
+          <button onClick={() => setDebugPose((value) => !value)} className="flex w-full items-center justify-between text-left">
+            <span><span className="block text-xs font-extrabold">Pose correction overlay</span><span className="mt-0.5 block text-[11px] font-bold text-white/55">Developer diagnostic · accepted, corrected, rebuilt</span></span>
+            <span className={`relative h-7 w-12 shrink-0 rounded-full transition ${debugPose ? "bg-volt-deep" : "bg-white/15"}`}><i className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-all ${debugPose ? "left-6" : "left-1"}`} /></span>
+          </button>
+          {debugPose && <div className="mt-3 flex flex-wrap gap-3 border-t border-white/10 pt-3 text-[11px] font-bold text-white/70"><span><i className="mr-1.5 inline-block h-2 w-2 rounded-full bg-signal-good" />Accepted</span><span><i className="mr-1.5 inline-block h-2 w-2 rounded-full bg-signal-okay" />Corrected</span><span><i className="mr-1.5 inline-block h-2 w-2 rounded-full bg-signal-work" />Rebuilt</span></div>}
+        </div>
+      )}
     </div>
   );
 }

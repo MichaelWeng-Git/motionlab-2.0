@@ -27,6 +27,7 @@ export default function Report() {
   const [curId, setCurId] = useState<string | null>(null);
   const [cover, setCover] = useState<string | undefined>(undefined); // video cover → share poster
   const [replaySpeed, setReplaySpeed] = useState(1); // shared: video player + 3D view stay in sync
+  const [debugPoseAvailable, setDebugPoseAvailable] = useState(false);
 
   const [, bump] = useState(0);
   // video-native coaching overlay: the ONE tip currently marked on the video
@@ -35,6 +36,7 @@ export default function Report() {
 
 
   useEffect(() => {
+    setDebugPoseAvailable(new URLSearchParams(window.location.search).get("debug") === "pose");
     if (params.id !== "demo") {
       const sessions = getSessions();
       const isLatest = params.id === "latest";
@@ -235,6 +237,7 @@ export default function Report() {
                 : null
             }
             seekRef={seekFracRef}
+            debugControls={debugPoseAvailable}
           />
         ) : isReal ? (
           /* past session: video was never stored (privacy) — say so honestly */
