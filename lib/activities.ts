@@ -15,7 +15,7 @@ export type StoredActivity = {
   description?: string | null;
   exertion?: number;
   privacy?: "everyone" | "followers" | "private";
-  splits?: { km: number; seconds: number }[] | null;
+  splits?: { n?: number; km?: number; unit?: "km" | "mi"; seconds: number }[] | null;
   elevGain?: number;
   elevMeasured?: boolean;
   kcal?: number | null;

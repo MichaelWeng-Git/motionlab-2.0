@@ -37,6 +37,10 @@ const EMPTY_CENTER: LatLng = [0, 0]; // never presented as the athlete's locatio
 
 type Phase = "ready" | "live" | "save";
 type Sheet = null | "picker" | "settings" | "confirm" | "discardConfirm" | "noLocation" | "iosLocation" | "mapType" | "resume";
+type Split = { n: number; unit: "km" | "mi"; seconds: number };
+type RecordSettings = { autoPause: boolean; audioCues: boolean; screenOn: boolean };
+const RECORD_SETTINGS_KEY = "ml_record_settings";
+const DEFAULT_RECORD_SETTINGS: RecordSettings = { autoPause: true, audioCues: false, screenOn: true };
 
 const fmtTime = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
@@ -112,7 +116,7 @@ export default function Activity() {
   const [paused, setPaused] = useState(false);
   const [satellite, setSatellite] = useState(false);
   const [count, setCount] = useState<number | null>(null); // 3 → 2 → 1 → 0 (GO)
-  const [settings, setSettings] = useState({ autoPause: true, audioCues: false, screenOn: true });
+  const [settings, setSettings] = useState<RecordSettings>(DEFAULT_RECORD_SETTINGS);
   const [units, setUnits] = useState<UnitSystem>("metric");
   const [actName, setActName] = useState("");
 
@@ -127,7 +131,10 @@ export default function Activity() {
   const [mapAttempt, setMapAttempt] = useState(0);
   const LiveMap = HAS_GKEY && !gmapDead ? GoogleMap : LeafletMap;
 
-  useEffect(() => setUnits(getPreferences().units), []);
+  useEffect(() => {
+    setUnits(getPreferences().units);
+    try { setSettings({ ...DEFAULT_RECORD_SETTINGS, ...JSON.parse(localStorage.getItem(RECORD_SETTINGS_KEY) ?? "{}") }); } catch {}
+  }, []);
   const [path, setPath] = useState<LatLng[]>([]);
   const [meters, setMeters] = useState(0);
   const realGpsRef = useRef(false);
@@ -139,8 +146,8 @@ export default function Activity() {
   // ——— Strava-parity recording state ———
   const [autoPaused, setAutoPaused] = useState(false); // GPS-detected standstill
   const isPaused = paused || autoPaused;
-  const [splits, setSplits] = useState<{ km: number; seconds: number }[]>([]);
-  const splitsRef = useRef<{ km: number; seconds: number }[]>([]);
+  const [splits, setSplits] = useState<Split[]>([]);
+  const splitsRef = useRef<Split[]>([]);
   const splitAnchorRef = useRef({ dist: 0, sec: 0 });
   const [elevGain, setElevGain] = useState(0);
   const elevRef = useRef<{ ref: number | null; win: number[] }>({ ref: null, win: [] });
@@ -180,6 +187,14 @@ export default function Activity() {
     } catch {}
   }, []);
 
+  function toggleRecordSetting(key: keyof RecordSettings) {
+    setSettings((current) => {
+      const next = { ...current, [key]: !current[key] };
+      try { localStorage.setItem(RECORD_SETTINGS_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }
+
   // audio cues (Web Speech) — spoken only when the toggle is on
   function speak(text: string) {
     if (!settings.audioCues) return;
@@ -190,16 +205,18 @@ export default function Activity() {
     } catch {}
   }
 
-  // km splits: whenever cumulative distance crosses n×1000m
+  // Splits follow the selected unit while route distance stays in meters.
   function recordDistance(nm: number) {
     const anchor = splitAnchorRef.current;
-    if (nm - anchor.dist >= 1000) {
+    const splitMeters = units === "imperial" ? 1609.344 : 1000;
+    if (nm - anchor.dist >= splitMeters) {
       const sec = Math.max(1, secondsRef.current - anchor.sec);
-      splitAnchorRef.current = { dist: anchor.dist + 1000, sec: secondsRef.current };
-      const km = splitsRef.current.length + 1;
-      splitsRef.current = [...splitsRef.current, { km, seconds: sec }];
+      splitAnchorRef.current = { dist: anchor.dist + splitMeters, sec: secondsRef.current };
+      const n = splitsRef.current.length + 1;
+      const unit = units === "imperial" ? "mi" : "km";
+      splitsRef.current = [...splitsRef.current, { n, unit, seconds: sec }];
       setSplits(splitsRef.current);
-      speak(`Kilometer ${km}. ${Math.floor(sec / 60)} minutes ${sec % 60} seconds.`);
+      speak(`${unit === "mi" ? "Mile" : "Kilometer"} ${n}. ${Math.floor(sec / 60)} minutes ${sec % 60} seconds.`);
     }
   }
 
@@ -235,8 +252,10 @@ export default function Activity() {
       secondsRef.current = c.sec; setSeconds(c.sec);
       setMeters(c.meters);
       setPath(c.path ?? []);
-      splitsRef.current = c.splits ?? []; setSplits(splitsRef.current);
-      splitAnchorRef.current = c.anchor ?? { dist: (c.splits?.length ?? 0) * 1000, sec: c.sec };
+      splitsRef.current = (c.splits ?? []).map((split: { n?: number; km?: number; unit?: "km" | "mi"; seconds: number }, index: number) => ({ n: split.n ?? split.km ?? index + 1, unit: split.unit ?? "km", seconds: split.seconds }));
+      setSplits(splitsRef.current);
+      const splitMeters = units === "imperial" ? 1609.344 : 1000;
+      splitAnchorRef.current = c.anchor ?? { dist: splitsRef.current.length * splitMeters, sec: c.sec };
       setKcal(c.kcal ?? 0);
       setElevGain(c.elev ?? 0);
       elevationMeasuredRef.current = c.elevMeasured === true || c.elev > 0;
@@ -727,16 +746,16 @@ export default function Activity() {
           ))}
         </div>
 
-        {/* km splits table */}
+        {/* distance splits table */}
         {splits.length > 0 && (
           <div className="mt-3 overflow-hidden rounded-2xl bg-white shadow-soft">
             <div className="flex items-center justify-between border-b border-black/5 px-4 py-2.5">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-ink-muted">Km</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-ink-muted">{splits[0]?.unit ?? (units === "imperial" ? "mi" : "km")}</span>
               <span className="text-[11px] font-bold uppercase tracking-widest text-ink-muted">Pace</span>
             </div>
             {splits.map((s) => (
-              <div key={s.km} className="flex items-center justify-between px-4 py-2 odd:bg-black/[0.02]">
-                <span className="text-sm font-bold">{s.km}</span>
+              <div key={`${s.unit}-${s.n}`} className="flex items-center justify-between px-4 py-2 odd:bg-black/[0.02]">
+                <span className="font-golden text-sm">{s.n}</span>
                 <span className="text-sm font-extrabold tabular-nums">
                   {Math.floor(s.seconds / 60)}:{String(s.seconds % 60).padStart(2, "0")}
                 </span>
@@ -1136,7 +1155,7 @@ export default function Activity() {
             ] as const).map((o) => (
               <button
                 key={o.k}
-                onClick={() => setSettings({ ...settings, [o.k]: !settings[o.k] })}
+                onClick={() => toggleRecordSetting(o.k)}
                 className="flex w-full items-center gap-3 rounded-2xl bg-white px-4 py-3.5 text-left shadow-soft transition active:scale-[0.99]"
               >
                 <span className="flex-1 text-sm font-bold">{o.t}</span>
