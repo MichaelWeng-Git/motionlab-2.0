@@ -112,6 +112,13 @@ export default function Report() {
 
   // vs your best: the strongest OTHER session OF THE SAME SPORT (never compare a run to a serve)
   const best = isReal ? bestOther(curId, a.sport) : null;
+  const jointEntries = Object.entries(a.biomech?.joints ?? {}).filter((entry) => typeof entry[1]?.romDeg === "number");
+  const primaryJoint = jointEntries.sort((left, right) => right[1].romDeg - left[1].romDeg)[0] ?? null;
+  const mechanics = a.biomech ? [
+    primaryJoint ? { label: primaryJoint[0].replace("_", " "), value: `${primaryJoint[1].romDeg}°`, note: "range of motion" } : null,
+    a.biomech.tempo.avgRepS != null ? { label: "Average rep", value: `${a.biomech.tempo.avgRepS.toFixed(1)}s`, note: `${a.biomech.reps.length} measured` } : null,
+    a.biomech.tempo.eccConRatio != null ? { label: "Down : up", value: `${a.biomech.tempo.eccConRatio.toFixed(2)}×`, note: "tempo ratio" } : null,
+  ].filter((item): item is { label: string; value: string; note: string } => item !== null) : [];
 
   return (
     <div className="stagger px-5 pt-2">
@@ -179,6 +186,32 @@ export default function Report() {
             <span className="inline-flex items-center gap-1.5 text-ink"><span className="h-2 w-2 rounded-full bg-volt" /> You</span>
             <span className="inline-flex items-center gap-1.5 text-ink-muted"><span className="inline-block h-0 w-4 border-t-2 border-dashed border-[#5B6472]" /> Target</span>
           </div>
+        </section>
+      )}
+
+      {isReal && mechanics.length > 0 && (
+        <section className="mt-4 rounded-3xl bg-cream p-5 shadow-soft">
+          <div className="flex items-baseline justify-between">
+            <div><p className="text-[11px] font-black tracking-[0.18em] text-ink-muted">FROM YOUR 3D MOTION</p><h2 className="mt-1 font-golden text-xl leading-none text-ink">MECHANICS</h2></div>
+            <span className="rounded-full bg-white px-3 py-1.5 text-[11px] font-black uppercase text-ink-muted">{a.biomech!.confidence} confidence</span>
+          </div>
+          <div className={`mt-4 grid gap-2 ${mechanics.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}>
+            {mechanics.map((metric) => (
+              <div key={metric.label} className="rounded-2xl bg-white px-3 py-4 text-center">
+                <p className="font-golden text-2xl leading-none text-ink">{metric.value}</p>
+                <p className="mt-1 truncate text-[11px] font-extrabold capitalize text-ink">{metric.label}</p>
+                <p className="mt-0.5 text-[11px] font-bold text-ink-muted">{metric.note}</p>
+              </div>
+            ))}
+          </div>
+          {a.biomech!.limitations.length > 0 && (
+            <details className="mt-3 rounded-2xl bg-white px-4 py-3">
+              <summary className="cursor-pointer text-[12px] font-extrabold text-ink">Measurement notes · {a.biomech!.limitations.length}</summary>
+              <ul className="mt-3 space-y-2">
+                {a.biomech!.limitations.map((note) => <li key={note} className="text-[12px] font-semibold leading-relaxed text-ink-muted">{note}</li>)}
+              </ul>
+            </details>
+          )}
         </section>
       )}
 
