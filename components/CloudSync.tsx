@@ -21,6 +21,7 @@ export function CloudSync() {
       retryMs = Math.min(retryMs * 2, 60_000);
     };
     const schedule = () => {
+      if (stopped || getCloudState() === "conflict") return;
       if (timer) clearTimeout(timer);
       timer = setTimeout(run, 1200);
     };

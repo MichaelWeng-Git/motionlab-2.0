@@ -56,11 +56,11 @@ export async function POST(req: Request) {
   const encoded = JSON.stringify(body.payload);
   if (encoded.length > 8_000_000) return Response.json({ ok: false, error: "payload-too-large" }, { status: 413 });
   const updatedAt = new Date().toISOString();
-  const { data: current, error: readError } = await db.from("account_data").select("updated_at").eq("profile_id", profile.id).maybeSingle();
+  const { data: current, error: readError } = await db.from("account_data").select("payload,updated_at").eq("profile_id", profile.id).maybeSingle();
   if (readError) return Response.json({ ok: false, error: "account-data-read" }, { status: 502 });
   if (current) {
     if (!body.baseUpdatedAt || body.baseUpdatedAt !== current.updated_at) {
-      return Response.json({ ok: false, error: "cloud-conflict", updatedAt: current.updated_at }, { status: 409 });
+      return Response.json({ ok: false, error: "cloud-conflict", updatedAt: current.updated_at, payload: current.payload ?? {} }, { status: 409 });
     }
     // The timestamp predicate makes the write optimistic: if another device
     // wins between the read above and this update, zero rows are returned.

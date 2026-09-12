@@ -17,6 +17,18 @@ const ACCOUNT_BINDING_KEY = "ml_account_email";
 const CLOUD_VERSION_KEY = "ml_cloud_updated_at";
 let currentCloudState: CloudState = "idle";
 
+// Supabase stores JSON as jsonb, whose object-key order is not guaranteed to
+// match localStorage insertion order. Compare canonical values so two tabs
+// uploading the same snapshot converge instead of reporting a false conflict.
+function stableJson(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(stableJson).join(",")}]`;
+  if (value && typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    return `{${Object.keys(record).sort().map((key) => `${JSON.stringify(key)}:${stableJson(record[key])}`).join(",")}}`;
+  }
+  return JSON.stringify(value) ?? "null";
+}
+
 export function getCloudState(): CloudState { return currentCloudState; }
 
 function cloudState(state: CloudState) {
@@ -78,12 +90,23 @@ async function upload(payload: Payload): Promise<boolean> {
     body: JSON.stringify({ payload, baseUpdatedAt: baseUpdatedAt || null }),
   });
   if (!response.ok) {
-    cloudState(response.status === 409 ? "conflict" : navigator.onLine ? "error" : "offline");
+    if (response.status === 409) {
+      const conflict = await response.json().catch(() => ({}));
+      // Another tab may have won with byte-for-byte equivalent account data.
+      // That is not a user conflict: adopt its revision and stop retrying.
+      if (conflict.updatedAt && conflict.payload && stableJson(conflict.payload) === stableJson(payload)) {
+        localStorage.setItem(CLOUD_VERSION_KEY, conflict.updatedAt);
+        sessionStorage.setItem("ml_cloud_fingerprint", stableJson(payload));
+        cloudState("synced");
+        return true;
+      }
+      cloudState("conflict");
+    } else cloudState(navigator.onLine ? "error" : "offline");
     return false;
   }
   const data = await response.json().catch(() => ({}));
   if (data.updatedAt) localStorage.setItem(CLOUD_VERSION_KEY, data.updatedAt);
-  sessionStorage.setItem("ml_cloud_fingerprint", JSON.stringify(payload));
+  sessionStorage.setItem("ml_cloud_fingerprint", stableJson(payload));
   cloudState("synced");
   return true;
 }
@@ -114,7 +137,7 @@ async function bootstrapAccountDataOnce(): Promise<BootstrapResult> {
     if (data.hasCloudData) {
       hydrate(data.payload ?? {});
       localStorage.setItem(ACCOUNT_BINDING_KEY, data.email);
-      sessionStorage.setItem("ml_cloud_fingerprint", JSON.stringify(data.payload ?? {}));
+      sessionStorage.setItem("ml_cloud_fingerprint", stableJson(data.payload ?? {}));
       if (data.updatedAt) localStorage.setItem(CLOUD_VERSION_KEY, data.updatedAt);
       else localStorage.removeItem(CLOUD_VERSION_KEY);
       cloudState("synced");
@@ -129,7 +152,7 @@ async function bootstrapAccountDataOnce(): Promise<BootstrapResult> {
       // already have saved it; never copy it into the newly signed-in email.
       hydrate(data.legacyProfile ? { ml_profile: data.legacyProfile } : {});
       localStorage.setItem(ACCOUNT_BINDING_KEY, data.email);
-      sessionStorage.setItem("ml_cloud_fingerprint", JSON.stringify(accountSnapshot()));
+      sessionStorage.setItem("ml_cloud_fingerprint", stableJson(accountSnapshot()));
       return { ok: true, isNew: false, migrated: false };
     }
     if (!Object.keys(local).length) {
@@ -137,7 +160,7 @@ async function bootstrapAccountDataOnce(): Promise<BootstrapResult> {
       // absent so the original browser can still perform the one-time import.
       if (data.legacyProfile) localStorage.setItem("ml_profile", JSON.stringify(data.legacyProfile));
       localStorage.setItem(ACCOUNT_BINDING_KEY, data.email);
-      sessionStorage.setItem("ml_cloud_fingerprint", JSON.stringify(accountSnapshot()));
+      sessionStorage.setItem("ml_cloud_fingerprint", stableJson(accountSnapshot()));
       return { ok: true, isNew: false, migrated: false };
     }
     const migrated = await upload(local);
@@ -148,7 +171,7 @@ async function bootstrapAccountDataOnce(): Promise<BootstrapResult> {
 
 export async function syncAccountData(): Promise<boolean> {
   const payload = accountSnapshot();
-  const fingerprint = JSON.stringify(payload);
+  const fingerprint = stableJson(payload);
   if (sessionStorage.getItem("ml_cloud_fingerprint") === fingerprint) return true;
   try { return await upload(payload); }
   catch {
