@@ -9,11 +9,10 @@ import { useEffect, useState } from "react";
 import { getSessions } from "@/lib/stats";
 import { buildFormProfile, CAP_META, CAP_ORDER, type FormProfile } from "@/lib/form";
 import type { AnalysisResult } from "@/lib/analysis";
-import { SURFACE } from "@/lib/palette";
+import { SIGNAL, SURFACE } from "@/lib/palette";
 
 // the app's one graphite ground — lib/palette SURFACE.graphite
-const MINT = "#7FD9AE";
-const DEEP = "#2E9E6B";
+const MINT = SIGNAL.good;
 
 function Hex({ size = 218, values }: { size?: number; values: (number | null)[] }) {
   const cx = size / 2, cy = size / 2, R = size / 2 - 28;
@@ -68,32 +67,35 @@ export default function FormPage() {
   const locked = p ? p.caps.filter((c) => c.value == null) : [];
 
   return (
-    <div className="stagger px-5 pb-10 pt-3">
+    <div className="stagger min-h-full bg-graphite px-5 pb-10 pt-5 text-white">
       <div className="flex items-center gap-2.5">
         <button
           onClick={() => router.push("/")}
-          className="flex h-7 w-11 items-center justify-center rounded-full bg-white text-[13px] leading-none text-ink shadow-soft transition active:scale-95"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-base leading-none text-white ring-1 ring-inset ring-white/10 transition active:scale-95"
+          aria-label="Back to Home"
         >
           ←
         </button>
-        <h1 className="font-golden text-[24px] leading-none">Form</h1>
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-signal-good">Movement quality</p>
+          <h1 className="font-golden text-[26px] leading-none">FORM</h1>
+        </div>
       </div>
 
       {!p || p.form == null ? (
-        <div className="mt-6 rounded-3xl bg-white p-6 text-center shadow-soft">
-          <p className="font-golden text-lg text-ink">NO PROFILE YET</p>
-          <p className="mt-2 text-[13px] font-semibold text-ink-soft">
-            Analyse a video and your athletic profile starts building.
-          </p>
+        <div className="mt-6 rounded-3xl bg-white/[0.06] p-6 text-center ring-1 ring-inset ring-white/10">
+          <p className="font-golden text-lg text-white">NO PROFILE YET</p>
+          <p className="mt-2 text-[13px] font-semibold text-white/55">Analyse one movement to reveal your first capacity.</p>
+          <button onClick={() => router.push("/analyze")} className="mt-5 w-full rounded-full bg-white py-3.5 font-golden text-[13px] text-graphite">START ANALYSIS</button>
         </div>
       ) : (
         <>
           {/* hero: the hexagon IS the athlete */}
-          <div className="mt-3 overflow-hidden rounded-2xl px-5 py-5 text-white shadow-lift" style={{ background: SURFACE.graphite }}>
+          <div className="relative mt-5 overflow-hidden rounded-3xl bg-white/[0.06] px-5 pb-5 pt-4 text-white ring-1 ring-inset ring-white/10" style={{ background: SURFACE.graphite }}>
             <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/22 to-transparent" />
             <div className="flex items-baseline justify-between">
-              <span className="font-golden text-[13px] text-white/55">ATHLETIC PROFILE</span>
-              <span className="text-[11px] font-bold text-white/35">{p.sessions} sessions</span>
+              <span className="font-golden text-[13px] text-white/70">YOUR SHAPE</span>
+              <span className="font-golden text-[12px] text-white/40">{p.sessions} SESSIONS</span>
             </div>
             <div className="relative mt-1 flex justify-center">
               <Hex values={values} />
@@ -106,52 +108,59 @@ export default function FormPage() {
             </div>
           </div>
 
-          {/* strongest / weakest, in one plain sentence */}
+          {/* strongest / weakest: the only interpretation before the raw capacities */}
           {ranked.length >= 2 && (
-            <div className="mt-3 rounded-2xl bg-volt-mist px-4 py-3">
-              <p className="text-[13px] font-bold leading-snug text-[#1E4D33]">
-                {CAP_META[ranked[0].key].label.toLowerCase()} is your strongest quality.{" "}
-                {CAP_META[ranked[ranked.length - 1].key].label.toLowerCase()} is where there&rsquo;s most to gain.
-              </p>
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <div className="rounded-xl bg-signal-good/15 p-3 ring-1 ring-inset ring-signal-good/20">
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-signal-good">Strongest</p>
+                <p className="mt-1 font-golden text-[17px] leading-none text-white">{CAP_META[ranked[0].key].label}</p>
+              </div>
+              <div className="rounded-xl bg-white/[0.06] p-3 ring-1 ring-inset ring-white/10">
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/40">Build next</p>
+                <p className="mt-1 font-golden text-[17px] leading-none text-white">{CAP_META[ranked[ranked.length - 1].key].label}</p>
+              </div>
             </div>
           )}
 
           {/* every capacity: value, trend, and what it actually measures */}
-          <div className="mt-3 rounded-2xl bg-white p-4 shadow-soft">
+          <section className="mt-6">
+            <div className="mb-3 flex items-baseline justify-between">
+              <h2 className="font-golden text-[15px] leading-none text-white">CAPACITIES</h2>
+              <span className="text-[11px] font-bold text-white/35">Tap for evidence</span>
+            </div>
+          <div className="overflow-hidden rounded-2xl bg-white/[0.06] px-4 ring-1 ring-inset ring-white/10">
             {ranked.map((c, i) => (
               <button
                 key={c.key}
                 onClick={() => setOpen(open === c.key ? null : c.key)}
-                className={`block w-full text-left ${i ? "mt-3 border-t border-black/[0.06] pt-3" : ""}`}
+                className={`block w-full py-4 text-left ${i ? "border-t border-white/10" : ""}`}
               >
                 <div className="flex items-baseline justify-between">
-                  <span className="font-golden text-[13px] text-ink">{CAP_META[c.key].label}</span>
-                  <span className="font-golden text-[16px] leading-none text-ink">{c.value}</span>
+                  <span className="font-golden text-[14px] text-white">{CAP_META[c.key].label}</span>
+                  <span className="font-golden text-[19px] leading-none text-white">{c.value}</span>
                 </div>
-                <div className="mt-1.5 h-[6px] overflow-hidden rounded-full bg-black/[0.07]">
-                  <div className="h-full rounded-full transition-all duration-700" style={{ width: `${c.value}%`, background: DEEP }} />
+                <div className="mt-2 h-[6px] overflow-hidden rounded-full bg-white/10">
+                  <div className="h-full rounded-full bg-signal-good transition-all duration-700" style={{ width: `${c.value}%` }} />
                 </div>
                 {open === c.key && (
-                  <div className="mt-2">
-                    <p className="text-[12px] font-semibold leading-relaxed text-ink-soft">{CAP_META[c.key].blurb}</p>
-                    <p className="mt-1 text-[11px] font-bold text-ink-muted">Measured from: {CAP_META[c.key].source}</p>
+                  <div className="mt-3 rounded-xl bg-black/20 p-3">
+                    <p className="text-[12px] font-semibold leading-relaxed text-white/70">{CAP_META[c.key].blurb}</p>
+                    <p className="mt-2 text-[11px] font-bold text-white/40">Measured from: {CAP_META[c.key].source}</p>
                   </div>
                 )}
               </button>
             ))}
 
             {locked.map((c) => (
-              <div key={c.key} className="mt-3 border-t border-black/[0.06] pt-3 opacity-45">
+              <div key={c.key} className="border-t border-white/10 py-4 opacity-45">
                 <div className="flex items-baseline justify-between">
-                  <span className="font-golden text-[13px] text-ink">{CAP_META[c.key].label}</span>
-                  <span className="text-[11px] font-bold text-ink-muted">Locked</span>
+                  <span className="font-golden text-[13px] text-white">{CAP_META[c.key].label}</span>
+                  <span className="text-[11px] font-bold text-white/50">Locked</span>
                 </div>
-                <p className="mt-1 text-[11px] font-semibold text-ink-muted">
-                  Analyse a new video to unlock — needs the biomechanics layer.
-                </p>
               </div>
             ))}
           </div>
+          </section>
 
         </>
       )}
