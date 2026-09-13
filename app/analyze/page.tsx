@@ -10,7 +10,7 @@ import { createEnsemble, probePeople, type PersonSeed } from "@/lib/ensemble";
 import { createLifter } from "@/lib/lift3d";
 import { createRefiner, spreadRefinement } from "@/lib/pose2d-refine";
 import { drawSkeleton } from "@/lib/draw";
-import { SIGNAL } from "@/lib/palette";
+import { SIGNAL, SURFACE } from "@/lib/palette";
 import { DEFAULT_SESSION_MIN, sessionSecondsOf } from "@/lib/workouts";
 import { getPreferences } from "@/lib/preferences";
 
@@ -467,7 +467,7 @@ export default function Analyze() {
   }, [step, videoUrl, router]);
 
   return (
-    <div className="pt-8">
+    <div className={`min-h-full pt-8 ${step === "pick" ? "bg-graphite text-white" : ""}`}>
       <input
         ref={fileRef}
         type="file"
@@ -482,26 +482,26 @@ export default function Analyze() {
 
       {step === "pick" && (
         <div className="animate-fade-up px-5">
-          <p className="text-[11px] font-black tracking-[0.22em] text-signal-good">ON-DEVICE MOTION CAPTURE</p>
-          <h1 className="mt-2 display text-4xl font-extrabold leading-[0.94]">Turn movement<br />into feedback.</h1>
+          <p className="text-[10px] font-black tracking-[0.2em] text-signal-good">MOTION ANALYSIS</p>
+          <h1 className="mt-2 font-golden text-[38px] leading-[0.92]">SEE HOW<br />YOU MOVE.</h1>
+          <p className="mt-3 max-w-[310px] text-[13px] font-semibold leading-snug text-white/55">One video becomes measured form, muscle load and coaching.</p>
 
           {/* AI-vision cover: what the product actually does — a glowing pose
               skeleton inside a viewfinder, motion trails in the trio colors.
               Dark + luminous, no mascots. */}
           <button
             onClick={() => fileRef.current?.click()}
-            className="group mt-6 block w-full overflow-hidden rounded-3xl bg-graphite text-left shadow-lift transition active:scale-[0.99]"
+            className="group mt-6 block w-full overflow-hidden rounded-3xl bg-white/[0.06] text-left ring-1 ring-inset ring-white/10 transition active:scale-[0.99]"
           >
             <svg viewBox="0 0 390 210" className="block w-full">
               <defs>
                 <radialGradient id="azBg" cx="50%" cy="0%" r="110%">
-                  <stop offset="0%" stopColor="#24463A" />
-                  <stop offset="62%" stopColor="#0E1811" />
+                  <stop offset="0%" stopColor={SIGNAL.good} stopOpacity="0.24" />
+                  <stop offset="72%" stopColor={SURFACE.graphite} />
                 </radialGradient>
               </defs>
               <rect width="390" height="210" fill="url(#azBg)" />
-              {/* violet data-light pooling under the figure */}
-              <ellipse cx="232" cy="182" rx="96" ry="18" fill="rgba(124,92,255,0.14)" />
+              <ellipse cx="232" cy="182" rx="96" ry="18" fill={SIGNAL.good} opacity="0.12" />
               {/* viewfinder corner brackets */}
               <g fill="none" stroke="rgba(255,255,255,0.28)" strokeWidth="3" strokeLinecap="round">
                 <path d="M18 32 v-14 h14" /><path d="M372 32 v-14 h-14" />
@@ -509,12 +509,12 @@ export default function Analyze() {
               </g>
               {/* motion trails — glow pass then core */}
               <g fill="none" strokeLinecap="round">
-                <path d="M28 96 Q110 66 176 96" stroke="rgba(124,92,255,0.25)" strokeWidth="15" />
-                <path d="M40 122 Q116 94 178 118" stroke="rgba(22,199,132,0.22)" strokeWidth="15" />
-                <path d="M54 148 Q124 122 182 140" stroke="rgba(46,134,246,0.22)" strokeWidth="15" />
-                <path d="M28 96 Q110 66 176 96" stroke="#8F7AFF" strokeWidth="6" />
-                <path d="M40 122 Q116 94 178 118" stroke="#16C784" strokeWidth="6" />
-                <path d="M54 148 Q124 122 182 140" stroke="#2E86F6" strokeWidth="6" />
+                <path d="M28 96 Q110 66 176 96" stroke={SIGNAL.work} strokeOpacity="0.16" strokeWidth="15" />
+                <path d="M40 122 Q116 94 178 118" stroke={SIGNAL.okay} strokeOpacity="0.16" strokeWidth="15" />
+                <path d="M54 148 Q124 122 182 140" stroke={SIGNAL.good} strokeOpacity="0.18" strokeWidth="15" />
+                <path d="M28 96 Q110 66 176 96" stroke={SIGNAL.work} strokeWidth="4" />
+                <path d="M40 122 Q116 94 178 118" stroke={SIGNAL.okay} strokeWidth="4" />
+                <path d="M54 148 Q124 122 182 140" stroke={SIGNAL.good} strokeWidth="4" />
               </g>
               {/* the pose skeleton — bones: glow pass then core */}
               {(() => {
@@ -536,10 +536,10 @@ export default function Analyze() {
                 ];
                 return (
                   <g>
-                    <g stroke="rgba(124,92,255,0.32)" strokeWidth="8" strokeLinecap="round">
+                    <g stroke={SIGNAL.good} strokeOpacity="0.22" strokeWidth="8" strokeLinecap="round">
                       {B.map((b, i) => <line key={i} x1={b[0]} y1={b[1]} x2={b[2]} y2={b[3]} />)}
                     </g>
-                    <g stroke="#8F7AFF" strokeWidth="2.5" strokeLinecap="round">
+                    <g stroke={SIGNAL.good} strokeWidth="2.5" strokeLinecap="round">
                       {B.map((b, i) => <line key={i} x1={b[0]} y1={b[1]} x2={b[2]} y2={b[3]} />)}
                     </g>
                     {/* head ring */}
@@ -558,10 +558,10 @@ export default function Analyze() {
               })()}
             </svg>
             <div className="flex items-center gap-4 border-t border-white/10 px-5 py-5">
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white text-ink transition group-hover:scale-105 group-active:scale-95"><UploadIcon /></span>
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-white text-ink transition group-hover:scale-105 group-active:scale-95"><UploadIcon /></span>
               <div className="min-w-0 flex-1">
-                <p className="font-golden text-2xl leading-none text-white">CHOOSE A VIDEO</p>
-                <p className="mt-1 text-[11px] font-bold text-white/55">Your full video stays on this device</p>
+                <p className="font-golden text-xl leading-none text-white">CHOOSE VIDEO</p>
+                <p className="mt-1 text-[11px] font-bold text-white/45">Private · processed on device</p>
               </div>
               <span className="text-xl text-white/60">→</span>
             </div>
@@ -766,13 +766,13 @@ function UploadIcon() {
 
 function CaptureRule({ icon, label }: { icon: "frame" | "light" | "steady"; label: string }) {
   return (
-    <div className="rounded-2xl bg-white px-2 py-3 text-center shadow-soft">
+    <div className="rounded-xl bg-white/[0.06] px-2 py-3 text-center ring-1 ring-inset ring-white/10">
       <svg className="mx-auto" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={SIGNAL.good} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         {icon === "frame" && <><path d="M8 3H4a1 1 0 0 0-1 1v4M16 3h4a1 1 0 0 1 1 1v4M8 21H4a1 1 0 0 1-1-1v-4M16 21h4a1 1 0 0 0 1-1v-4" /><circle cx="12" cy="8" r="2" /><path d="M12 10.5v4M8.5 20l3.5-5.5 3.5 5.5M12 12l-4 2M12 12l4 2" /></>}
         {icon === "light" && <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></>}
         {icon === "steady" && <><rect x="4" y="7" width="16" height="11" rx="2" /><path d="m9 7 1.5-2h3L15 7M9 12h6M12 9v6" /></>}
       </svg>
-      <p className="mt-2 text-[11px] font-black tracking-[0.12em] text-ink">{label}</p>
+      <p className="mt-2 text-[10px] font-black tracking-[0.1em] text-white/65">{label}</p>
     </div>
   );
 }
