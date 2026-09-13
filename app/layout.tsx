@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ECEFEC",
+  themeColor: "#14181B",
   width: "device-width",
   initialScale: 1,
 };
@@ -23,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       {/* The DOCUMENT never scrolls (see globals). Scrolling happens inside the shell's
           <main>, so the phone-shell width is constant on every OS/browser — no route
           change can ever shift it sideways. */}
-      <body className="flex h-dvh justify-center overflow-hidden bg-[#DDE4DF] text-ink antialiased">
+      <body className="flex h-dvh justify-center overflow-hidden bg-graphite text-ink antialiased">
         <PwaRegister />
         {/* `isolate` gives the shell its own stacking context so the -z-10 wave
             paints above the shell's bg-paper fallback but below ALL content;
@@ -31,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* clean solid backdrop — no imagery competing with the content */}
         {/* longevity-mood morning-light wash (see .ml-backdrop) — the calm
             depth the old wallpaper gave, without an image fighting content */}
-        <div className="ml-backdrop relative isolate flex h-dvh w-full max-w-[430px] flex-col overflow-hidden shadow-[0_0_60px_-20px_rgba(14,31,26,0.30)]">
+        <div className="ml-backdrop relative isolate flex h-dvh w-full max-w-[430px] flex-col overflow-hidden shadow-lift">
           <AppShell>{children}</AppShell>
         </div>
       </body>

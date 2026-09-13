@@ -87,7 +87,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {!immersive && <TopBar />}
       {/* the ONLY scroll container in the app; a flex column so full-height pages
           (Activity) can flex-1 to fill without fragile percentage-height chains */}
-      <main id="ml-scroll" className="flex min-h-0 flex-1 flex-col overflow-y-auto pb-28">
+      <main id="ml-scroll" className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-paper pb-28">
         {/* the entrance animation lives in app/template.tsx, which Next
             re-mounts on every navigation. A second wrapper here nested the
             same animation inside itself and played it twice. */}

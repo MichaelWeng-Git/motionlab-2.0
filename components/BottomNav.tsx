@@ -56,12 +56,12 @@ export function BottomNav() {
 
       {/* the STANDARD mobile tab bar: full-width, flush to the bottom edge,
           white with a hairline divider — every destination labeled */}
-      <nav className="fixed bottom-0 left-1/2 z-50 w-full max-w-[430px] -translate-x-1/2 border-t border-black/10 bg-white/95 backdrop-blur-xl">
+      <nav className="fixed bottom-0 left-1/2 z-50 w-full max-w-[430px] -translate-x-1/2 border-t border-white/10 bg-graphite/95 text-white backdrop-blur-xl">
         <div className="relative grid grid-cols-3 items-start px-2 pb-[max(0.45rem,env(safe-area-inset-bottom))] pt-1.5">
           {/* Home */}
           <Link href="/" className="flex flex-col items-center gap-1 py-1">
             <HomeIcon filled={pathname === "/"} />
-            <span className={`text-[11px] ${pathname === "/" ? "font-bold text-ink" : "font-medium text-ink-muted"}`}>
+            <span className={`text-[11px] ${pathname === "/" ? "font-bold text-white" : "font-medium text-white/45"}`}>
               Home
             </span>
           </Link>
@@ -77,7 +77,7 @@ export function BottomNav() {
             >
               <button
                 onClick={() => go("/analyze")}
-                className={`flex w-[96px] flex-col items-center gap-1.5 rounded-2xl rounded-br-[44px] bg-ink py-3.5 pr-1 text-white shadow-lift transition-all duration-500 ${
+                className={`flex w-[96px] flex-col items-center gap-1.5 rounded-2xl bg-graphite py-3.5 text-white shadow-lift ring-1 ring-inset ring-white/10 transition-all duration-500 ${
                   open ? "translate-x-0 scale-100" : "translate-x-8 scale-90"
                 }`}
                 style={{ transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)" }}
@@ -87,7 +87,7 @@ export function BottomNav() {
               </button>
               <button
                 onClick={() => go("/fuel")}
-                className={`mb-7 flex w-[96px] flex-col items-center gap-1.5 rounded-2xl bg-[#E8A13C] py-3.5 text-white shadow-lift transition-all duration-500 ${
+                className={`mb-7 flex w-[96px] flex-col items-center gap-1.5 rounded-2xl bg-signal-okay py-3.5 text-white shadow-lift transition-all duration-500 ${
                   open ? "translate-y-0 scale-100" : "translate-y-4 scale-90"
                 }`}
                 style={{ transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)" }}
@@ -99,7 +99,7 @@ export function BottomNav() {
               </button>
               <button
                 onClick={() => go("/activity")}
-                className={`flex w-[96px] flex-col items-center gap-1.5 rounded-2xl rounded-bl-[44px] bg-volt py-3.5 pl-1 text-volt-ink shadow-lift transition-all duration-500 ${
+                className={`flex w-[96px] flex-col items-center gap-1.5 rounded-2xl bg-signal-good py-3.5 text-white shadow-lift transition-all duration-500 ${
                   open ? "translate-x-0 scale-100" : "-translate-x-8 scale-90"
                 }`}
                 style={{ transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)" }}
@@ -114,20 +114,20 @@ export function BottomNav() {
             <button
               onClick={openLauncher}
               aria-expanded={open}
-              className={`grid h-8 w-11 place-items-center rounded-xl bg-ink text-volt-glow shadow-soft transition-all duration-300 active:scale-95 ${
+              className={`grid h-9 w-12 place-items-center rounded-full bg-white text-graphite shadow-soft transition-all duration-300 active:scale-95 ${
                 open ? "rotate-45" : ""
               }`}
             >
               <PlusIcon />
             </button>
-            <span className={`mt-1 text-[11px] ${centerActive || open ? "font-bold text-ink" : "font-semibold text-ink"}`}>Start</span>
+            <span className={`mt-1 text-[11px] ${centerActive || open ? "font-bold text-white" : "font-semibold text-white/70"}`}>Start</span>
           </div>
 
           {/* Progress */}
           <Link href="/history" className="flex flex-col items-center gap-1 py-1">
             <ChartIcon filled={pathname === "/history"} />
             <span
-              className={`text-[11px] ${pathname === "/history" ? "font-bold text-ink" : "font-medium text-ink-muted"}`}
+                className={`text-[11px] ${pathname === "/history" ? "font-bold text-white" : "font-medium text-white/45"}`}
             >
               Progress
             </span>
@@ -142,13 +142,13 @@ export function BottomNav() {
 function HomeIcon({ filled }: { filled: boolean }) {
   if (filled) {
     return (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className="text-ink">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className="text-white">
         <path d="M11.4 2.5a1 1 0 0 1 1.2 0l8.6 7.2c.5.4.2 1.3-.5 1.3H19v8.5a1.5 1.5 0 0 1-1.5 1.5H14v-6a2 2 0 0 0-4 0v6H6.5A1.5 1.5 0 0 1 5 19.5V11H3.3c-.7 0-1-.9-.5-1.3l8.6-7.2Z" />
       </svg>
     );
   }
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-ink-muted">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-white/45">
       <path d="M3 10.5 12 3l9 7.5" />
       <path d="M5 9.5V21h14V9.5" />
     </svg>
@@ -158,7 +158,7 @@ function HomeIcon({ filled }: { filled: boolean }) {
 function ChartIcon({ filled }: { filled: boolean }) {
   if (filled) {
     return (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className="text-ink">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className="text-white">
         <rect x="5.2" y="10.5" width="3.6" height="8.5" rx="1.2" />
         <rect x="10.2" y="5" width="3.6" height="14" rx="1.2" />
         <rect x="15.2" y="7.5" width="3.6" height="11.5" rx="1.2" />
@@ -166,7 +166,7 @@ function ChartIcon({ filled }: { filled: boolean }) {
     );
   }
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-ink-muted">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-white/45">
       <path d="M7 19v-8M12 19V6M17 19v-6" />
     </svg>
   );

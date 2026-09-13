@@ -12,7 +12,7 @@
 }
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 html,
@@ -25,7 +25,7 @@ body {
      This makes the centered phone shell's width constant on every OS/browser,
      so switching routes can never shift it sideways. */
   overflow: hidden;
-  background: #ECEFEC; /* cool green porcelain ground */
+  background: #14181B;
   color: #17271F;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -562,7 +562,7 @@ button:not(:disabled),
 /* Ink-style stage: one flat cool porcelain, zero decoration — cold ground is
    what separates "instrument" from "craft paper" (design research 2026-09) */
 .ml-backdrop {
-  background-color: #ECEFEC;
+  background-color: #EDF1EE;
 }
 
 /* Card system: clean white slabs, big radius, ink-tinted stacked shadow +

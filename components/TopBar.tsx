@@ -100,7 +100,7 @@ export function TopBar() {
   return (
     <header
       className={`sticky top-0 z-40 border-b transition-all duration-300 ${
-        scrolled ? "border-black/10 bg-paper/95 shadow-soft backdrop-blur-2xl" : "border-black/5 bg-paper/80 backdrop-blur-xl"
+        scrolled ? "border-white/10 bg-graphite/95 shadow-lift backdrop-blur-2xl" : "border-white/5 bg-graphite/90 backdrop-blur-xl"
       }`}
     >
       <div
@@ -111,7 +111,7 @@ export function TopBar() {
         <Link href="/" className="flex items-center">
           {/* the M2 ribbon mark IS the wordmark — no text beside it */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-mark.png" alt="MotionLab" className="h-[24px] w-auto" />
+          <img src="/logo-mark.png" alt="MotionLab" className="h-[24px] w-auto brightness-0 invert" />
         </Link>
 
         {/* ask MotionLab AI — centered pill, opens a floating input window.
@@ -121,10 +121,10 @@ export function TopBar() {
             data-ask
             onClick={() => setAskOpen(!askOpen)}
             aria-label="Ask MotionLab AI"
-            className="flex h-8 items-center gap-1.5 rounded-xl bg-white px-3 shadow-soft ring-1 ring-black/10"
+            className="flex h-9 items-center gap-1.5 rounded-full bg-white/10 px-3 text-white ring-1 ring-inset ring-white/10"
           >
             <SparkleIcon />
-            <span className="text-xs font-extrabold text-ink">AI</span>
+            <span className="font-golden text-xs text-white">AI</span>
           </button>
         </div>
 
@@ -134,7 +134,7 @@ export function TopBar() {
             href="/streak"
             aria-label="My streak"
             className={`flex h-9 items-center gap-1 rounded-full pl-1.5 pr-2.5 shadow-soft transition active:scale-95 ${
-              streak > 0 ? "bg-[#FFF1DC] text-[#C25A12]" : "bg-white text-ink-muted"
+              streak > 0 ? "bg-award-gold-wash/15 text-award-gold-light" : "bg-white/10 text-white/55"
             } ${flamePop ? "streak-pop" : ""}`}
           >
             <Flame size={18} lit={streak > 0} />
@@ -142,7 +142,7 @@ export function TopBar() {
           </Link>
           <Link
             href="/account"
-            className="grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-white shadow-soft transition active:scale-95"
+            className="grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-white/10 ring-1 ring-inset ring-white/10 transition active:scale-95"
             aria-label="My profile"
           >
             {profile && <Avatar p={profile} iconSize={24} />}
@@ -186,10 +186,9 @@ export function TopBar() {
 // little AI sparkle
 function SparkleIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="shrink-0 text-volt-deep">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="shrink-0 text-volt-glow">
       <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z" fill="currentColor" />
       <path d="M18.5 15l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9.9-2.6z" fill="currentColor" opacity="0.55" />
     </svg>
   );
 }
-
