@@ -66,6 +66,19 @@ export function accountSnapshot(): Payload {
   return payload;
 }
 
+// Does this device hold training the athlete would mourn? Deliberately narrow:
+// goals, streaks and coins are re-derivable or cosmetic, but an analysed session
+// or a recorded activity cannot be recovered once deleted — the video is gone.
+export function hasLocalTraining(): boolean {
+  for (const key of ["ml_sessions", "ml_sessions_backup", "ml_activities"]) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw && (JSON.parse(raw) as unknown[]).length > 0) return true;
+    } catch {}
+  }
+  return false;
+}
+
 function hydrate(payload: Payload) {
   for (const key of LOCAL_CLEAR_KEYS) localStorage.removeItem(key);
   for (const [key, value] of Object.entries(payload)) {
@@ -127,6 +140,27 @@ async function bootstrapAccountDataOnce(): Promise<BootstrapResult> {
     if (data.isNew) {
       // A genuinely new email starts clean even if this browser previously held
       // another account's data. Identity, not device storage, is authoritative.
+      //
+      // EXCEPT when this device holds training that exists nowhere else. Cloud
+      // sync is new, so every pre-existing athlete is "new" to the server the
+      // first time they open the app — and `isNew` is derived from the
+      // `profiles` table, which is about social identity, not about whether
+      // this browser has irreplaceable records. Wiping here also removes
+      // ml_sessions_backup, so the mirror that exists for exactly this accident
+      // is destroyed in the same sweep. This project has lost a user's
+      // analyses three times; it does not get to happen a fourth.
+      //
+      // Adopt the local records into the new account instead of destroying
+      // them. If they genuinely belong to someone else, the athlete can clear
+      // them from Settings — a recoverable annoyance, unlike deletion.
+      if (hasLocalTraining()) {
+        const adopted = accountSnapshot();
+        localStorage.setItem(ACCOUNT_BINDING_KEY, data.email);
+        localStorage.removeItem(CLOUD_VERSION_KEY);
+        const ok = await upload(adopted);
+        cloudState(ok ? "synced" : "offline");
+        return { ok, isNew: true, migrated: true };
+      }
       hydrate({});
       localStorage.setItem(ACCOUNT_BINDING_KEY, data.email);
       sessionStorage.setItem("ml_cloud_fingerprint", "{}");
