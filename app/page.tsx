@@ -345,7 +345,7 @@ export default function Home() {
           never fights the card. Labels + numbers in the brand face. */}
       <section className="mt-4" ref={todayRef}>
         <Link href="/weeks" className="block">
-          <GoalCardShell className="transition active:scale-[0.99]">
+          <GoalCardShell className="ring-1 ring-inset ring-white/10 transition active:scale-[0.99]">
             <div className="flex items-center gap-5">
               <div className="relative shrink-0">
                 <GoalRing pcts={[pct, pAna, pWo]} />
@@ -455,15 +455,15 @@ export default function Home() {
 
         {/* MUSCLES — the AI-read body, spinnable, standing tall on the right */}
         <div className="h-full" ref={musclesRef}>
-          <div className="gk-card flex h-full flex-col overflow-hidden !bg-volt-mist p-4 pb-3 ring-1 ring-inset ring-white/10">
+          <div className="gk-card flex h-full flex-col overflow-hidden !bg-graphite p-4 pb-3 ring-1 ring-inset ring-white/10">
             <Link href="/muscles" className="flex items-center justify-center gap-2">
-              <span className="grid h-7 w-7 place-items-center rounded-lg" style={{ background: "#62D98B24" }}>
+              <span className="grid h-7 w-7 place-items-center rounded-xl bg-signal-good/15">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2E9E5B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="4.5" r="2.2" />
                   <path d="M12 8v6M12 8.5c-2.8 0-4.5 1-6 2.5M12 8.5c2.8 0 4.5 1 6 2.5M12 14l-2.8 6M12 14l2.8 6" />
                 </svg>
               </span>
-              <h2 className="font-golden text-lg leading-none text-ink">MUSCLES</h2>
+              <h2 className="font-golden text-lg leading-none text-white">MUSCLES</h2>
             </Link>
             <div className="flex flex-1 items-center justify-center pt-2">
               {has3d ? (
@@ -481,7 +481,7 @@ export default function Home() {
                 animate={freshAnalysis}
               />
             ) : (
-              <p className="mt-1.5 text-center text-[11px] font-bold text-ink-soft">
+              <p className="mt-1.5 text-center text-[11px] font-bold text-white/55">
                 {muscles ? recoveryStateText(recovery) : "Reading your sessions…"}
               </p>
             )}
@@ -580,7 +580,7 @@ export default function Home() {
                     <SIcon name={row.icon!} size={26} />
                   )}
                 </span>
-                <span className={`flex-1 text-sm ${row.me ? "font-extrabold" : "font-semibold"}`}>
+                <span className={`flex-1 text-sm text-ink ${row.me ? "font-extrabold" : "font-semibold"}`}>
                   {row.name}
                   {row.me && <span className="ml-2 text-[11px] font-bold uppercase tracking-wide text-ink-muted">You</span>}
                 </span>
@@ -782,12 +782,12 @@ function RecoveryBar({ recovery, animate }: { recovery: Extract<RecoveryState, {
   return (
     <div className="mt-1.5">
       <div className="flex items-baseline justify-between">
-        <span className="text-[11px] font-bold uppercase tracking-wide text-ink-muted">
+        <span className="text-[11px] font-bold uppercase tracking-wide text-white/45">
           {recoveryStateText(recovery)}
         </span>
         <span className="font-golden text-[13px] leading-none tabular-nums" style={{ color }}>{shown}%</span>
       </div>
-      <div className="mt-1 h-[7px] overflow-hidden rounded-full bg-black/[0.06]">
+      <div className="mt-1 h-[7px] overflow-hidden rounded-full bg-white/10">
         <div className="h-full rounded-full" style={{ width: `${shown}%`, background: color }} />
       </div>
     </div>
