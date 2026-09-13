@@ -190,7 +190,7 @@ export default function History() {
       {/* MEDALS — moved off Home so the first screen stays about TODAY */}
       <section className="mb-2 mt-5">
         {(() => {
-          const families = medalCollection({ analyses: medalStats.total, bestScore: medalStats.bestScore, streakDays: medalStats.streakDays, workouts: acts });
+          const families = medalCollection({ analyses: medalStats.total, bestScore: medalStats.bestScore, streakDays: medalStats.streakDays, recordedWorkouts: acts });
           const earnedCount = earnedMedalIds(families).length;
           return (
             <Link href="/medals" className="block overflow-hidden rounded-2xl bg-graphite p-5 text-white shadow-lift transition active:scale-[0.99]">

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MedalArt } from "@/components/MedalArt";
 import { getStats } from "@/lib/stats";
+import { readActivities } from "@/lib/activities";
 import { earnedMedalIds, medalCollection, type MedalFamily, type MedalMilestone } from "@/lib/medals";
 
 export default function MedalsPage() {
@@ -12,9 +13,8 @@ export default function MedalsPage() {
   const [reveal, setReveal] = useState<{ family: MedalFamily; medal: MedalMilestone } | null>(null);
   useEffect(() => {
     const stats = getStats();
-    let workouts = 0;
-    try { workouts = (JSON.parse(localStorage.getItem("ml_activities") ?? "[]") as unknown[]).length; } catch {}
-    const next = medalCollection({ analyses: stats.total, bestScore: stats.bestScore, streakDays: stats.streakDays, workouts });
+    const recordedWorkouts = readActivities().length;
+    const next = medalCollection({ analyses: stats.total, bestScore: stats.bestScore, streakDays: stats.streakDays, recordedWorkouts });
     setFamilies(next);
     const earned = earnedMedalIds(next);
     let seen: string[] = [];
