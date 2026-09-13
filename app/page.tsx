@@ -330,14 +330,14 @@ export default function Home() {
   const overall = (pct + pAna + pWo) / 3;
 
   return (
-    <div className="stagger px-5 pt-7">
+    <div className="stagger min-h-full bg-graphite px-5 pb-10 pt-7 text-white">
       {/* greeting — pure text; every control lives in the top bar's right
           cluster, so nothing floats loose down here */}
       <div className="animate-fade-up">
         <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-signal-good">
           {new Date().toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}
         </p>
-        <h1 className="mt-0.5 text-[26px] font-extrabold tracking-tight">{name ? `Hey, ${name}` : "Hey there"}</h1>
+        <h1 className="mt-1 font-golden text-[28px] leading-none text-white">{name ? `HEY, ${name}` : "HEY THERE"}</h1>
       </div>
 
       {/* TODAY — one object, not three meters: a single ring split into three
@@ -455,7 +455,7 @@ export default function Home() {
 
         {/* MUSCLES — the AI-read body, spinnable, standing tall on the right */}
         <div className="h-full" ref={musclesRef}>
-          <div className="gk-card flex h-full flex-col overflow-hidden !bg-volt-mist p-4 pb-3">
+          <div className="gk-card flex h-full flex-col overflow-hidden !bg-volt-mist p-4 pb-3 ring-1 ring-inset ring-white/10">
             <Link href="/muscles" className="flex items-center justify-center gap-2">
               <span className="grid h-7 w-7 place-items-center rounded-lg" style={{ background: "#62D98B24" }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2E9E5B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -494,7 +494,7 @@ export default function Home() {
           LOAD = how much, CHARGE = how ready. */}
       {charge && (
         <section className="mt-4" ref={chargeRef}>
-          <Link href="/charge" className="gk-card block w-full !bg-graphite p-5 text-left transition active:scale-[0.99]">
+          <Link href="/charge" className="gk-card block w-full !bg-graphite p-5 text-left ring-1 ring-inset ring-white/10 transition active:scale-[0.99]">
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-2.5">
                 <span className="grid h-8 w-8 place-items-center rounded-xl bg-white/10">
