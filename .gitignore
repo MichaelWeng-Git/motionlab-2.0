@@ -14,3 +14,8 @@ public/models/
 exercise-images-inbox/
 design-assets/
 tsconfig.tsbuildinfo
+
+# dev build output — Codex added distDir=.next-dev in next.config.mjs but not here,
+# so the whole dev build cache was being tracked
+.next-dev/
+.pnpm-store/
