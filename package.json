@@ -6,7 +6,9 @@
     "dev": "next dev -p 3100",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "^1.0.1",
@@ -36,6 +38,7 @@
     "postcss": "8.4.39",
     "sharp": "^0.35.4",
     "tailwindcss": "3.4.7",
-    "typescript": "5.5.3"
+    "typescript": "5.5.3",
+    "vitest": "^2.1.9"
   }
 }

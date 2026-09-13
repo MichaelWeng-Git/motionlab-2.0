@@ -38,8 +38,8 @@ than once in this project.
    `computeRecovery`, or the pose cleanup order without real regression
    evidence first.
 4. **Do not restore** `/api/muscles` or any sport-name muscle estimation.
-5. Run `npx tsc --noEmit` and `npm run build` per item. Only one Next process
-   may run against this checkout at a time.
+5. Run `npx tsc --noEmit`, `npm test` and `npm run build` per item. Only one
+   Next process may run against this checkout at a time.
 
 ---
 
@@ -55,6 +55,12 @@ than once in this project.
 | — | Data-honesty audit: GPS randomness, fake distance/pace, 70 kg calories, fixed heart rate, biomech failure reasons, cloud-3D gating | `179ebd8` |
 | — | Pose: candidate association, foot keypoints, reliability → biomech | `a7b664b` |
 | **P0-1** | Unified `Workout` record — LOAD/Recovery/CHARGE count one training once | `78b2085` |
+| **P0-2** | One `RecoveryState` selector, four kinds, five surfaces | `53c59bb` |
+| **P0-3** | One FORM source on Home | `84ef4c6` |
+| **P0-4** | Session length asked before saving an analysis | `ae17f11` |
+| **P0-5** | Local `dayKey()`, zero `slice(0,10)` business dates | — |
+| **P0-6** | All session writes through `writeSessions()` | — |
+| **P1-4** | Vitest — 35 tests across data safety, workouts, recovery, palette | — |
 
 ---
 

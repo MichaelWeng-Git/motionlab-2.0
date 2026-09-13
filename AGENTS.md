@@ -66,15 +66,17 @@ npm install
 npm run dev      # localhost:3100
 npm run build
 npm run lint     # NOTE: ESLint is not configured yet — this prompts for setup
-npx tsc --noEmit # the de-facto check; there is no test suite
+npx tsc --noEmit # types
+npm test         # vitest — data safety, the Workout model, recovery, palette
 ```
 
 `npx tsc --noEmit` is clean as of `179ebd8`. (It previously carried standing
 errors in `lib/ensemble.ts`; those are fixed — do not re-add a filter for them.)
 
-**There is no test suite yet** (P1-4 adds Vitest). Verification is done by
-running the dev server and inspecting the actual pages, plus compiling `lib/`
-to ESM and exercising it under node — see Current Development State.
+**Run `npm test` before every commit.** `tests/data-safety.test.ts` exists
+because this project has deleted an athlete's analyses three times — treat a
+failure there as a release blocker, not a flaky test. Visual changes still need
+the dev server and a real look at the page.
 
 **Only ONE Next process may run against this checkout at a time.** Everything
 writes to the same `.next`, so a second one silently breaks the first:
