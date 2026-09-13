@@ -108,10 +108,10 @@ export function TopBar() {
           scrolled ? "h-11" : "h-14"
         }`}
       >
-        <Link href="/" className="flex items-center">
+        <Link href="/" className="flex h-9 items-center rounded-full bg-white px-2.5 ring-1 ring-inset ring-white/20">
           {/* the M2 ribbon mark IS the wordmark — no text beside it */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-mark.png" alt="MotionLab" className="h-[24px] w-auto brightness-0 invert" />
+          <img src="/logo-mark.png" alt="MotionLab" className="h-[22px] w-auto" />
         </Link>
 
         {/* ask MotionLab AI — centered pill, opens a floating input window.
