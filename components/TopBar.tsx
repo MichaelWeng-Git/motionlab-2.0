@@ -47,6 +47,19 @@ export function TopBar() {
   const [askOpen, setAskOpen] = useState(false);
   const [q, setQ] = useState("");
 
+  // These three destinations sit in persistent chrome. Warm them as soon as
+  // the shell is idle so the first tap does not wait for a development compile
+  // or a cold route chunk.
+  useEffect(() => {
+    const warm = () => {
+      router.prefetch("/account");
+      router.prefetch("/streak");
+      router.prefetch("/history");
+    };
+    const id = window.setTimeout(warm, 300);
+    return () => window.clearTimeout(id);
+  }, [router]);
+
   // ChatGPT-style draft memory: a half-typed question survives leaving the
   // app for up to 30 minutes, then quietly expires
   useEffect(() => {
