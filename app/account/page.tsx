@@ -80,16 +80,16 @@ export default function Account() {
   ];
 
   return (
-    <div className="px-5 pt-8">
+    <div className="min-h-full bg-graphite px-5 pt-8 text-white">
       <div className="mb-5 flex items-center gap-3">
-        <Link href="/" className="grid h-9 w-9 place-items-center rounded-full bg-white text-ink shadow-soft">
+        <Link href="/" className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white ring-1 ring-inset ring-white/10">
           ←
         </Link>
         <h1 className="font-golden text-[26px] leading-none">Profile</h1>
       </div>
       {/* profile header — tap the avatar (camera badge = the affordance) to
           change the photo, WhatsApp-style */}
-      <div className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-soft">
+      <div className="flex items-center gap-4 rounded-2xl bg-white/[0.06] p-4 ring-1 ring-inset ring-white/10">
         <button onClick={() => setPhotoSheet(true)} className="relative shrink-0 transition active:scale-95" aria-label="Change profile photo">
           <XpAvatarRing xp={stats?.xp ?? 0}><span className="grid h-full w-full place-items-center bg-volt-mist"><Avatar p={profile} iconSize={44} /></span></XpAvatarRing>
           <span className="absolute -bottom-0.5 -right-0.5 grid h-6 w-6 place-items-center rounded-full bg-ink text-white ring-2 ring-[#ECEFEC]">
@@ -97,9 +97,9 @@ export default function Account() {
           </span>
         </button>
         <div className="min-w-0 flex-1">
-          <p className="text-xl font-extrabold tracking-tight">{profile.name ?? "You"}</p>
+          <p className="font-golden text-xl leading-none text-white">{profile.name ?? "You"}</p>
           <div className="mt-2"><LevelBadge xp={stats?.xp ?? 0} /></div>
-          <Link href="/xp" className="mt-2 flex items-center gap-2"><span className="h-1.5 flex-1 overflow-hidden rounded-full bg-black/[0.07]"><span className="block h-full rounded-full" style={{ width: `${levelForXp(stats?.xp ?? 0).progress * 100}%`, background: levelForXp(stats?.xp ?? 0).color }} /></span><span className="text-[11px] font-black text-ink-muted">{stats?.xp ?? 0} XP ›</span></Link>
+          <Link href="/xp" className="mt-2 flex items-center gap-2"><span className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10"><span className="block h-full rounded-full" style={{ width: `${levelForXp(stats?.xp ?? 0).progress * 100}%`, background: levelForXp(stats?.xp ?? 0).color }} /></span><span className="font-golden text-[11px] text-white/50">{stats?.xp ?? 0} XP ›</span></Link>
         </div>
       </div>
 
@@ -110,9 +110,9 @@ export default function Account() {
           { v: stats?.total ? stats.bestScore : "—", l: "Best score" },
           { v: stats && stats.monthDelta > 0 ? `+${stats.monthDelta}` : "—", l: "This month" },
         ].map((s) => (
-          <div key={s.l} className="rounded-2xl bg-white py-4 text-center shadow-soft">
+          <div key={s.l} className="rounded-2xl bg-white/[0.06] py-4 text-center ring-1 ring-inset ring-white/10">
             <p className="font-golden text-2xl leading-none">{s.v}</p>
-            <p className="mt-1.5 text-[11px] font-bold uppercase tracking-wide text-ink-muted">{s.l}</p>
+            <p className="mt-1.5 text-[11px] font-bold uppercase tracking-wide text-white/40">{s.l}</p>
           </div>
         ))}
       </div>
@@ -120,17 +120,17 @@ export default function Account() {
       {/* menu groups */}
       <div className="mt-6 space-y-4 pb-6">
         {menu.map((group, gi) => (
-          <div key={gi} className="overflow-hidden rounded-2xl bg-white shadow-soft">
+          <div key={gi} className="overflow-hidden rounded-2xl bg-white/[0.06] ring-1 ring-inset ring-white/10">
             {group.map((item, i) => {
-              const cls = `flex w-full items-center gap-3 px-4 py-3.5 text-left transition active:bg-black/[0.03] ${
-                i > 0 ? "border-t border-black/5" : ""
+              const cls = `flex w-full items-center gap-3 px-4 py-3.5 text-left text-white transition active:bg-white/[0.05] ${
+                i > 0 ? "border-t border-white/10" : ""
               }`;
               const inner = (
                 <>
                   <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg" style={{ background: item.tint }}>{item.icon}</span>
                   <span className="flex-1 text-[15px] font-bold">{item.label}</span>
                   {item.hint && <span className="text-xs text-ink-muted">{item.hint}</span>}
-                  <span className="font-bold text-ink">›</span>
+                  <span className="font-bold text-white/60">›</span>
                 </>
               );
               return item.href ? (
@@ -143,7 +143,7 @@ export default function Account() {
         ))}
 
         {/* log out — double-confirm; local data stays untouched */}
-        <div className="overflow-hidden rounded-2xl bg-white shadow-soft">
+        <div className="overflow-hidden rounded-2xl bg-white/[0.06] ring-1 ring-inset ring-white/10">
           <button
             onClick={() => setConfirmOut(true)}
             className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition active:bg-black/[0.03]"
