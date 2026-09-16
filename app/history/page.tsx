@@ -77,20 +77,20 @@ export default function History() {
 
 
   return (
-    <div className="stagger px-5 pt-8">
-      <h1 className="font-golden text-[26px] leading-none">Progress</h1>
+    <div className="stagger min-h-full bg-graphite px-5 pb-8 pt-8 text-white">
+      <h1 className="font-golden text-[26px] leading-none">PROGRESS</h1>
 
       {/* all-time at a glance — ONE bordered block, three bold columns */}
-      <div className="mt-4 overflow-hidden rounded-3xl bg-white shadow-soft">
-        <div className="grid grid-cols-3 divide-x divide-black/10 py-4">
+      <div className="mt-4 overflow-hidden rounded-3xl bg-white/[0.06] ring-1 ring-inset ring-white/10">
+        <div className="grid grid-cols-3 divide-x divide-white/10 py-4">
           {[
             { v: sessions.length, l: "Analyses" },
             { v: acts, l: "Workouts" },
             { v: sessions.length ? best : "—", l: "Best score" },
           ].map((x) => (
             <div key={x.l} className="text-center">
-              <p className="text-2xl font-extrabold tabular-nums text-ink">{x.v}</p>
-              <p className="mt-0.5 text-[11px] font-bold text-ink">{x.l}</p>
+              <p className="font-golden text-2xl tabular-nums text-white">{x.v}</p>
+              <p className="mt-0.5 text-[11px] font-bold text-white/45">{x.l}</p>
             </div>
           ))}
         </div>
@@ -139,8 +139,8 @@ export default function History() {
       {/* Twelve-week training consistency — each dot comes from a real Workout. */}
       <section className="mt-5">
         <div className="flex items-baseline justify-between">
-          <h2 className="font-golden text-xl leading-none text-ink">12-WEEK RHYTHM</h2>
-          <span className="text-[11px] font-black tracking-[0.14em] text-ink-muted">TRAINING DAYS</span>
+          <h2 className="font-golden text-xl leading-none text-white">12-WEEK RHYTHM</h2>
+          <span className="text-[11px] font-black tracking-[0.14em] text-white/40">TRAINING DAYS</span>
         </div>
         <div className="mt-2.5 overflow-hidden rounded-2xl bg-graphite p-5 text-white shadow-lift">
           <div className="flex gap-2">
@@ -170,20 +170,20 @@ export default function History() {
       </section>
 
       <section className="mt-5">
-        <div className="flex items-baseline justify-between"><h2 className="font-golden text-xl leading-none text-ink">PERSONAL BESTS</h2><span className="text-[11px] font-black tracking-[0.14em] text-ink-muted">MEASURED ONLY</span></div>
+        <div className="flex items-baseline justify-between"><h2 className="font-golden text-xl leading-none text-white">PERSONAL BESTS</h2><span className="text-[11px] font-black tracking-[0.14em] text-white/40">MEASURED ONLY</span></div>
         {pbs.length ? (
           <div className="-mx-5 mt-2.5 flex snap-x gap-3 overflow-x-auto px-5 pb-2 no-scrollbar">
             {pbs.map((pb) => (
-              <Link key={pb.id} href={pb.href ?? "#"} className="min-w-[180px] snap-start overflow-hidden rounded-2xl bg-white p-4 shadow-soft active:scale-[0.98]">
+              <Link key={pb.id} href={pb.href ?? "#"} className="min-w-[180px] snap-start overflow-hidden rounded-2xl bg-white/[0.06] p-4 ring-1 ring-inset ring-white/10 active:scale-[0.98]">
                 <div className="flex items-center justify-between"><span className={`rounded-full px-2 py-1 text-[11px] font-black tracking-[0.13em] ${pb.kind === "score" ? "bg-volt text-ink" : "bg-sky text-ink"}`}>{pb.kind === "score" ? "FORM SCORE" : "GPS DISTANCE"}</span><span className="text-sm font-black">›</span></div>
-                <p className="mt-5 font-golden text-4xl leading-none tabular-nums text-ink">{pb.value}<span className="ml-1 text-xs">{pb.unit}</span></p>
-                <p className="mt-2 truncate text-sm font-extrabold text-ink">{pb.sport}</p>
-                <p className="mt-0.5 text-[11px] font-bold text-ink-muted">{new Date(pb.date).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}</p>
+                <p className="mt-5 font-golden text-4xl leading-none tabular-nums text-white">{pb.value}<span className="ml-1 text-xs">{pb.unit}</span></p>
+                <p className="mt-2 truncate text-sm font-extrabold text-white">{pb.sport}</p>
+                <p className="mt-0.5 text-[11px] font-bold text-white/40">{new Date(pb.date).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}</p>
               </Link>
             ))}
           </div>
         ) : (
-          <Link href="/analyze" className="mt-2.5 flex items-center justify-between rounded-2xl border border-dashed border-black/15 bg-white/55 p-5"><div><p className="font-extrabold text-ink">Your first PB starts here</p><p className="mt-1 text-xs font-bold text-ink-muted">Analyze a movement or record a GPS workout.</p></div><span className="font-golden text-2xl">›</span></Link>
+          <Link href="/analyze" className="mt-2.5 flex items-center justify-between rounded-2xl bg-white/[0.06] p-5 ring-1 ring-inset ring-white/10"><div><p className="font-extrabold text-white">Your first PB starts here</p><p className="mt-1 text-xs font-bold text-white/40">Analyze a movement or record a GPS workout.</p></div><span className="font-golden text-2xl">›</span></Link>
         )}
       </section>
 
