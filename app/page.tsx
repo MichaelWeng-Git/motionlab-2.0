@@ -22,7 +22,7 @@ import { addBonusCoins, RING_COIN, dayKey } from "@/lib/coins";
 import { fetchFriends, iconOf, syncMe, type Person } from "@/lib/friends";
 import { getGoals, RING_COLORS, DEFAULT_GOALS, type Goals } from "@/lib/goals";
 import { getCharge, CHARGE_META, type Charge } from "@/lib/charge";
-import { touchDailyStreak } from "@/lib/streak";
+import { getStreakInfo, touchDailyStreak } from "@/lib/streak";
 import { DEFAULT_SESSION_MIN, fetchMuscleState, getCachedMuscleState, getRecoveryState, recoveryColor, recoveryStateText, type MuscleState, type RecoveryState } from "@/lib/muscles";
 import { buildLoadMonth, loadColor, type LoadMonth } from "@/lib/fitness";
 import { SIGNAL } from "@/lib/palette";
@@ -44,6 +44,7 @@ export default function Home() {
   // rows that are genuinely NEW this session get the squeeze-in animation;
   // everyone already seen stays perfectly still
   const [newRows, setNewRows] = useState<Set<string>>(new Set());
+  const [streakInfo, setStreakInfo] = useState({ count: 0, max: 0 });
 
   // ranked leaderboard rows: you + accepted friends (real users)
   const lbRows: { id: string; name: string; xp: number; me: boolean; icon?: SIconName; photo?: string | null }[] = [
@@ -131,6 +132,8 @@ export default function Home() {
   useEffect(() => {
     try {
       const r = touchDailyStreak();
+      const info = getStreakInfo();
+      setStreakInfo({ count: info.count, max: info.max });
       setTimeout(() => window.dispatchEvent(new CustomEvent("ml:streak", { detail: r })), 700);
     } catch {}
   }, []);
@@ -455,7 +458,7 @@ export default function Home() {
 
         {/* MUSCLES — the AI-read body, spinnable, standing tall on the right */}
         <div className="h-full" ref={musclesRef}>
-          <div className="gk-card flex h-full flex-col overflow-hidden !bg-graphite p-4 pb-3 ring-1 ring-inset ring-white/10">
+          <div className="flex h-full flex-col overflow-hidden rounded-2xl bg-white/[0.07] p-4 pb-3 ring-1 ring-inset ring-white/15">
             <Link href="/muscles" className="flex items-center justify-center gap-2">
               <span className="grid h-7 w-7 place-items-center rounded-xl bg-signal-good/15">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2E9E5B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -636,6 +639,28 @@ export default function Home() {
             );
           })()}
         </div>
+      </section>
+
+      <section className="mt-4">
+        <Link href="/streak" className="block rounded-2xl bg-white/[0.07] p-5 ring-1 ring-inset ring-white/15 transition active:scale-[0.99]">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[10px] font-black tracking-[0.18em] text-award-gold-light">CONSISTENCY</p>
+              <h2 className="mt-1 font-golden text-xl leading-none text-white">NEXT MILESTONE</h2>
+            </div>
+            <span className="font-golden text-[13px] text-white/45">VIEW PATH ›</span>
+          </div>
+          {(() => {
+            const next = [1, 10, 20, 30].find((n) => n > streakInfo.max) ?? (Math.floor(streakInfo.max / 10) + 1) * 10;
+            const base = next === 1 ? 0 : next - 10;
+            const progress = Math.max(0, Math.min(1, (streakInfo.max - base) / Math.max(1, next - base)));
+            return <div className="mt-4">
+              <div className="flex items-end justify-between"><span className="font-golden text-[34px] leading-none text-white">{streakInfo.count}<span className="ml-1 font-sans text-xs font-bold text-white/45">day streak</span></span><span className="font-golden text-[15px] text-award-gold-light">{next} DAYS</span></div>
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10"><span className="block h-full rounded-full bg-award-gold" style={{ width: `${progress * 100}%` }} /></div>
+              <p className="mt-2 text-[11px] font-bold text-white/40">Personal best {streakInfo.max} {streakInfo.max === 1 ? "day" : "days"}</p>
+            </div>;
+          })()}
+        </Link>
       </section>
 
       {/* FIRST-VISIT TOUR — spotlight cutout + bouncing intro bubble */}
