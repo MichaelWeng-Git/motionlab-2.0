@@ -70,7 +70,7 @@ export default function Streak() {
       </div>
 
       {/* hero — consistency, framed like a training status rather than a toy counter */}
-      <div className="relative mt-5 overflow-hidden rounded-3xl bg-graphite p-5 text-white shadow-lift">
+      <div className="relative mt-5 overflow-hidden rounded-3xl bg-white/[0.07] p-5 text-white ring-1 ring-inset ring-white/15">
         <div className="absolute -right-16 -top-20 h-52 w-52 rounded-full bg-[#FF6A16]/15 blur-3xl" />
         <p className="relative font-golden text-[13px] leading-none text-[#FFB44D]">SHOW-UP STREAK</p>
         <div className="relative mt-3 flex items-center justify-between">
