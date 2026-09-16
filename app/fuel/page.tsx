@@ -7,7 +7,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getMeals, logMeal, proteinTarget, removeMeal, restoreMeal, todayMeals, type Meal } from "@/lib/fuel";
+import { getMeals, logMeal, proteinTarget, removeMeal, restoreMeal, todayMeals, TRAINING_PROTEIN_G_PER_KG, type Meal } from "@/lib/fuel";
 import { SIGNAL } from "@/lib/palette";
 
 type Scan = {
@@ -181,6 +181,16 @@ export default function Fuel() {
 
       <section className="mt-3 rounded-2xl bg-white/[0.06] p-5 ring-1 ring-inset ring-white/10">
         <div className="flex items-end justify-between"><div><p className="text-[10px] font-black tracking-[0.18em] text-white/40">RECENT</p><h2 className="mt-1 font-golden text-xl text-white">MEAL HISTORY</h2></div><span className="font-golden text-lg text-white/40">{meals.length}</span></div>
+        <div className="mt-4 rounded-xl bg-white/[0.06] p-3 ring-1 ring-inset ring-white/10">
+          <div className="flex items-baseline justify-between">
+            <span className="text-[11px] font-bold text-white/50">TODAY&apos;S PROTEIN</span>
+            <span className="font-golden text-[17px] text-white">{protein}<span className="ml-1 font-sans text-[11px] font-bold text-white/40">{target ? `/ ${target} g` : "g"}</span></span>
+          </div>
+          <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
+            <span className="block h-full rounded-full bg-signal-good transition-[width] duration-500" style={{ width: `${pct * 100}%` }} />
+          </div>
+          <p className="mt-2 text-[10px] font-bold text-white/35">{target ? `Training target · ${TRAINING_PROTEIN_G_PER_KG} g/kg body weight` : "Add body weight to calculate a training target"}</p>
+        </div>
         {history.length ? <div className="mt-4 space-y-2">{history.map((meal, index) => {
           const date = new Date(meal.date), previous = history[index - 1];
           const showDay = !previous || new Date(previous.date).toDateString() !== date.toDateString();

@@ -43,12 +43,21 @@ export function restoreMeal(meal: Meal) {
   localStorage.setItem("ml_fuel", JSON.stringify(all));
 }
 
-// 1.6 g/kg/day. Null when the user has not given a weight — a target computed
+export const TRAINING_PROTEIN_G_PER_KG = 1.6;
+
+export function proteinTargetForWeight(weightKg: number | null | undefined): number | null {
+  if (!weightKg || !Number.isFinite(weightKg) || weightKg <= 0) return null;
+  return Math.round(weightKg * TRAINING_PROTEIN_G_PER_KG);
+}
+
+// 1.6 g/kg/day: a single, stable point inside the 1.2–2.0 g/kg range used by
+// sports-nutrition guidance for routinely active adults. Null when the user
+// has not given a weight — a target computed
 // against an assumed 65 kg body is a made-up number, not a default.
 export function proteinTarget(): number | null {
   try {
     const p = JSON.parse(localStorage.getItem("ml_profile") ?? "{}") as { weight?: number };
-    return p.weight ? Math.round(p.weight * 1.6) : null;
+    return proteinTargetForWeight(p.weight);
   } catch {
     return null;
   }
