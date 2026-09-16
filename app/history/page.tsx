@@ -142,7 +142,7 @@ export default function History() {
           <h2 className="font-golden text-xl leading-none text-white">12-WEEK RHYTHM</h2>
           <span className="text-[11px] font-black tracking-[0.14em] text-white/40">TRAINING DAYS</span>
         </div>
-        <div className="mt-2.5 overflow-hidden rounded-2xl bg-graphite p-5 text-white shadow-lift">
+        <div className="mt-2.5 overflow-hidden rounded-2xl bg-white/[0.07] p-5 text-white ring-1 ring-inset ring-white/15">
           <div className="flex gap-2">
             <div className="grid grid-rows-7 gap-1.5 pt-px text-[11px] font-black text-white/35">
               {["M", "", "W", "", "F", "", "S"].map((d, i) => <span key={i} className="flex h-3 items-center">{d}</span>)}
@@ -154,7 +154,7 @@ export default function History() {
                     <span
                       key={d.date}
                       title={`${new Date(d.date).toLocaleDateString()} · ${d.future ? "upcoming" : d.count ? `${d.count} workout${d.count === 1 ? "" : "s"}${d.minutes == null ? " · duration unknown" : ` · ${d.minutes} min`}` : "rest"}`}
-                      className={`h-3 rounded-[3px] ${d.future ? "bg-transparent" : d.level === 4 ? "bg-volt" : d.level === 3 ? "bg-heat-3" : d.level === 2 ? "bg-heat-2" : d.level === 1 ? (d.minutes == null ? "border border-volt bg-transparent" : "bg-heat-1") : "bg-white/[0.08]"}`}
+                      className={`h-3 rounded-[3px] ring-1 ring-inset ring-white/[0.06] ${d.future ? "bg-transparent" : d.level === 4 ? "bg-heat-4" : d.level === 3 ? "bg-heat-3" : d.level === 2 ? "bg-heat-2" : d.level === 1 ? (d.minutes == null ? "border border-heat-2 bg-transparent" : "bg-heat-1") : "bg-white/[0.12]"}`}
                     />
                   ))}
                 </div>
