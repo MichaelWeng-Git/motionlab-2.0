@@ -58,11 +58,11 @@ export default function Streak() {
   const reachedCount = nodes.filter((m) => best >= m.n).length;
 
   return (
-    <div className="stagger px-5 pb-8 pt-8">
+    <div className="stagger min-h-full bg-graphite px-5 pb-8 pt-8 text-white">
       <div className="flex items-center gap-3">
         <button
           onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
-          className="grid h-9 w-9 place-items-center rounded-full bg-white text-ink shadow-soft"
+          className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white ring-1 ring-inset ring-white/10"
         >
           ←
         </button>
@@ -81,19 +81,19 @@ export default function Streak() {
       </div>
 
       {/* last 7 days */}
-      <div className="mt-4 rounded-2xl bg-white p-4 shadow-soft">
-        <div className="flex items-end justify-between"><h2 className="font-golden text-xl leading-none text-ink">LAST 7 DAYS</h2><span className="text-[11px] font-bold text-ink-muted">APP CHECK-IN</span></div>
-        <div className="relative mt-4 grid grid-cols-7 before:absolute before:left-[7%] before:right-[7%] before:top-5 before:h-px before:bg-black/10">
+      <div className="mt-4 rounded-2xl bg-white/[0.06] p-4 ring-1 ring-inset ring-white/10">
+        <div className="flex items-end justify-between"><h2 className="font-golden text-xl leading-none text-white">LAST 7 DAYS</h2><span className="text-[11px] font-bold text-white/40">APP CHECK-IN</span></div>
+        <div className="relative mt-4 grid grid-cols-7 before:absolute before:left-[7%] before:right-[7%] before:top-5 before:h-px before:bg-white/10">
           {days.map((d) => (
             <div key={d.key} className="flex flex-col items-center gap-1.5">
               <span
                 className={`relative z-10 grid h-10 w-10 place-items-center rounded-full ${
-                  d.active ? "bg-[#FFF1DC]" : "bg-black/[0.04]"
-                } ${d.today ? "ring-2 ring-ink/70" : ""}`}
+                  d.active ? "bg-award-gold-wash" : "bg-white/[0.06]"
+                } ${d.today ? "ring-2 ring-white/70" : ""}`}
               >
                 <Flame size={22} lit={d.active} level={flameLevel(streak)} />
               </span>
-              <span className={`text-[11px] text-ink ${d.today ? "font-extrabold" : "font-semibold"}`}>
+              <span className={`text-[11px] text-white/70 ${d.today ? "font-extrabold" : "font-semibold"}`}>
                 {d.label}
               </span>
             </div>
@@ -104,23 +104,23 @@ export default function Streak() {
       {/* the tree — tap in to decorate. Big tree left, big words filling the right. */}
       <Link
         href="/tree"
-        className="press mt-4 flex items-center gap-5 rounded-3xl bg-white px-6 py-6 shadow-soft"
+        className="press mt-4 flex items-center gap-5 rounded-3xl bg-white/[0.06] px-6 py-6 ring-1 ring-inset ring-white/10"
       >
         <MiniTree size={72} />
-        <span className="flex-1 text-right font-golden text-[26px] leading-[1.15] text-ink">
+        <span className="flex-1 text-right font-golden text-[26px] leading-[1.15] text-white">
           Decorate my&nbsp;tree
         </span>
-        <span className="text-lg font-bold text-ink">›</span>
+        <span className="text-lg font-bold text-white">›</span>
       </Link>
 
       {/* milestones — a timeline; the flame burns hotter at every node, and a
           faded ghost target always waits below the last one */}
-      <div className="mt-4 rounded-2xl bg-white p-5 shadow-soft">
-        <p className="text-[11px] font-bold text-ink-muted">CONSISTENCY PATH</p>
-        <h2 className="mt-1 font-golden text-2xl leading-none text-ink">MILESTONES</h2>
+      <div className="mt-4 rounded-2xl bg-white/[0.06] p-5 ring-1 ring-inset ring-white/10">
+        <p className="text-[11px] font-bold text-white/40">CONSISTENCY PATH</p>
+        <h2 className="mt-1 font-golden text-2xl leading-none text-white">MILESTONES</h2>
         <div className="relative mt-4">
           {/* spine + progress fill */}
-          <span className="absolute bottom-6 left-[22px] top-1 w-[3px] rounded-full bg-black/[0.07]" />
+          <span className="absolute bottom-6 left-[22px] top-1 w-[3px] rounded-full bg-white/10" />
           {reachedCount > 0 && (
             <span
               className="absolute left-[22px] top-1 w-[3px] rounded-full bg-gradient-to-b from-[#FFB93D] to-[#FF5A1F]"
@@ -137,18 +137,18 @@ export default function Streak() {
                     className={`relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-full border ${
                       reached
                         ? "border-[#F5B23D]/50 bg-[#FFF1DC] shadow-soft"
-                        : "border-black/5 bg-paper"
+                        : "border-white/10 bg-white/[0.06]"
                     }`}
                   >
                     <MilestoneMark index={i} reached={reached} />
                   </span>
-                  <p className="flex-1 text-[15px] font-extrabold text-ink">{m.label}</p>
+                  <p className="flex-1 text-[15px] font-extrabold text-white">{m.label}</p>
                   {reached ? (
                     <span className="rounded-full bg-[#FFF1DC] px-2.5 py-1 text-[11px] font-bold text-[#C25A12]">
                       Reached
                     </span>
                   ) : next ? (
-                    <span className="rounded-full bg-black/[0.05] px-2.5 py-1 text-[11px] font-bold text-ink">
+                    <span className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white">
                       {m.n - best} to go
                     </span>
                   ) : null}
@@ -157,10 +157,10 @@ export default function Streak() {
             })}
             {/* the ghost — a faded glimpse of what comes next */}
             <div className="relative flex items-center gap-4 opacity-40">
-              <span className="relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-full border border-dashed border-black/20 bg-paper">
+              <span className="relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-full border border-dashed border-white/20 bg-white/[0.06]">
                 <MilestoneMark index={nodes.length} reached={false} />
               </span>
-              <p className="flex-1 text-[15px] font-extrabold text-ink">{ghost.n} days</p>
+              <p className="flex-1 text-[15px] font-extrabold text-white">{ghost.n} days</p>
             </div>
           </div>
         </div>

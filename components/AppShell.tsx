@@ -15,7 +15,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const isAuthPage = AUTH_PATHS.includes(pathname);
-  const darkCanvas = pathname === "/" || pathname === "/analyze" || pathname === "/form" || pathname === "/fuel";
+  const darkCanvas = pathname === "/" || pathname === "/analyze" || pathname === "/form" || pathname === "/fuel"
+    || pathname === "/streak" || pathname === "/account" || pathname === "/history";
 
   // Pure workout mode: while actively recording, the Activity page raises
   // this flag and ALL app chrome disappears (no top bar to mis-tap, no nav).
