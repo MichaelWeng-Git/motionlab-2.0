@@ -7,6 +7,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { CoachMark } from "@/components/CoachMark";
 import { hasAuthCallback } from "@/lib/supabase-client";
 import { CloudSync } from "@/components/CloudSync";
+import { isLocalDevAuthBypass } from "@/lib/dev-auth";
 
 const AUTH_PATHS = ["/login", "/onboarding", "/account/help"];
 
@@ -49,6 +50,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   // REAL auth gate: nobody enters the app without logging in.
   // Google login → server session; email OTP → ml_auth flag set by /login.
   useEffect(() => {
+    // Local product review goes straight to the app. This deliberately does
+    // not write ml_auth: it is a UI-gate bypass, not a fake account, and it
+    // therefore cannot upload local records under an invented identity.
+    if (isLocalDevAuthBypass() && !hasAuthCallback()) {
+      if (pathname === "/login") router.replace("/");
+      return;
+    }
     if (isAuthPage) return;
     // A magic link may land on ANY route (the Supabase Site URL is often just
     // "/"). Its tokens live in the URL — bounce to /login WITH them intact so
