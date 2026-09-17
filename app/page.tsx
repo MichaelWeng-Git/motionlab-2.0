@@ -376,14 +376,14 @@ export default function Home() {
         <div className="flex flex-col gap-3" ref={formRef}>
         <Link
           href={form !== null ? "/form" : "/analyze"}
-          className="gk-card block flex-1 !bg-cream p-5 transition active:scale-[0.98]"
+          className="gk-card block flex-1 p-5 text-fg transition active:scale-[0.98]"
         >
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-2">
               <span className="grid h-7 w-7 place-items-center rounded-lg" style={{ background: "#7C5CFF1C" }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7C5CFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12h4l2.5-6 4 12 2.5-6h5" /></svg>
               </span>
-              <span className="font-golden text-lg leading-none text-ink">FORM</span>
+              <span className="font-golden text-lg leading-none text-fg">FORM</span>
             </span>
             {form !== null && formTrend !== 0 && (
               <span className={`text-[11px] font-extrabold ${formTrend > 0 ? "text-signal-good" : "text-signal-work"}`}>
@@ -401,7 +401,7 @@ export default function Home() {
             if (val == null || measured < 3) {
               return (
                 <div className="mt-4 flex h-[76px] items-center">
-                  <p className="text-[13px] font-bold text-ink-soft">
+                  <p className="text-[13px] font-bold text-fg-soft">
                     {val != null ? `${val} — one analysis so far` : "Analyze a video to start your profile"}
                   </p>
                 </div>
@@ -418,27 +418,27 @@ export default function Home() {
               <div className="mt-2 flex items-center gap-2">
                 <svg width={S} height={S} viewBox={`0 0 ${S} ${S}`} className="shrink-0">
                   {[0.5, 1].map((f) => (
-                    <polygon key={f} points={ring(f)} fill="none" stroke="rgba(14,31,26,0.10)" strokeWidth="1" />
+                    <polygon key={f} points={ring(f)} fill="none" stroke="var(--hair)" strokeWidth="1" />
                   ))}
                   <polygon points={shape} fill="rgba(46,158,107,0.18)" stroke="#2E9E6B" strokeWidth="2" strokeLinejoin="round" />
                 </svg>
                 <div>
-                  <p className="font-golden text-[32px] leading-none text-ink">{val}</p>
+                  <p className="font-golden text-[32px] leading-none text-fg">{val}</p>
                 </div>
               </div>
             );
           })()}
         </Link>
-        <Link href="/load" className="gk-card block flex-1 !bg-paper p-5 transition active:scale-[0.98]">
+        <Link href="/load" className="gk-card block flex-1 p-5 text-fg transition active:scale-[0.98]">
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-2">
               <span className="grid h-7 w-7 place-items-center rounded-lg" style={{ background: `${SIGNAL.good}1C` }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={SIGNAL.good} strokeWidth="2" strokeLinecap="round"><path d="M5 19a8.5 8.5 0 1 1 14 0" /><path d="M12 13l3.5-3.5" /><circle cx="12" cy="13.5" r="1.4" fill={SIGNAL.good} /></svg>
               </span>
-              <span className="font-golden text-lg leading-none text-ink">LOAD</span>
+              <span className="font-golden text-lg leading-none text-fg">LOAD</span>
             </span>
             {loadDelta !== null && (
-              <span className={`text-[11px] font-extrabold ${loadDelta >= 0 ? "text-signal-good" : "text-ink-muted"}`}>
+              <span className={`text-[11px] font-extrabold ${loadDelta >= 0 ? "text-signal-good" : "text-fg-muted"}`}>
                 {loadDelta >= 0 ? "▲" : "▼"} {Math.abs(loadDelta)}%
               </span>
             )}
@@ -449,8 +449,6 @@ export default function Home() {
               value={String(loadMonth?.week ?? 0)}
               label="LAST 7 DAYS"
               color={loadColor(loadMonth?.week ?? 0)}
-              valueColor="#17271F"
-              labelColor="#51604F"
             />
           </div>
         </Link>
@@ -539,15 +537,15 @@ export default function Home() {
       {/* LEADERBOARD — after your own status (every pro app ranks social
           below self); past 3 rows the 4th sits fogged behind "More" */}
       <section className="mt-4">
-        <div className="gk-card overflow-hidden !bg-cream">
+        <div className="gk-card overflow-hidden text-fg">
           <div className="flex items-center justify-between px-5 pb-2 pt-4">
             <span className="flex items-center gap-2.5">
               <span className="grid h-8 w-8 place-items-center rounded-xl" style={{ background: "#E8A13C24" }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9821B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0V4z" /><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v3M8.5 20h7M10 20v-2h4v2" /></svg>
               </span>
-              <h2 className="font-golden text-lg leading-none text-ink">LEADERBOARD</h2>
+              <h2 className="font-golden text-lg leading-none text-fg">LEADERBOARD</h2>
             </span>
-            <Link href="/friends" className="press rounded-full bg-paper px-3 py-1.5 text-[11px] font-extrabold text-ink">
+            <Link href="/friends" className="press rounded-full bg-inset px-3 py-1.5 text-[11px] font-extrabold text-fg">
               Friends ›
             </Link>
           </div>
@@ -560,20 +558,20 @@ export default function Home() {
 
             const Row = ({ row, rank, divider }: { row: (typeof lbRows)[number]; rank: number; divider: boolean }) => (
               <div
-                className={`flex items-center gap-3.5 px-5 py-3.5 ${row.me ? "bg-volt-mist" : ""} ${
-                  divider ? "border-t border-black/5" : ""
+                className={`flex items-center gap-3.5 px-5 py-3.5 ${row.me ? "bg-white/[0.06]" : ""} ${
+                  divider ? "border-t border-hair" : ""
                 } ${!row.me && newRows.has(row.id) ? "row-squeeze" : ""}`}
                 style={!row.me && newRows.has(row.id) ? { animationDelay: `${rank * 0.07}s` } : undefined}
               >
                 <span
                   className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-extrabold tabular-nums ${
-                    rank === 1 ? "text-white" : "bg-black/10 text-ink-muted"
+                    rank === 1 ? "text-white" : "bg-inset text-fg-muted"
                   }`}
                   style={rank === 1 ? { background: "#F5B23D" } : undefined}
                 >
                   {rank}
                 </span>
-                <span className="grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-paper">
+                <span className="grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-inset">
                   {row.me ? (
                     <Avatar p={profile} iconSize={26} />
                   ) : row.photo ? (
@@ -583,11 +581,11 @@ export default function Home() {
                     <SIcon name={row.icon!} size={26} />
                   )}
                 </span>
-                <span className={`flex-1 text-sm text-ink ${row.me ? "font-extrabold" : "font-semibold"}`}>
+                <span className={`flex-1 text-sm text-fg ${row.me ? "font-extrabold" : "font-semibold"}`}>
                   {row.name}
-                  {row.me && <span className="ml-2 text-[11px] font-bold uppercase tracking-wide text-ink-muted">You</span>}
+                  {row.me && <span className="ml-2 text-[11px] font-bold uppercase tracking-wide text-fg-muted">You</span>}
                 </span>
-                <span className="text-sm font-bold tabular-nums text-ink-muted">{row.xp} XP</span>
+                <span className="font-golden text-sm tabular-nums text-fg-muted">{row.xp} XP</span>
               </div>
             );
 
@@ -598,16 +596,16 @@ export default function Home() {
                 ))}
                 {meExtra && <Row row={meExtra.row} rank={meExtra.rank} divider />}
                 {folded && hidden.length > 0 && (
-                  <div className="relative border-t border-black/5">
+                  <div className="relative border-t border-hair">
                     {/* a hint of fog — one row, lightly blurred */}
                     <div className="pointer-events-none select-none opacity-70 blur-[1.5px]">
                       <Row row={hidden[0]} rank={lbRows.indexOf(hidden[0]) + 1} divider={false} />
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-white/55 to-white/80" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-graphite/55 to-graphite/90" />
                     {/* the whole fogged strip is the tap target */}
                     <button
                       onClick={() => setLbOpen(true)}
-                      className="absolute inset-0 flex items-center justify-center gap-1 text-sm font-bold text-ink"
+                      className="absolute inset-0 flex items-center justify-center gap-1 text-sm font-bold text-fg"
                     >
                       More
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
@@ -619,7 +617,7 @@ export default function Home() {
                 {lbOpen && lbRows.length > 4 && (
                   <button
                     onClick={() => setLbOpen(false)}
-                    className="w-full border-t border-black/5 py-2.5 text-center text-xs font-bold text-ink-muted transition active:bg-black/[0.03]"
+                    className="w-full border-t border-hair py-2.5 text-center text-xs font-bold text-fg-muted transition active:bg-white/[0.04]"
                   >
                     Show less
                   </button>
@@ -635,7 +633,7 @@ export default function Home() {
                 ? `${lbRows[0].xp - lbRows[1].xp} XP ahead of ${lbRows[1].name}`
                 : `${lbRows[i - 1].xp - lbRows[i].xp} XP behind ${lbRows[i - 1].name}`;
             return (
-              <p className="border-t border-black/5 py-2.5 text-center text-[12px] font-bold text-ink-soft">{line}</p>
+              <p className="border-t border-hair py-2.5 text-center text-[12px] font-bold text-fg-soft">{line}</p>
             );
           })()}
         </div>

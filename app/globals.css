@@ -57,7 +57,9 @@
      translucent panel would show the page through it. #24282B is exactly
      what a white/7% card composites to over graphite. */
   --sheet: #24282B;
-  --track: rgba(255, 255, 255, 0.10);
+  /* 16% is the lowest measured alpha at which the LOAD semicircle remains
+     visible on the raised 7% panel at phone brightness. */
+  --track: rgba(255, 255, 255, 0.16);
   --hair: rgba(255, 255, 255, 0.08);
   --fg: #FFFFFF;
   --fg-soft: rgba(255, 255, 255, 0.72);
