@@ -9,14 +9,19 @@ import { hasAuthCallback } from "@/lib/supabase-client";
 import { CloudSync } from "@/components/CloudSync";
 import { isLocalDevAuthBypass } from "@/lib/dev-auth";
 
-const AUTH_PATHS = ["/login", "/onboarding", "/account/help"];
+// Only true authentication/onboarding routes live outside the product shell.
+// The assistant is a normal signed-in destination: excluding it here used to
+// remove both pieces of chrome and reveal the old white document canvas.
+const AUTH_PATHS = ["/login", "/onboarding"];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const isAuthPage = AUTH_PATHS.includes(pathname);
-  const darkCanvas = pathname === "/" || pathname === "/analyze" || pathname === "/form" || pathname === "/fuel"
-    || pathname === "/streak" || pathname === "/account" || pathname === "/history";
+  // MotionLab is one dark product shell. Individual light cards can still be
+  // deliberate surfaces, but navigation must never swap the whole viewport to
+  // paper and flash white between routes.
+  const darkCanvas = !isAuthPage;
 
   // Pure workout mode: while actively recording, the Activity page raises
   // this flag and ALL app chrome disappears (no top bar to mis-tap, no nav).
@@ -99,6 +104,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           (Activity) can flex-1 to fill without fragile percentage-height chains */}
       <main
         id="ml-scroll"
+        data-shell={darkCanvas ? "dark" : "light"}
         className={`flex min-h-0 flex-1 flex-col overflow-y-auto pb-28 ${darkCanvas ? "bg-graphite" : "bg-paper"}`}
       >
         {/* the entrance animation lives in app/template.tsx, which Next

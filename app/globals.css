@@ -15,6 +15,59 @@
   color-scheme: dark;
 }
 
+/* ——— SURFACES FOLLOW THE SHELL ———
+   Cards used to hard-code their own colours, so switching a route's canvas to
+   graphite changed the background and left every block on it light: a cream
+   FORM card, a pale LOAD card and a white leaderboard sitting on a black page.
+   These variables are set ONCE per shell (AppShell's <main data-shell>) and
+   every surface token reads them, so a block fuses with whatever page it is on
+   and flipping a route to dark carries its cards with it.
+
+   Light values are the app's original ones exactly — light routes render
+   unchanged. Dark values are measured from the dark cards that already read
+   right (MUSCLES, CONSISTENCY: white/7% fill, white/15% inset edge, white/10%
+   tracks). On dark, elevation is a LIGHTER surface plus an edge; a drop shadow
+   is invisible against graphite, so it is removed rather than left to fail.
+
+   Text floors (contrast on a white/7% card over #14181B, and on a tile nested
+   inside one): fg 14.9:1, fg-soft 8.4:1, fg-muted 5.5:1 (4.9:1 nested) — all AA
+   for small text. white/40 is only 3.6:1 and must not be used for text. */
+:root,
+[data-shell="light"] {
+  --panel: rgba(255, 255, 255, 0.96);
+  --panel-edge: rgba(14, 31, 26, 0.04);
+  --panel-shadow: 0 1px 2px rgba(14, 31, 26, 0.05), 0 10px 28px -10px rgba(14, 31, 26, 0.14);
+  --inset: #EDF1EE;
+  --sheet: #EDF1EE;
+  --track: rgba(14, 31, 26, 0.07);
+  --hair: rgba(14, 31, 26, 0.06);
+  --fg: #17271F;
+  --fg-soft: #26382E;
+  --fg-muted: #51604F;
+  --action: #17271F;
+  --on-action: #FFFFFF;
+}
+
+[data-shell="dark"] {
+  --panel: rgba(255, 255, 255, 0.07);
+  --panel-edge: rgba(255, 255, 255, 0.15);
+  --panel-shadow: none;
+  --inset: rgba(255, 255, 255, 0.06);
+  /* modals and sheets float over content, so they must be OPAQUE — a
+     translucent panel would show the page through it. #24282B is exactly
+     what a white/7% card composites to over graphite. */
+  --sheet: #24282B;
+  --track: rgba(255, 255, 255, 0.10);
+  --hair: rgba(255, 255, 255, 0.08);
+  --fg: #FFFFFF;
+  --fg-soft: rgba(255, 255, 255, 0.72);
+  --fg-muted: rgba(255, 255, 255, 0.55);
+  /* the primary filled button inverts: an ink button on graphite is invisible */
+  --action: #FFFFFF;
+  --on-action: #14181B;
+  color: var(--fg);
+}
+
 html,
 body {
   padding: 0;
@@ -567,11 +620,11 @@ button:not(:disabled),
 
 /* Card system: clean white slabs, big radius, ink-tinted stacked shadow +
    1px inset ring (machined edge) — NO borders */
+/* the standard card — its surface comes from the shell (see SURFACES above) */
 .gk-card {
-  background: rgba(255, 255, 255, 0.96);
+  background: var(--panel);
   border-radius: 24px;
-  box-shadow: 0 0 0 1px rgba(14, 31, 26, 0.04) inset, 0 1px 2px rgba(14, 31, 26, 0.05),
-    0 10px 28px -10px rgba(14, 31, 26, 0.14);
+  box-shadow: 0 0 0 1px var(--panel-edge) inset, var(--panel-shadow);
 }
 
 /* Touch-first app: Chromium's blue focus ring and the webview tap-highlight
@@ -646,6 +699,10 @@ iframe {
   background: linear-gradient(90deg, rgba(14,31,26,0.055) 25%, rgba(14,31,26,0.10) 37%, rgba(14,31,26,0.055) 63%);
   background-size: 400% 100%;
   animation: skel-shimmer 1.4s ease-in-out infinite;
+}
+[data-shell="dark"] .skel {
+  background: linear-gradient(90deg, rgba(255,255,255,0.055) 25%, rgba(255,255,255,0.12) 37%, rgba(255,255,255,0.055) 63%);
+  background-size: 400% 100%;
 }
 @keyframes skel-shimmer {
   0% { background-position: 100% 50%; }

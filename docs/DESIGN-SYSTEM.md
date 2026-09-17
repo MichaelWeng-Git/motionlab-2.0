@@ -162,10 +162,12 @@ role genuinely has none (a podium rank, a density ramp), add it to BOTH
 `tailwind.config.ts` and `lib/palette.ts` and document it here — do not inline
 a hex.
 
-Dark surfaces in use: `#14181B` (TODAY / GoalRing ground) and `#F3F0E8` cream
-(day-intensity card). **Card surface colour is not decoration** — the 3D body
-reads a different colour on cream than on white, so a card showing the body
-matches Home's white.
+The authenticated app uses one dark viewport, `graphite #14181B`, so route
+changes never flash a white document canvas. Cards on it use the shared
+shell-aware `panel` token (white at 7% with a 15% inset edge); opaque sheets use
+`sheet #24282B`, the exact composite of that panel over graphite. Light auth
+routes retain the paper values of the same tokens. **Card surface colour is not
+decoration** — use `panel`/`inset`/`sheet` instead of a locally chosen near-dark.
 
 ---
 

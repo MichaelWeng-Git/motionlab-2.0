@@ -45,6 +45,10 @@ export const SURFACE = {
   // green-black: the ring's mint arcs are the only colour on that card, and a
   // green ground fights them.
   graphite: "#14181B",
+  // opaque raised sheet on graphite. It is the exact composite of the
+  // standard white/7% panel over graphite, used where translucency would show
+  // moving content through a modal.
+  sheet: "#24282B",
   // warm paper — the day-intensity card. The 3D body reads a different colour
   // on cream than on white, so this is a deliberate choice, not decoration.
   cream: "#F3F0E8",

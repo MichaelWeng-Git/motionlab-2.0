@@ -3,7 +3,9 @@
 // reads as one system. Colors are per-context: pass color/track/valueColor.
 export function Gauge({
   pct, value, unit, label, big, color = "#7C5CFF",
-  track = "rgba(14,31,26,0.08)", valueColor = "#17271F", labelColor = "#51604F",
+  // shell-aware defaults (app/globals.css SURFACES): the same dial reads right
+  // on a light card and a dark one without the caller passing colours
+  track = "var(--track)", valueColor = "var(--fg)", labelColor = "var(--fg-muted)",
   glow = false,
 }: {
   pct: number; value: string; unit?: string; label?: string; big?: boolean;
@@ -27,7 +29,9 @@ export function Gauge({
         {/* overflow-visible is load-bearing: the glow's drop-shadow spills past
             the 100×52 box, and a clipped shadow shows as a hard straight edge */}
         <svg viewBox="0 0 100 52" className="w-full" style={{ overflow: "visible" }}>
-          <path d="M8 48 A42 42 0 0 1 92 48" fill="none" stroke={trackColor} strokeWidth="11" strokeLinecap="round" />
+          {/* stroke via style, not the attribute: a CSS variable only resolves
+              inside style, and the default track is var(--track) */}
+          <path d="M8 48 A42 42 0 0 1 92 48" fill="none" style={{ stroke: trackColor }} strokeWidth="11" strokeLinecap="round" />
           {p > 0 && (
             <path
               d="M8 48 A42 42 0 0 1 92 48"

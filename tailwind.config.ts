@@ -32,6 +32,21 @@ const config: Config = {
         // Card grounds. Kept byte-identical to lib/palette SURFACE — Tailwind
         // classes cannot read a TS constant, so the value lives in both places
         // and they must not drift.
+        // Shell-aware surfaces (app/globals.css SURFACES). Use these, not
+        // bg-white / text-ink / bg-black/[..], for anything that sits on a
+        // page — they render light or dark according to the route's shell.
+        panel: "var(--panel)",
+        inset: "var(--inset)",
+        sheet: "var(--sheet)",   // opaque — modals and bottom sheets
+        action: "var(--action)",       // primary filled button
+        "on-action": "var(--on-action)",
+        track: "var(--track)",
+        hair: "var(--hair)",
+        fg: {
+          DEFAULT: "var(--fg)",
+          soft: "var(--fg-soft)",
+          muted: "var(--fg-muted)",
+        },
         graphite: "#14181B",   // the one dark card ground (TODAY, GoalRing, heroes)
         cream: "#F3F0E8",      // warm paper — the day-intensity card
         // Podium ranks and medal tiers. See lib/palette AWARD for the
@@ -76,6 +91,8 @@ const config: Config = {
         "3xl": "2rem",
       },
       boxShadow: {
+        // shell-aware: a soft drop on light, none on dark (plus the inset edge)
+        panel: "0 0 0 1px var(--panel-edge) inset, var(--panel-shadow)",
         soft: "0 1px 2px rgba(14,31,26,0.05), 0 10px 28px -12px rgba(14,31,26,0.18)",
         lift: "0 2px 4px rgba(14,31,26,0.09), 0 22px 52px -18px rgba(14,31,26,0.34)",
       },
