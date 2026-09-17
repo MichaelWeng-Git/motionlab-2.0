@@ -106,7 +106,7 @@ export function GoalRows({ values, targets }: { values: number[]; targets: numbe
             <div className="flex items-baseline justify-between">
               <span className="font-golden text-[12px] leading-none text-white/60">{GOAL_LABELS[i]}</span>
               <span className="font-golden text-[15px] leading-none">
-                {values[i]}<span className="text-white/30">/{targets[i]}</span>
+                {values[i]}<span className="text-white/55">/{targets[i]}</span>
               </span>
             </div>
             <div className="mt-1.5 h-[6px] w-full overflow-hidden rounded-full bg-white/[0.09]">

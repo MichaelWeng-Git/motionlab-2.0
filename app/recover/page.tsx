@@ -136,15 +136,15 @@ export default function Recover() {
   }, []);
 
   return (
-    <div className="px-5 pt-8">
-      <h1 className="font-golden text-2xl leading-none text-ink">RECOVERY</h1>
-      <div className="mt-4 space-y-1.5 rounded-2xl bg-white p-4 shadow-soft">
+    <div className="min-h-full bg-graphite px-5 pt-8 text-white">
+      <h1 className="font-golden text-2xl leading-none text-white">RECOVERY</h1>
+      <div className="mt-4 space-y-1.5 rounded-2xl bg-panel p-4 text-fg shadow-panel">
         {log.map((l, i) => (
-          <p key={i} className="text-[13px] font-semibold text-ink">{l}</p>
+          <p key={i} className="text-[13px] font-semibold text-fg">{l}</p>
         ))}
       </div>
       {done && (
-        <a href="/" className="btn-press mt-5 block w-full rounded-full bg-ink py-4 text-center text-[15px] font-bold text-white">
+        <a href="/" className="btn-press mt-5 block w-full rounded-full bg-action py-4 text-center text-[15px] font-bold text-on-action">
           Back to home
         </a>
       )}

@@ -357,7 +357,7 @@ export default function Home() {
                     <p className="font-golden text-[34px] leading-none">
                       <AnimatedNumber value={Math.round(overall * 100)} />
                     </p>
-                    <p className="-mt-0.5 font-golden text-[11px] leading-none text-white/30">/100</p>
+                    <p className="-mt-0.5 font-golden text-[11px] leading-none text-white/55">/100</p>
                   </div>
                 </div>
               </div>

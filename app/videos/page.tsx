@@ -38,19 +38,19 @@ export default function Videos() {
   const confirmSession = sessions.find((s) => s.id === confirmFor);
 
   return (
-    <div className="px-5 pt-8">
+    <div className="min-h-full bg-graphite px-5 pt-8 text-white">
       <div className="flex items-center gap-3">
-        <Link href="/history" className="grid h-9 w-9 place-items-center rounded-full bg-white text-ink shadow-soft">
+        <Link href="/history" aria-label="Back to progress" className="grid h-10 w-10 place-items-center rounded-full bg-panel text-fg shadow-panel">
           ←
         </Link>
         <h1 className="font-golden text-[26px] leading-none">Your analyses</h1>
       </div>
 
       {sessions.length === 0 ? (
-        <div className="mt-6 flex flex-col items-center rounded-3xl bg-white p-8 text-center shadow-soft">
-          <span className="grid h-14 w-14 place-items-center rounded-2xl bg-paper"><ClapperIcon className="text-volt-deep" /></span>
-          <p className="mt-3 text-sm font-bold">No analyses yet</p>
-          <Link href="/analyze" className="btn-press mt-5 w-full rounded-full bg-ink py-3 text-sm font-bold text-white transition">
+        <div className="mt-6 flex flex-col items-center rounded-3xl bg-panel p-8 text-center text-fg shadow-panel">
+          <span className="grid h-14 w-14 place-items-center rounded-xl bg-inset"><ClapperIcon className="text-signal-good" /></span>
+          <p className="mt-3 font-golden text-lg leading-none">NO ANALYSES YET</p>
+          <Link href="/analyze" className="btn-press mt-5 w-full rounded-full bg-action py-3 text-sm font-bold text-on-action transition">
             Analyze a video
           </Link>
         </div>
@@ -59,7 +59,7 @@ export default function Videos() {
           {sessions.map((s) => (
             <div
               key={s.id}
-              className={`relative flex items-center gap-3.5 rounded-3xl bg-white p-3 shadow-soft ${
+              className={`relative flex items-center gap-3.5 rounded-2xl bg-panel p-3 text-fg shadow-panel ${
                 removing === s.id ? "card-removing" : ""
               }`}
             >
@@ -77,11 +77,11 @@ export default function Videos() {
                 </span>
                 <span className="min-w-0 flex-1">
                   <p className="truncate text-sm font-extrabold">{s.sport} · {s.action}</p>
-                  <p className="text-xs font-semibold text-ink-muted">{timeAgo(s.date)}</p>
+                  <p className="text-xs font-semibold text-fg-muted">{timeAgo(s.date)}</p>
                 </span>
                 <span className="text-right">
                   <p className="font-golden text-lg">{s.score}</p>
-                  <p className="text-[11px] font-bold uppercase tracking-wide text-ink-muted">score</p>
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-fg-muted">score</p>
                 </span>
               </Link>
 
@@ -89,21 +89,21 @@ export default function Videos() {
               <button
                 onClick={() => setMenuFor(menuFor === s.id ? null : s.id)}
                 aria-label="More options"
-                className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-ink-muted transition active:bg-black/[0.05]"
+                className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-fg-muted transition active:bg-white/[0.05]"
               >
                 <DotsIcon />
               </button>
               {menuFor === s.id && (
-                <div className="menu-pop absolute right-3 top-14 z-40 w-40 overflow-hidden rounded-2xl bg-white shadow-lift">
+                <div className="menu-pop absolute right-3 top-14 z-40 w-40 overflow-hidden rounded-2xl bg-sheet text-fg shadow-lift ring-1 ring-inset ring-white/15">
                   <button
                     onClick={() => { setMenuFor(null); router.push(`/report/${s.id}`); }}
-                    className="flex w-full items-center gap-2.5 px-4 py-3 text-left text-sm font-semibold transition active:bg-black/[0.04]"
+                    className="flex w-full items-center gap-2.5 px-4 py-3 text-left text-sm font-semibold transition active:bg-white/[0.05]"
                   >
                     <OpenIcon /> Open report
                   </button>
                   <button
                     onClick={() => { setMenuFor(null); setConfirmFor(s.id); }}
-                    className="flex w-full items-center gap-2.5 border-t border-black/5 px-4 py-3 text-left text-sm font-semibold text-signal-work transition active:bg-signal-work/5"
+                    className="flex w-full items-center gap-2.5 border-t border-hair px-4 py-3 text-left text-sm font-semibold text-signal-work transition active:bg-signal-work/5"
                   >
                     <TrashIcon /> Delete
                   </button>
@@ -122,9 +122,9 @@ export default function Videos() {
       {/* delete confirm — dead center */}
       {confirmSession && (
         <>
-          <div className="fixed inset-0 z-[60] bg-ink/50 backdrop-blur-[2px]" onClick={() => setConfirmFor(null)} />
+          <div className="fixed inset-0 z-[60] bg-graphite/75 backdrop-blur-[2px]" onClick={() => setConfirmFor(null)} />
           <div className="fixed inset-0 z-[61] grid place-items-center px-10">
-            <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-paper p-6 text-center shadow-lift">
+            <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15">
               <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-signal-work/12 text-signal-work">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6M14 11v6" /></svg>
               </span>
@@ -138,7 +138,7 @@ export default function Videos() {
                 </button>
                 <button
                   onClick={() => setConfirmFor(null)}
-                  className="w-full rounded-full bg-white py-3.5 text-[15px] font-bold text-ink transition active:scale-[0.98]"
+                  className="w-full rounded-full bg-white/10 py-3.5 text-[15px] font-bold text-white transition active:scale-[0.98]"
                 >
                   Keep it
                 </button>
