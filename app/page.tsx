@@ -348,7 +348,7 @@ export default function Home() {
           never fights the card. Labels + numbers in the brand face. */}
       <section className="mt-4" ref={todayRef}>
         <Link href="/weeks" className="block">
-          <GoalCardShell className="ring-1 ring-inset ring-white/10 transition active:scale-[0.99]">
+          <GoalCardShell emphasis className="ring-1 ring-inset ring-white/15 transition active:scale-[0.99]">
             <div className="flex items-center gap-5">
               <div className="relative shrink-0">
                 <GoalRing pcts={[pct, pAna, pWo]} />

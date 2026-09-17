@@ -127,15 +127,38 @@ export function GoalRows({ values, targets }: { values: number[]; targets: numbe
 }
 
 // the graphite card shell with its light-catching top edge + colour washes
-export function GoalCardShell({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+export function GoalCardShell({
+      children,
+      className = "",
+      emphasis = false,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  emphasis?: boolean;
+}) {
+  const background = emphasis
+    ? [
+        `radial-gradient(105% 160% at 104% 8%, ${GOAL_ARCS[2]}80 0%, ${GOAL_ARCS[2]}4D 40%, transparent 75%)`,
+        `radial-gradient(85% 145% at -12% 118%, ${GOAL_ARCS[1]}24 0%, transparent 64%)`,
+        GOAL_BG,
+      ].join(", ")
+    : GOAL_BG;
+
   return (
     <div
       className={`relative overflow-hidden rounded-2xl px-5 py-4 text-white shadow-lift ${className}`}
-      style={{ background: GOAL_BG }}
+      style={{ background }}
     >
-      <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/22 to-transparent" />
-      <span className="pointer-events-none absolute -right-20 -top-24 h-52 w-52 rounded-full blur-3xl" style={{ background: `${GOAL_ARCS[1]}1F` }} />
-      <span className="pointer-events-none absolute -bottom-28 -left-16 h-48 w-48 rounded-full blur-3xl" style={{ background: `${GOAL_ARCS[1]}10` }} />
+      <span
+        className="pointer-events-none absolute inset-x-0 top-0 h-px"
+        style={{ background: `linear-gradient(90deg, transparent, ${emphasis ? GOAL_ARCS[1] : "rgba(255,255,255,0.22)"}, transparent)` }}
+      />
+      {!emphasis && (
+        <>
+          <span className="pointer-events-none absolute -right-20 -top-24 h-52 w-52 rounded-full blur-3xl" style={{ background: `${GOAL_ARCS[1]}1F` }} />
+          <span className="pointer-events-none absolute -bottom-28 -left-16 h-48 w-48 rounded-full blur-3xl" style={{ background: `${GOAL_ARCS[1]}10` }} />
+        </>
+      )}
       <div className="relative">{children}</div>
     </div>
   );
