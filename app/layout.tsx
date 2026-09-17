@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
 import { PwaRegister } from "@/components/PwaRegister";
+import { SURFACE } from "@/lib/palette";
 
 export const metadata: Metadata = {
   title: "MotionLab — Your AI movement coach",
@@ -12,26 +13,31 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#14181B",
+  themeColor: SURFACE.graphite,
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    // These inline colours are intentional. Tailwind and globals.css arrive
+    // after the browser's first document paint; without an inline canvas the
+    // browser briefly uses its default white background on a cold load.
+    <html lang="en" style={{ backgroundColor: SURFACE.graphite, colorScheme: "dark" }}>
       {/* The DOCUMENT never scrolls (see globals). Scrolling happens inside the shell's
           <main>, so the phone-shell width is constant on every OS/browser — no route
           change can ever shift it sideways. */}
-      <body className="flex h-dvh justify-center overflow-hidden bg-graphite text-ink antialiased">
+      <body
+        className="flex h-dvh justify-center overflow-hidden bg-graphite text-ink antialiased"
+        style={{ backgroundColor: SURFACE.graphite }}
+      >
         <PwaRegister />
-        {/* `isolate` gives the shell its own stacking context so the -z-10 wave
-            paints above the shell's bg-paper fallback but below ALL content;
-            `overflow-hidden` clips it to the phone frame (never bleeds outside) */}
-        {/* clean solid backdrop — no imagery competing with the content */}
-        {/* longevity-mood morning-light wash (see .ml-backdrop) — the calm
-            depth the old wallpaper gave, without an image fighting content */}
-        <div className="ml-backdrop relative isolate flex h-dvh w-full max-w-[430px] flex-col overflow-hidden shadow-lift">
+        {/* This is the route-transition underlay. Keep it dark both inline and
+            in CSS so an unmounted template can never expose a pale phone frame. */}
+        <div
+          className="ml-backdrop relative isolate flex h-dvh w-full max-w-[430px] flex-col overflow-hidden shadow-lift"
+          style={{ backgroundColor: SURFACE.graphite }}
+        >
           <AppShell>{children}</AppShell>
         </div>
       </body>

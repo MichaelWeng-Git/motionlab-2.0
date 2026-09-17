@@ -614,10 +614,10 @@ button:not(:disabled),
   background: #e8e6e0;
 }
 
-/* Ink-style stage: one flat cool porcelain, zero decoration — cold ground is
-   what separates "instrument" from "craft paper" (design research 2026-09) */
+/* Permanent route-transition underlay. Auth pages paint their own light canvas,
+   but every gap before/between authenticated routes must stay graphite. */
 .ml-backdrop {
-  background-color: #EDF1EE;
+  background-color: #14181B;
 }
 
 /* Card system: clean white slabs, big radius, ink-tinted stacked shadow +

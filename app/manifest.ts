@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { SURFACE } from "@/lib/palette";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -7,8 +8,10 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Movement analysis, training load and recovery in one private training app.",
     start_url: "/",
     display: "standalone",
-    background_color: "#ECEFEC",
-    theme_color: "#17271F",   // tailwind `ink` — the brand anchor
+    // Match the document's inline first-paint colour. Standalone mode shows
+    // this before Next or the stylesheet has loaded.
+    background_color: SURFACE.graphite,
+    theme_color: SURFACE.graphite,
     orientation: "portrait",
     categories: ["fitness", "sports", "health"],
     icons: [
