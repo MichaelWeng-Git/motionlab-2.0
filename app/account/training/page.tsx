@@ -49,11 +49,12 @@ export default function TrainingEdit() {
   }
 
   return (
-    <div className="px-5 pt-8 pb-8">
+    <div className="min-h-full bg-graphite px-5 pb-8 pt-8 text-white">
       <div className="flex items-center gap-3">
         <button
           onClick={() => router.push("/account")}
-          className="grid h-9 w-9 place-items-center rounded-full bg-white text-ink shadow-soft"
+          className="grid h-10 w-10 place-items-center rounded-full bg-panel text-fg shadow-panel"
+          aria-label="Back to profile"
         >
           ←
         </button>
@@ -61,7 +62,7 @@ export default function TrainingEdit() {
       </div>
 
       {/* gender */}
-      <p className="mt-6 font-golden text-[12px] tracking-wide text-ink-muted">GENDER</p>
+      <p className="mt-6 font-golden text-[12px] tracking-wide text-fg-muted">GENDER</p>
       <div className="mt-1.5 grid grid-cols-3 gap-2">
         {[
           { k: "m", t: "Male" },
@@ -72,7 +73,7 @@ export default function TrainingEdit() {
             key={g.k}
             onClick={() => set("gender", g.k)}
             className={`rounded-2xl border py-3 text-sm font-bold transition ${
-              p.gender === g.k ? "border-ink bg-ink text-white" : "border-black/10 bg-white shadow-soft"
+              p.gender === g.k ? "border-white bg-action text-on-action" : "border-hair bg-panel text-fg shadow-panel"
             }`}
           >
             {g.t}
@@ -90,31 +91,31 @@ export default function TrainingEdit() {
       )}
 
       <div className="mt-5 grid grid-cols-2 gap-3">
-        <div className="rounded-2xl bg-white p-4 shadow-soft">
+        <div className="rounded-2xl bg-panel p-4 text-fg shadow-panel">
           <div className="flex items-baseline justify-between">
-            <span className="font-golden text-[12px] tracking-wide text-ink-muted">HEIGHT</span>
-            <span className="font-golden text-[19px] leading-none">{p.height ?? "\u2014"}<span className="ml-1 font-sans text-xs font-bold text-ink-muted">cm</span></span>
+            <span className="font-golden text-[12px] tracking-wide text-fg-muted">HEIGHT</span>
+            <span className="font-golden text-[19px] leading-none">{p.height ?? "\u2014"}<span className="ml-1 font-sans text-xs font-bold text-fg-muted">cm</span></span>
           </div>
-          <input type="range" min={140} max={210} value={p.height ?? 172} onChange={(e) => set("height", +e.target.value)} className="mt-2 w-full accent-ink" />
+          <input type="range" min={140} max={210} value={p.height ?? 172} onChange={(e) => set("height", +e.target.value)} className="mt-2 w-full accent-signal-good" />
         </div>
-        <div className="rounded-2xl bg-white p-4 shadow-soft">
+        <div className="rounded-2xl bg-panel p-4 text-fg shadow-panel">
           <div className="flex items-baseline justify-between">
-            <span className="font-golden text-[12px] tracking-wide text-ink-muted">WEIGHT</span>
-            <span className="font-golden text-[19px] leading-none">{p.weight ?? "\u2014"}<span className="ml-1 font-sans text-xs font-bold text-ink-muted">kg</span></span>
+            <span className="font-golden text-[12px] tracking-wide text-fg-muted">WEIGHT</span>
+            <span className="font-golden text-[19px] leading-none">{p.weight ?? "\u2014"}<span className="ml-1 font-sans text-xs font-bold text-fg-muted">kg</span></span>
           </div>
-          <input type="range" min={35} max={150} value={p.weight ?? 65} onChange={(e) => set("weight", +e.target.value)} className="mt-2 w-full accent-ink" />
+          <input type="range" min={35} max={150} value={p.weight ?? 65} onChange={(e) => set("weight", +e.target.value)} className="mt-2 w-full accent-signal-good" />
         </div>
       </div>
 
       {/* level */}
-      <p className="mt-5 font-golden text-[12px] tracking-wide text-ink-muted">LEVEL</p>
+      <p className="mt-5 font-golden text-[12px] tracking-wide text-fg-muted">LEVEL</p>
       <div className="mt-1.5 grid grid-cols-3 gap-2">
         {LEVELS.map((l) => (
           <button
             key={l.k}
             onClick={() => set("level", l.k)}
             className={`rounded-2xl border py-3 text-xs font-bold transition ${
-              p.level === l.k ? "border-ink bg-ink text-white" : "border-black/10 bg-white shadow-soft"
+              p.level === l.k ? "border-white bg-action text-on-action" : "border-hair bg-panel text-fg shadow-panel"
             }`}
           >
             {l.t}
@@ -123,14 +124,14 @@ export default function TrainingEdit() {
       </div>
 
       {/* goal */}
-      <p className="mt-5 font-golden text-[12px] tracking-wide text-ink-muted">GOAL</p>
+      <p className="mt-5 font-golden text-[12px] tracking-wide text-fg-muted">GOAL</p>
       <div className="mt-1.5 grid grid-cols-2 gap-2">
         {GOALS.map((g) => (
           <button
             key={g.k}
             onClick={() => set("goal", g.k)}
             className={`rounded-2xl border py-3 text-sm font-bold transition ${
-              p.goal === g.k ? "border-ink bg-ink text-white" : "border-black/10 bg-white shadow-soft"
+              p.goal === g.k ? "border-white bg-action text-on-action" : "border-hair bg-panel text-fg shadow-panel"
             }`}
           >
             {g.t}
@@ -144,8 +145,8 @@ export default function TrainingEdit() {
         disabled={!dirty}
         className={`mt-7 w-full rounded-full py-4 font-golden text-[16px] leading-none transition ${
           dirty
-            ? "btn-press bg-volt text-white"
-            : "cursor-default bg-black/10 text-ink-muted"
+            ? "btn-press bg-action text-on-action"
+            : "cursor-default bg-inset text-fg-muted"
         }`}
       >
         SAVE CHANGES

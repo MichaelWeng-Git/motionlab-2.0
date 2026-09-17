@@ -72,11 +72,12 @@ export default function ProfileEdit() {
   const preview: Profile = { ...p, ...(draft ?? {}) } as Profile;
 
   return (
-    <div className="px-5 pt-8 pb-8">
+    <div className="min-h-full bg-graphite px-5 pb-8 pt-8 text-white">
       <div className="flex items-center gap-3">
         <button
           onClick={backWithoutSaving}
-          className="grid h-9 w-9 place-items-center rounded-full bg-white text-ink shadow-soft"
+          className="grid h-10 w-10 place-items-center rounded-full bg-panel text-fg shadow-panel"
+          aria-label="Back to profile"
         >
           ←
         </button>
@@ -84,41 +85,41 @@ export default function ProfileEdit() {
       </div>
 
       {/* profile photo entry */}
-      <p className="mt-4 text-xs font-bold uppercase tracking-widest text-ink-muted">Profile photo</p>
-      <div className="mt-1.5 overflow-hidden rounded-2xl bg-white shadow-soft">
-        <Link href="/account/photo" className="flex w-full items-center gap-3 px-4 py-3.5 transition active:bg-black/[0.03]">
-          <span className="grid w-6 place-items-center"><CameraIcon className="text-volt-deep" /></span>
+      <p className="mt-4 text-xs font-bold uppercase tracking-widest text-fg-muted">Profile photo</p>
+      <div className="mt-1.5 overflow-hidden rounded-2xl bg-panel text-fg shadow-panel">
+        <Link href="/account/photo" className="flex w-full items-center gap-3 px-4 py-3.5 transition active:bg-white/[0.05]">
+          <span className="grid w-6 place-items-center"><CameraIcon className="text-signal-good" /></span>
           <span className="flex-1 text-sm font-semibold">Change photo</span>
           {/* live preview — shows a staged (unsaved) photo/icon too */}
           <span className="grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-volt-mist">
             <Avatar p={preview} iconSize={24} />
           </span>
-          <span className="font-bold text-ink">›</span>
+          <span className="font-bold text-fg">›</span>
         </Link>
       </div>
 
       {/* name */}
-      <p className="mt-5 text-xs font-bold uppercase tracking-widest text-ink-muted">Name</p>
+      <p className="mt-5 text-xs font-bold uppercase tracking-widest text-fg-muted">Name</p>
       <input
         value={p.name ?? ""}
         onChange={(e) => set("name", e.target.value)}
         maxLength={16}
         placeholder="Your name"
-        className="mt-1.5 w-full rounded-2xl bg-white px-4 py-3.5 text-[15px] font-bold shadow-soft outline-none focus:border-ink"
+        className="mt-1.5 w-full rounded-2xl bg-panel px-4 py-3.5 text-[15px] font-bold text-fg shadow-panel outline-none placeholder:text-fg-muted focus:ring-1 focus:ring-inset focus:ring-white/25"
       />
 
       {/* privacy */}
-      <p className="mt-5 text-xs font-bold uppercase tracking-widest text-ink-muted">Privacy</p>
-      <div className="mt-1.5 overflow-hidden rounded-2xl bg-white shadow-soft">
+      <p className="mt-5 text-xs font-bold uppercase tracking-widest text-fg-muted">Privacy</p>
+      <div className="mt-1.5 overflow-hidden rounded-2xl bg-panel text-fg shadow-panel">
         <div className="flex w-full items-center gap-3 px-4 py-3.5">
-          <span className="grid w-6 place-items-center"><LockIcon className="text-volt-deep" /></span>
+          <span className="grid w-6 place-items-center"><LockIcon className="text-signal-good" /></span>
           <p className="flex-1 text-sm font-semibold">Private account</p>
           {/* switch */}
           <button
             onClick={togglePrivate}
             aria-pressed={priv}
             aria-label="Private account"
-            className={`relative h-7 w-12 rounded-full transition-colors ${priv ? "bg-volt" : "bg-black/15"}`}
+            className={`relative h-7 w-12 rounded-full transition-colors ${priv ? "bg-signal-good" : "bg-white/15"}`}
           >
             <span
               className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow-soft transition-all ${
@@ -135,8 +136,8 @@ export default function ProfileEdit() {
         disabled={!dirty}
         className={`mt-7 w-full rounded-full py-4 text-[15px] font-bold transition ${
           dirty
-            ? "btn-press bg-volt text-white"
-            : "cursor-default bg-black/10 text-ink-muted"
+            ? "btn-press bg-action text-on-action"
+            : "cursor-default bg-inset text-fg-muted"
         }`}
       >
         Save changes

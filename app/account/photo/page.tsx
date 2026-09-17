@@ -90,11 +90,12 @@ export default function ProfilePhoto() {
   }
 
   return (
-    <div className="px-5 pt-8 pb-8">
+    <div className="min-h-full bg-graphite px-5 pb-8 pt-8 text-white">
       <div className="flex items-center gap-3">
         <button
           onClick={() => router.push("/account/profile")}
-          className="grid h-9 w-9 place-items-center rounded-full bg-white text-ink shadow-soft"
+          className="grid h-10 w-10 place-items-center rounded-full bg-panel text-fg shadow-panel"
+          aria-label="Back to profile"
         >
           ←
         </button>
@@ -115,26 +116,26 @@ export default function ProfilePhoto() {
 
       {/* two panels: photo (left) · icon (right) */}
       <div className="mt-6 grid grid-cols-2 gap-3">
-        <div className="flex flex-col rounded-3xl bg-white p-4 shadow-soft">
+        <div className="flex flex-col rounded-2xl bg-panel p-4 text-fg shadow-panel">
           <p className="text-sm font-bold">Your photo</p>
           <div className="mt-3 grid flex-1 place-items-center">
             <button
               onClick={() => fileRef.current?.click()}
-              className="grid h-20 w-20 place-items-center rounded-full border-2 border-dashed border-black/15 text-ink-muted transition active:scale-95"
+              className="grid h-20 w-20 place-items-center rounded-full border-2 border-dashed border-white/20 text-fg-muted transition active:scale-95"
             >
-              <CameraIcon size={26} className="text-volt-deep" />
+              <CameraIcon size={26} className="text-signal-good" />
             </button>
           </div>
           <button
             onClick={() => fileRef.current?.click()}
-            className="mt-3 w-full rounded-full bg-ink py-2.5 text-xs font-bold text-white transition active:scale-[0.98]"
+            className="mt-3 w-full rounded-full bg-action py-2.5 text-xs font-bold text-on-action transition active:scale-[0.98]"
           >
             {p.photo ? "Change photo" : "Choose photo"}
           </button>
           <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={onPickPhoto} />
         </div>
 
-        <div className="flex flex-col rounded-3xl bg-white p-4 shadow-soft">
+        <div className="flex flex-col rounded-2xl bg-panel p-4 text-fg shadow-panel">
           <p className="text-sm font-bold">Sport icon</p>
           <div className="mt-3 grid flex-1 grid-cols-3 place-items-center gap-2">
             {AVATARS.map((a) => (
@@ -142,7 +143,7 @@ export default function ProfilePhoto() {
                 key={a}
                 onClick={() => stage({ avatar: a, photo: null })}
                 className={`grid h-11 w-11 place-items-center rounded-full bg-volt-mist transition ${
-                  p.avatar === a && !p.photo ? "ring-2 ring-ink ring-offset-2 ring-offset-white" : "opacity-55"
+                  p.avatar === a && !p.photo ? "ring-2 ring-signal-good ring-offset-2 ring-offset-graphite" : "opacity-55"
                 }`}
               >
                 <SIcon name={AVATAR_ICON[a]} size={28} />
@@ -155,8 +156,8 @@ export default function ProfilePhoto() {
       {/* interactive cropper — drag to move, slider to zoom; the circle is fixed */}
       {raw && (
         <div className="fixed inset-0 z-[60] grid place-items-center bg-ink/50 px-6 backdrop-blur-[2px]">
-          <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-paper p-6 text-center shadow-lift">
-            <h2 className="text-lg font-extrabold">Drag to position</h2>
+          <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15">
+            <h2 className="font-golden text-xl leading-none">DRAG TO POSITION</h2>
 
             <div
               className="relative mx-auto mt-5 touch-none overflow-hidden rounded-full ring-4 ring-white"
@@ -206,19 +207,19 @@ export default function ProfilePhoto() {
                   return { x: Math.max(-mx, Math.min(mx, o.x)), y: Math.max(-my, Math.min(my, o.y)) };
                 });
               }}
-              className="mt-5 w-full accent-ink"
+              className="mt-5 w-full accent-signal-good"
             />
 
             <div className="mt-4 flex gap-2.5">
               <button
                 onClick={() => { URL.revokeObjectURL(raw.src); setRaw(null); }}
-                className="flex-1 rounded-full bg-white py-3 text-sm font-bold text-ink transition active:scale-[0.98]"
+                className="flex-1 rounded-full bg-white/10 py-3 text-sm font-bold text-white transition active:scale-[0.98]"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmCrop}
-                className="btn-press flex-1 rounded-full bg-ink py-3 text-sm font-bold text-white transition"
+                className="btn-press flex-1 rounded-full bg-action py-3 text-sm font-bold text-on-action transition"
               >
                 Set as photo
               </button>
