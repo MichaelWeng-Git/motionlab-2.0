@@ -16,6 +16,7 @@ import {
 import { getProfile } from "@/lib/profile";
 import { getStats } from "@/lib/stats";
 import { LevelBadge } from "@/components/XpLevel";
+import { isLocalDevAuthBypass } from "@/lib/dev-auth";
 
 type Tab = "requests" | "friends" | "people";
 
@@ -44,10 +45,15 @@ export default function Friends() {
       setPhase("ready");
       return;
     }
-    // no cloud identity — but if you're logged into the app locally, don't nag
-    // to sign in; show a local view (just you, empty lists) instead
+    // No cloud identity (or the friends backend is temporarily unavailable).
+    // App authentication and Friends transport are separate concerns: a user
+    // who is already inside MotionLab must never be told to sign in again.
+    // Local preview mode intentionally has no cloud identity, so it gets the
+    // same honest local-only state instead of a misleading Google prompt.
     let local = false;
-    try { local = !!localStorage.getItem("ml_auth") || !!getProfile().name; } catch {}
+    try {
+      local = isLocalDevAuthBypass() || !!localStorage.getItem("ml_auth") || !!getProfile().name;
+    } catch {}
     if (local) {
       const prof = getProfile();
       const stats = getStats();
@@ -152,7 +158,7 @@ export default function Friends() {
       <div className="flex items-center gap-3">
         <button
           onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
-          className="grid h-9 w-9 place-items-center rounded-full bg-white text-ink shadow-soft"
+          className="grid h-9 w-9 place-items-center rounded-full bg-panel text-fg shadow-panel"
         >
           ←
         </button>
@@ -167,11 +173,11 @@ export default function Friends() {
       )}
 
       {phase === "signedout" && (
-        <div className="mt-6 rounded-2xl bg-white p-6 text-center shadow-soft">
+        <div className="mt-6 rounded-2xl bg-panel p-6 text-center text-fg shadow-panel">
           <p className="text-sm font-bold">Sign in to add friends</p>
           <button
             onClick={() => signIn("google", { callbackUrl: "/friends" })}
-            className="btn-press mt-4 w-full rounded-full bg-ink py-3 text-sm font-bold text-white transition"
+            className="mt-4 w-full rounded-full bg-action py-3 text-sm font-bold text-on-action transition active:scale-[0.98]"
           >
             Continue with Google
           </button>
@@ -188,7 +194,7 @@ export default function Friends() {
           </section>
 
           {/* compact sport-app segmented navigation */}
-          <div className="mt-3 grid grid-cols-3 rounded-2xl bg-white p-1 shadow-soft">
+          <div className="mt-3 grid grid-cols-3 rounded-2xl bg-panel p-1 text-fg shadow-panel">
             {bubbles.map((b) => {
               const on = tab === b.key;
               return (
@@ -202,7 +208,7 @@ export default function Friends() {
                     }
                   }}
                   className={`press relative flex items-center justify-center gap-1.5 rounded-xl px-2 py-2.5 text-center transition ${
-                    on ? "bg-ink text-white" : "text-ink-muted"
+                    on ? "bg-action text-on-action" : "text-fg-muted"
                   }`}
                 >
                   <span className="text-[11px] font-black leading-tight">{b.key === "requests" ? "REQUESTS" : b.key === "friends" ? "FRIENDS" : "DISCOVER"}</span>
@@ -222,7 +228,7 @@ export default function Friends() {
                 <FriendEmpty kind="requests" onInvite={shareInvite} />
               )}
               {incoming.map(({ friendshipId, person }) => (
-                <div key={friendshipId} className="flex items-center gap-3 rounded-2xl bg-white p-3.5 shadow-soft">
+                <div key={friendshipId} className="flex items-center gap-3 rounded-2xl bg-panel p-3.5 text-fg shadow-panel">
                   <PersonAvatar p={person} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-bold">{person.name}</p>
@@ -230,13 +236,13 @@ export default function Friends() {
                   </div>
                   <button
                     onClick={() => onRespond(friendshipId, true)}
-                    className="rounded-xl bg-ink px-4 py-2 text-xs font-bold text-white transition active:scale-95"
+                    className="rounded-xl bg-action px-4 py-2 text-xs font-bold text-on-action transition active:scale-95"
                   >
                     Accept
                   </button>
                   <button
                     onClick={() => onRespond(friendshipId, false)}
-                    className="rounded-xl bg-white px-4 py-2 text-xs font-bold text-ink transition active:scale-95"
+                    className="rounded-xl bg-inset px-4 py-2 text-xs font-bold text-fg transition active:scale-95"
                   >
                     Decline
                   </button>
@@ -251,12 +257,12 @@ export default function Friends() {
                 <FriendEmpty kind="friends" onInvite={shareInvite} />
               )}
               {friends.map((p) => (
-                <div key={p.id} className="flex items-center gap-3 rounded-2xl bg-white p-3.5 shadow-soft">
+                <div key={p.id} className="flex items-center gap-3 rounded-2xl bg-panel p-3.5 text-fg shadow-panel">
                   <PersonAvatar p={p} />
                   <div className="min-w-0 flex-1"><p className="truncate text-sm font-bold">{p.name}</p><div className="mt-1"><LevelBadge xp={p.xp} compact /></div></div>
                   <button
                     onClick={() => setConfirmRemove(p)}
-                    className="rounded-xl bg-white px-4 py-2 text-xs font-bold text-ink-muted transition active:scale-95"
+                    className="rounded-xl bg-inset px-4 py-2 text-xs font-bold text-fg-muted transition active:scale-95"
                   >
                     Remove
                   </button>
@@ -267,7 +273,7 @@ export default function Friends() {
 
           {tab === "people" && (
             <section className="mt-4 space-y-2">
-              <label className="flex items-center gap-2 rounded-2xl bg-white px-4 py-3 shadow-soft"><SearchIcon size={17} /><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search athletes by name" className="min-w-0 flex-1 bg-transparent text-sm font-bold text-ink outline-none placeholder:text-ink-muted" /></label>
+              <label className="flex items-center gap-2 rounded-2xl bg-panel px-4 py-3 text-fg shadow-panel"><SearchIcon size={17} /><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search athletes by name" className="min-w-0 flex-1 bg-transparent text-sm font-bold text-fg outline-none placeholder:text-fg-muted" /></label>
               {filteredPeople.length === 0 && <FriendEmpty kind={query ? "search" : "people"} onInvite={shareInvite} />}
               {filteredPeople.map((p) => {
                 const isLeaving = leaving.includes(p.id);
@@ -275,7 +281,7 @@ export default function Friends() {
                 return (
                   <div
                     key={p.id}
-                    className={`flex items-center gap-3 rounded-2xl bg-white p-3.5 shadow-soft ${
+                    className={`flex items-center gap-3 rounded-2xl bg-panel p-3.5 text-fg shadow-panel ${
                       isLeaving ? "card-removing" : ""
                     }`}
                     style={isLeaving ? { animationDelay: "0.45s" } : undefined}
@@ -285,11 +291,11 @@ export default function Friends() {
                     {isLeaving ? (
                       <span className="animate-pop rounded-xl bg-signal-good px-4 py-2 text-xs font-bold text-white">Added ✓</span>
                     ) : isRequested ? (
-                      <span className="animate-pop rounded-xl bg-paper px-4 py-2 text-xs font-bold text-ink-muted">Requested</span>
+                      <span className="animate-pop rounded-xl bg-inset px-4 py-2 text-xs font-bold text-fg-muted">Requested</span>
                     ) : (
                       <button
                         onClick={() => onAdd(p)}
-                        className="rounded-xl bg-ink px-5 py-2 text-xs font-bold text-white transition active:scale-95"
+                        className="rounded-xl bg-action px-5 py-2 text-xs font-bold text-on-action transition active:scale-95"
                       >
                         Add
                       </button>
@@ -309,10 +315,10 @@ export default function Friends() {
           onClick={() => setConfirmRemove(null)}
         >
           <div
-            className="w-full max-w-[300px] animate-pop rounded-3xl bg-paper p-6 text-center shadow-lift"
+            className="w-full max-w-[300px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15"
             onClick={(e) => e.stopPropagation()}
           >
-            <p className="text-base font-extrabold text-ink">Remove {confirmRemove.name}?</p>
+            <p className="text-base font-extrabold text-fg">Remove {confirmRemove.name}?</p>
             <div className="mt-5 space-y-2.5">
               <button
                 onClick={() => onRemove(confirmRemove)}
@@ -322,7 +328,7 @@ export default function Friends() {
               </button>
               <button
                 onClick={() => setConfirmRemove(null)}
-                className="w-full rounded-full bg-white py-3 text-sm font-bold text-ink transition active:scale-[0.98]"
+                className="w-full rounded-full bg-inset py-3 text-sm font-bold text-fg transition active:scale-[0.98]"
               >
                 Cancel
               </button>
@@ -341,5 +347,5 @@ function FriendEmpty({ kind, onInvite }: { kind: "requests" | "friends" | "peopl
     people: ["NO ATHLETES TO DISCOVER", "Share MotionLab with your training group."],
     search: ["NO MATCHES", "Try another athlete name."],
   }[kind];
-  return <div className="rounded-2xl border border-dashed border-ink/15 bg-white px-5 py-8 text-center"><span className="mx-auto grid h-11 w-11 place-items-center rounded-2xl bg-volt-mist text-signal-good"><FriendsIcon size={21} /></span><p className="mt-3 font-golden text-lg text-ink">{copy[0]}</p><p className="mt-1 text-[11px] font-bold text-ink-muted">{copy[1]}</p>{kind !== "requests" && kind !== "search" && <button onClick={onInvite} className="mt-4 rounded-full bg-ink px-4 py-2.5 text-[11px] font-black text-white">INVITE FRIEND</button>}</div>;
+  return <div className="rounded-2xl border border-dashed border-white/15 bg-panel px-5 py-8 text-center text-fg shadow-panel"><span className="mx-auto grid h-11 w-11 place-items-center rounded-xl bg-inset text-signal-good"><FriendsIcon size={21} /></span><p className="mt-3 font-golden text-lg text-fg">{copy[0]}</p><p className="mt-1 text-[11px] font-bold text-fg-muted">{copy[1]}</p>{kind !== "requests" && kind !== "search" && <button onClick={onInvite} className="mt-4 rounded-full bg-action px-4 py-2.5 text-[11px] font-black text-on-action">INVITE FRIEND</button>}</div>;
 }
