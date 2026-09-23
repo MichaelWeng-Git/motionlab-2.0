@@ -122,7 +122,7 @@ export default function Fuel() {
     <div className="stagger min-h-full bg-graphite px-5 pb-10 pt-5 text-white">
       <header className="flex items-center gap-2.5">
         <button onClick={() => router.back()} className="flex h-10 w-10 items-center justify-center rounded-full bg-track text-base text-white ring-1 ring-inset ring-hair active:scale-95" aria-label="Back">←</button>
-        <div><p className="text-[10px] font-black tracking-[0.18em] text-signal-good">RECOVERY INPUT</p><h1 className="font-golden text-[26px] leading-none">FUEL</h1></div>
+        <div><p className="text-[11px] font-black tracking-[0.18em] text-signal-good">RECOVERY INPUT</p><h1 className="font-golden text-[26px] leading-none">FUEL</h1></div>
       </header>
       <input ref={camRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={onPick} />
       <input ref={libRef} type="file" accept="image/*" className="hidden" onChange={onPick} />
@@ -131,7 +131,7 @@ export default function Fuel() {
         <div className="pointer-events-none absolute -right-20 -top-24 h-60 w-60 rounded-full bg-signal-good/20 blur-3xl" />
         <div className="relative flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-black tracking-[0.18em] text-signal-good">TODAY</p>
+            <p className="text-[11px] font-black tracking-[0.18em] text-signal-good">TODAY</p>
             <h2 className="mt-2 font-golden text-3xl">PROTEIN</h2>
             <div className="mt-5 flex items-end gap-2">
               <span className="font-golden text-6xl leading-none">{protein}</span>
@@ -180,7 +180,7 @@ export default function Fuel() {
       </section>
 
       <section className="mt-3 rounded-2xl bg-inset p-5 ring-1 ring-inset ring-hair">
-        <div className="flex items-end justify-between"><div><p className="text-[10px] font-black tracking-[0.18em] text-fg-muted">RECENT</p><h2 className="mt-1 font-golden text-xl text-white">MEAL HISTORY</h2></div><span className="font-golden text-lg text-fg-muted">{meals.length}</span></div>
+        <div className="flex items-end justify-between"><div><p className="text-[11px] font-black tracking-[0.18em] text-fg-muted">RECENT</p><h2 className="mt-1 font-golden text-xl text-white">MEAL HISTORY</h2></div><span className="font-golden text-lg text-fg-muted">{meals.length}</span></div>
         <div className="mt-4 rounded-xl bg-inset p-3 ring-1 ring-inset ring-hair">
           <div className="flex items-baseline justify-between">
             <span className="text-[11px] font-bold text-white/50">TODAY&apos;S PROTEIN</span>
@@ -189,7 +189,7 @@ export default function Fuel() {
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-track">
             <span className="block h-full rounded-full bg-signal-good transition-[width] duration-500" style={{ width: `${pct * 100}%` }} />
           </div>
-          <p className="mt-2 text-[10px] font-bold text-fg-muted">{target ? `Training target · ${TRAINING_PROTEIN_G_PER_KG} g/kg body weight` : "Add body weight to calculate a training target"}</p>
+          <p className="mt-2 text-[11px] font-bold text-fg-muted">{target ? `Training target · ${TRAINING_PROTEIN_G_PER_KG} g/kg body weight` : "Add body weight to calculate a training target"}</p>
         </div>
         {history.length ? <div className="mt-4 space-y-2">{history.map((meal, index) => {
           const date = new Date(meal.date), previous = history[index - 1];

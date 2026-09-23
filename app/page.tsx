@@ -657,7 +657,7 @@ export default function Home() {
         <Link href="/streak" className="block rounded-2xl bg-panel p-5 ring-1 ring-inset ring-hair transition active:scale-[0.99]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-black tracking-[0.18em] text-award-gold-light">CONSISTENCY</p>
+              <p className="text-[11px] font-black tracking-[0.18em] text-award-gold-light">CONSISTENCY</p>
               <h2 className="mt-1 font-golden text-xl leading-none text-white">NEXT MILESTONE</h2>
             </div>
             <span className="font-golden text-[13px] text-fg-muted">VIEW PATH ›</span>

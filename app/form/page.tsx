@@ -77,7 +77,7 @@ export default function FormPage() {
           ←
         </button>
         <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-signal-good">Movement quality</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-signal-good">Movement quality</p>
           <h1 className="font-golden text-[26px] leading-none">FORM</h1>
         </div>
       </div>
@@ -112,11 +112,11 @@ export default function FormPage() {
           {ranked.length >= 2 && (
             <div className="mt-3 grid grid-cols-2 gap-3">
               <div className="rounded-xl bg-signal-good/15 p-3 ring-1 ring-inset ring-signal-good/20">
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-signal-good">Strongest</p>
+                <p className="text-[11px] font-black uppercase tracking-[0.14em] text-signal-good">Strongest</p>
                 <p className="mt-1 font-golden text-[17px] leading-none text-white">{CAP_META[ranked[0].key].label}</p>
               </div>
               <div className="rounded-xl bg-inset p-3 ring-1 ring-inset ring-hair">
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-fg-muted">Build next</p>
+                <p className="text-[11px] font-black uppercase tracking-[0.14em] text-fg-muted">Build next</p>
                 <p className="mt-1 font-golden text-[17px] leading-none text-white">{CAP_META[ranked[ranked.length - 1].key].label}</p>
               </div>
             </div>

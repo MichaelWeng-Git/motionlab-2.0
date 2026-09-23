@@ -51,6 +51,7 @@ describe("dark app bootstrap", () => {
     expect(sources).not.toMatch(/bg-white\/(?:8|10|15)\b/);
     expect(sources).not.toMatch(/ring-white\/(?:5|10|15)\b/);
     expect(sources).not.toMatch(/text-white\/(?:30|35|40|45)\b/);
+    expect(sources).not.toMatch(/text-\[10px\]/);
     expect(authenticatedSources).not.toMatch(/bg-white(?!\/)[^\n]*(?:text-ink(?:-muted)?|text-graphite)/);
     expect(authenticatedSources).not.toMatch(/(?:text-ink(?:-muted)?|text-graphite)[^\n]*bg-white(?!\/)/);
     expect(sources).not.toMatch(/\bshadow-lift\b/);

@@ -482,7 +482,7 @@ export default function Analyze() {
 
       {step === "pick" && (
         <div className="animate-fade-up px-5">
-          <p className="text-[10px] font-black tracking-[0.2em] text-signal-good">MOTION ANALYSIS</p>
+          <p className="text-[11px] font-black tracking-[0.2em] text-signal-good">MOTION ANALYSIS</p>
           <h1 className="mt-2 font-golden text-[38px] leading-[0.92]">SEE HOW<br />YOU MOVE.</h1>
           <p className="mt-3 max-w-[310px] text-[13px] font-semibold leading-snug text-white/55">One video becomes measured form, muscle load and coaching.</p>
 
@@ -772,7 +772,7 @@ function CaptureRule({ icon, label }: { icon: "frame" | "light" | "steady"; labe
         {icon === "light" && <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></>}
         {icon === "steady" && <><rect x="4" y="7" width="16" height="11" rx="2" /><path d="m9 7 1.5-2h3L15 7M9 12h6M12 9v6" /></>}
       </svg>
-      <p className="mt-2 text-[10px] font-black tracking-[0.1em] text-white/65">{label}</p>
+      <p className="mt-2 text-[11px] font-black tracking-[0.1em] text-white/65">{label}</p>
     </div>
   );
 }
