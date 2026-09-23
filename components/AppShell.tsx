@@ -97,14 +97,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <>
+    // SHELL SCOPE — this wrapper, not <main>.
+    //
+    // The shell's CSS variables (app/globals.css SURFACES) only reach what is
+    // INSIDE the element carrying data-shell. While it sat on <main>, TopBar,
+    // BottomNav and CoachMark were siblings, so all 20 of their token uses fell
+    // back to :root — the LIGHT values — on a dark app. The visible symptom was
+    // the Start button's plus vanishing: text-on-action resolved to #FFFFFF on
+    // a white button. The page code was right; the scope was wrong.
+    //
+    // display:contents generates no box, so the flex layout below is unchanged.
+    <div className="contents" data-shell={darkCanvas ? "dark" : "light"}>
       <CloudSync />
       {!immersive && <TopBar />}
       {/* the ONLY scroll container in the app; a flex column so full-height pages
           (Activity) can flex-1 to fill without fragile percentage-height chains */}
       <main
         id="ml-scroll"
-        data-shell={darkCanvas ? "dark" : "light"}
         className={`flex min-h-0 flex-1 flex-col overflow-y-auto pb-28 ${darkCanvas ? "bg-graphite" : "bg-paper"}`}
       >
         {/* the entrance animation lives in app/template.tsx, which Next
@@ -126,6 +135,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
