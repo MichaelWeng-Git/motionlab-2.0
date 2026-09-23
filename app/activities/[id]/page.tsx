@@ -56,7 +56,7 @@ export default function ActivityDetailPage() {
 
     {activity.splits && activity.splits.length > 0 && <section className="mx-5 mt-4 rounded-2xl bg-panel p-5 text-fg shadow-panel"><h2 className="font-golden text-[18px] leading-none">SPLITS</h2><div className="mt-3 divide-y divide-hair">{activity.splits.map((split, index) => { const n = split.n ?? split.km ?? index + 1; const splitUnit = split.unit ?? "km"; return <div key={`${splitUnit}-${n}`} className="flex items-center justify-between py-3"><span className="text-sm font-bold uppercase text-fg">{splitUnit} {n}</span><span className="font-golden text-lg text-fg">{Math.floor(split.seconds / 60)}:{String(split.seconds % 60).padStart(2, "0")}</span></div>; })}</div></section>}
 
-    {activity.description && <section className="mx-5 mt-4 rounded-2xl bg-cream p-5 shadow-soft"><h2 className="font-golden text-[18px] leading-none">NOTES</h2><p className="mt-3 text-[13px] font-semibold leading-relaxed text-ink">{activity.description}</p></section>}
+    {activity.description && <section className="mx-5 mt-4 rounded-2xl bg-panel p-5 text-fg"><h2 className="font-golden text-[18px] leading-none">NOTES</h2><p className="mt-3 text-[13px] font-semibold leading-relaxed text-fg">{activity.description}</p></section>}
   </div>;
 }
 

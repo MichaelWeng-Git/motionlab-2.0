@@ -192,25 +192,25 @@ export default function Report() {
       )}
 
       {isReal && mechanics.length > 0 && (
-        <section className="mt-4 rounded-3xl bg-cream p-5 shadow-soft">
+        <section className="mt-4 rounded-3xl bg-panel p-5 text-fg">
           <div className="flex items-baseline justify-between">
-            <div><p className="text-[11px] font-black tracking-[0.18em] text-ink-muted">FROM YOUR 3D MOTION</p><h2 className="mt-1 font-golden text-xl leading-none text-ink">MECHANICS</h2></div>
-            <span className="rounded-full bg-white px-3 py-1.5 text-[11px] font-black uppercase text-ink-muted">{a.biomech!.confidence} confidence</span>
+            <div><p className="text-[11px] font-black tracking-[0.18em] text-fg-muted">FROM YOUR 3D MOTION</p><h2 className="mt-1 font-golden text-xl leading-none text-fg">MECHANICS</h2></div>
+            <span className="rounded-full bg-inset px-3 py-1.5 text-[11px] font-black uppercase text-fg-muted">{a.biomech!.confidence} confidence</span>
           </div>
           <div className={`mt-4 grid gap-2 ${mechanics.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}>
             {mechanics.map((metric) => (
-              <div key={metric.label} className="rounded-2xl bg-white px-3 py-4 text-center">
-                <p className="font-golden text-2xl leading-none text-ink">{metric.value}</p>
-                <p className="mt-1 truncate text-[11px] font-extrabold capitalize text-ink">{metric.label}</p>
-                <p className="mt-0.5 text-[11px] font-bold text-ink-muted">{metric.note}</p>
+              <div key={metric.label} className="rounded-2xl bg-inset px-3 py-4 text-center">
+                <p className="font-golden text-2xl leading-none text-fg">{metric.value}</p>
+                <p className="mt-1 truncate text-[11px] font-extrabold capitalize text-fg">{metric.label}</p>
+                <p className="mt-0.5 text-[11px] font-bold text-fg-muted">{metric.note}</p>
               </div>
             ))}
           </div>
           {a.biomech!.limitations.length > 0 && (
-            <details className="mt-3 rounded-2xl bg-white px-4 py-3">
-              <summary className="cursor-pointer text-[12px] font-extrabold text-ink">Measurement notes · {a.biomech!.limitations.length}</summary>
+            <details className="mt-3 rounded-2xl bg-inset px-4 py-3">
+              <summary className="cursor-pointer text-[12px] font-extrabold text-fg">Measurement notes · {a.biomech!.limitations.length}</summary>
               <ul className="mt-3 space-y-2">
-                {a.biomech!.limitations.map((note) => <li key={note} className="text-[12px] font-semibold leading-relaxed text-ink-muted">{note}</li>)}
+                {a.biomech!.limitations.map((note) => <li key={note} className="text-[12px] font-semibold leading-relaxed text-fg-muted">{note}</li>)}
               </ul>
             </details>
           )}

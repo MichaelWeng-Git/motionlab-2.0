@@ -352,11 +352,10 @@ export default function Weeks() {
       </div>
 
       {/* what that day trained — the body lit by THAT DAY's work only (never
-          decayed), on a cream ground so the porcelain figure and its red heat
-          read the way they do on the rest of the app's light surfaces */}
+          decayed), on the same raised surface as the rest of the dark shell */}
       {dayIntensity && (
-        <div className="mt-4 overflow-hidden rounded-2xl bg-cream px-5 py-4 shadow-soft">
-          <p className="font-golden text-[13px] leading-none text-ink">
+        <div className="mt-4 overflow-hidden rounded-2xl bg-panel px-5 py-4 text-fg">
+          <p className="font-golden text-[13px] leading-none text-fg">
             {sel.k === keyOf(new Date()) ? "TODAY" : fmtDay(sel.date).split(",")[0].toUpperCase()}&rsquo;S INTENSITY
           </p>
           <div className="mt-1 flex items-center gap-3">
@@ -366,7 +365,7 @@ export default function Weeks() {
                 pct={dayIntensity.score}
                 value={dayIntensity.level}
                 color={dayIntensity.color}
-                track="rgba(14,31,26,0.09)"
+                track="var(--track)"
                 valueColor={dayIntensity.color}
                 big
               />

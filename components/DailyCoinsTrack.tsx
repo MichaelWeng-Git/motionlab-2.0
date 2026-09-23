@@ -45,9 +45,9 @@ export function DailyCoinsTrack({ claims, onClaim }: { claims: string[]; onClaim
           <p className="font-golden text-2xl leading-none text-fg">DAILY COINS</p>
           <p className="mt-1 text-[12px] font-bold text-fg-muted">Show up. Claim once.</p>
         </div>
-        <div className="flex items-center gap-1.5 rounded-full bg-cream px-3 py-2">
+        <div className="flex items-center gap-1.5 rounded-full bg-inset px-3 py-2">
           <CoinIcon size={16} />
-          <span className="font-golden text-lg leading-none tabular-nums text-ink">{earned}</span>
+          <span className="font-golden text-lg leading-none tabular-nums text-fg">{earned}</span>
         </div>
       </header>
 
@@ -61,16 +61,16 @@ export function DailyCoinsTrack({ claims, onClaim }: { claims: string[]; onClaim
               disabled={!claimable}
               onClick={() => claim(node)}
               aria-label={claimable ? `Claim ${node.amount} coins` : node.label}
-              className={`flex min-w-0 flex-col items-center gap-2 rounded-xl py-2.5 transition active:scale-95 ${claimable ? "bg-award-gold-wash text-ink" : node.state === "missed" ? "opacity-35" : ""}`}
+              className={`flex min-w-0 flex-col items-center gap-2 rounded-xl py-2.5 transition active:scale-95 ${claimable ? "bg-award-gold/15 text-fg" : node.state === "missed" ? "opacity-35" : ""}`}
             >
-              <span className={`grid h-9 w-9 place-items-center rounded-full border-2 ${complete ? "border-award-gold bg-award-gold" : claimable ? "border-award-gold bg-white" : "border-hair bg-inset"}`}>
+              <span className={`grid h-9 w-9 place-items-center rounded-full border-2 ${complete ? "border-award-gold bg-award-gold" : claimable ? "border-award-gold bg-inset" : "border-hair bg-inset"}`}>
                 {complete ? (
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 4 4 10-10" /></svg>
                 ) : (
-                  <span className={`font-golden text-[13px] ${claimable ? "text-ink-muted" : "text-fg-muted"}`}>{node.amount}</span>
+                  <span className="font-golden text-[13px] text-fg-muted">{node.amount}</span>
                 )}
               </span>
-              <span className={`text-[11px] font-extrabold ${claimable ? "text-ink" : "text-fg-muted"}`}>{node.label}</span>
+              <span className="text-[11px] font-extrabold text-fg-muted">{node.label}</span>
             </button>
           );
         })}
