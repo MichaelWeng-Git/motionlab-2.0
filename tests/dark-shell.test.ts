@@ -48,7 +48,7 @@ describe("dark app bootstrap", () => {
     const globalCss = readFileSync("app/globals.css", "utf8");
 
     expect(sources).not.toMatch(/bg-white\/\[0\.(?:03|04|05|06|07|08|09)\]/);
-    expect(sources).not.toMatch(/bg-white\/(?:8|10|15)\b/);
+    expect(sources).not.toMatch(/bg-white\/(?:8|1[0-9])\b/);
     expect(sources).not.toMatch(/\bbg-(?:ink|volt)(?![-/])\b/);
     expect(sources).not.toMatch(/ring-white\/(?:5|10|15)\b/);
     expect(sources).not.toMatch(/text-white\/(?:30|35|40|45)\b/);

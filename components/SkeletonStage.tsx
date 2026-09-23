@@ -56,7 +56,7 @@ export function SkeletonStage({
       </svg>
 
       {/* labels */}
-      <div className="absolute left-3 top-3 rounded-full bg-white/12 px-3 py-1 text-[11px] font-semibold text-white backdrop-blur">
+      <div className="absolute left-3 top-3 rounded-full bg-track px-3 py-1 text-[11px] font-semibold text-white backdrop-blur">
         {label}
       </div>
       {highlight && (

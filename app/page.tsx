@@ -559,7 +559,7 @@ export default function Home() {
               </span>
               <h2 className="font-golden text-lg leading-none text-fg">LEADERBOARD</h2>
             </span>
-            <Link href="/friends" className="press rounded-full bg-inset px-3 py-1.5 text-[11px] font-extrabold text-fg">
+            <Link href="/friends" className="press rounded-full bg-track px-3 py-1.5 text-[11px] font-extrabold text-fg">
               Friends ›
             </Link>
           </div>
@@ -572,20 +572,20 @@ export default function Home() {
 
             const Row = ({ row, rank, divider }: { row: (typeof lbRows)[number]; rank: number; divider: boolean }) => (
               <div
-                className={`flex items-center gap-3.5 px-5 py-3.5 ${row.me ? "bg-inset" : ""} ${
+                className={`flex items-center gap-3.5 px-5 py-3.5 ${row.me ? "bg-track" : ""} ${
                   divider ? "border-t border-hair" : ""
                 } ${!row.me && newRows.has(row.id) ? "row-squeeze" : ""}`}
                 style={!row.me && newRows.has(row.id) ? { animationDelay: `${rank * 0.07}s` } : undefined}
               >
                 <span
                   className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-extrabold tabular-nums ${
-                    rank === 1 ? "text-white" : "bg-inset text-fg-muted"
+                    rank === 1 ? "text-white" : "bg-track text-fg-muted"
                   }`}
                   style={rank === 1 ? { background: "#F5B23D" } : undefined}
                 >
                   {rank}
                 </span>
-                <span className="grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-inset">
+                <span className="grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-track">
                   {row.me ? (
                     <Avatar p={profile} iconSize={26} />
                   ) : row.photo ? (
@@ -631,7 +631,7 @@ export default function Home() {
                 {lbOpen && lbRows.length > 4 && (
                   <button
                     onClick={() => setLbOpen(false)}
-                    className="w-full border-t border-hair py-2.5 text-center text-xs font-bold text-fg-muted transition active:bg-inset"
+                    className="w-full border-t border-hair py-2.5 text-center text-xs font-bold text-fg-muted transition active:bg-track"
                   >
                     Show less
                   </button>
@@ -700,7 +700,7 @@ export default function Home() {
               <div className="mt-3 flex items-center justify-between">
                 <span className="flex gap-1.5">
                   {INTRO.map((_, i) => (
-                    <span key={i} className={`h-1.5 w-1.5 rounded-full ${i === introStep ? "bg-white" : "bg-white/30"}`} />
+                    <span key={i} className={`h-1.5 w-1.5 rounded-full bg-fg ${i === introStep ? "" : "opacity-30"}`} />
                   ))}
                 </span>
                 <span className="rounded-full bg-white px-4 py-1.5 text-xs font-extrabold text-on-action">
