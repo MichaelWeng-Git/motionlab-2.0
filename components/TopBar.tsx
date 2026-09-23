@@ -168,7 +168,7 @@ export function TopBar() {
         <div data-ask className="absolute left-1/2 top-full z-50 mt-2 w-[min(88%,340px)] -translate-x-1/2">
           <form
             onSubmit={submitAsk}
-            className="rise-in flex items-center gap-2 rounded-2xl bg-white p-1.5 pl-3 shadow-lift"
+            className="rise-in flex items-center gap-2 rounded-2xl bg-sheet p-1.5 pl-3 text-fg shadow-lift ring-1 ring-inset ring-white/15"
           >
             <SparkleIcon />
             <input
@@ -176,13 +176,13 @@ export function TopBar() {
               value={q}
               onChange={(e) => setDraft(e.target.value)}
               placeholder="Ask MotionLab AI anything…"
-              className="min-w-0 flex-1 bg-transparent text-sm font-medium outline-none placeholder:text-ink-muted"
+              className="min-w-0 flex-1 bg-transparent text-sm font-medium text-fg outline-none placeholder:text-fg-muted"
             />
             <button
               type="submit"
               aria-label="Ask"
               className={`grid h-8 w-8 shrink-0 place-items-center rounded-full transition active:scale-95 ${
-                q.trim() ? "bg-ink text-white" : "bg-black/10 text-ink-muted"
+                q.trim() ? "bg-action text-on-action" : "bg-inset text-fg-muted"
               }`}
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

@@ -217,11 +217,11 @@ export default function Weeks() {
     return (
       <div className="stagger px-5 pb-8 pt-3">
         <div className="flex items-center gap-2.5">
-          <span className="h-7 w-11 rounded-full bg-white shadow-soft" />
-          <span className="h-6 w-24 rounded-lg bg-black/[0.06]" />
+          <span className="skel h-7 w-11 rounded-full" />
+          <span className="skel h-6 w-24 rounded-lg" />
         </div>
-        <div className="mt-4 h-[70px] rounded-2xl bg-white shadow-soft" />
-        <div className="mt-3 h-[150px] rounded-2xl bg-ink/90" />
+        <div className="skel mt-4 h-[70px] rounded-2xl" />
+        <div className="skel mt-3 h-[150px] rounded-2xl" />
       </div>
     );
   }
@@ -231,7 +231,7 @@ export default function Weeks() {
       <div className="flex items-center gap-2.5">
         <button
           onClick={() => router.back()}
-          className="flex h-7 w-11 items-center justify-center rounded-full bg-white text-[13px] leading-none text-ink shadow-soft transition active:scale-95"
+          className="flex h-7 w-11 items-center justify-center rounded-full bg-panel text-[13px] leading-none text-fg shadow-panel transition active:scale-95"
         >
           ←
         </button>
@@ -269,18 +269,18 @@ export default function Weeks() {
         <button
           onClick={() => setWeekOffset((o) => Math.min(maxOffset, o + 1))}
           disabled={weekOffset >= maxOffset}
-          className={`grid h-8 w-8 place-items-center rounded-full text-ink-muted transition active:scale-90 ${
-            weekOffset >= maxOffset ? "opacity-25" : "hover:text-ink"
+          className={`grid h-8 w-8 place-items-center rounded-full text-fg-muted transition active:scale-90 ${
+            weekOffset >= maxOffset ? "opacity-25" : "hover:text-fg"
           }`}
         >
           <Chevron left />
         </button>
-        <span className="min-w-[128px] text-center font-golden text-[17px] leading-none text-ink">{weekLabel.toUpperCase()}</span>
+        <span className="min-w-[128px] text-center font-golden text-[17px] leading-none text-fg">{weekLabel.toUpperCase()}</span>
         <button
           onClick={() => setWeekOffset((o) => Math.max(0, o - 1))}
           disabled={weekOffset <= 0}
-          className={`grid h-8 w-8 place-items-center rounded-full text-ink-muted transition active:scale-90 ${
-            weekOffset <= 0 ? "opacity-25" : "hover:text-ink"
+          className={`grid h-8 w-8 place-items-center rounded-full text-fg-muted transition active:scale-90 ${
+            weekOffset <= 0 ? "opacity-25" : "hover:text-fg"
           }`}
         >
           <Chevron />
@@ -288,7 +288,7 @@ export default function Weeks() {
       </div>
 
       {/* 7-day strip — tap a day to enlarge it and inspect it below */}
-      <div className="mt-3 rounded-3xl bg-white p-2.5 shadow-soft">
+      <div className="mt-3 rounded-3xl bg-panel p-2.5 text-fg shadow-panel">
         <div className="flex justify-between">
           {weekDays.map((d) => {
             const active = d.k === sel.k;
@@ -298,16 +298,16 @@ export default function Weeks() {
                 onClick={() => !d.off && setSelectedKey(d.k)}
                 disabled={d.off}
                 className={`flex flex-col items-center gap-1.5 rounded-2xl px-2 py-2 transition-all duration-200 ${
-                  active ? "scale-110 bg-volt-mist" : d.off ? "opacity-40" : "active:scale-95"
+                  active ? "scale-110 bg-signal-good/15" : d.off ? "opacity-40" : "active:scale-95"
                 }`}
               >
-                <span className={`text-[15px] leading-none ${active ? "font-extrabold text-ink" : "font-bold text-ink-muted"}`}>
+                <span className={`text-[15px] leading-none ${active ? "font-extrabold text-fg" : "font-bold text-fg-muted"}`}>
                   {d.label}
                 </span>
                 {/* the day's tri-color bar: ⅓ Move · ⅓ Analyze · ⅓ Workout,
                     each third fills in its own color */}
                 <span className="block w-8">
-                  <TriBar pcts={[Math.min(1, d.pcts[0]), d.pcts[1], d.pcts[2]]} height={4} track="rgba(14,31,26,0.1)" />
+                  <TriBar pcts={[Math.min(1, d.pcts[0]), d.pcts[1], d.pcts[2]]} height={4} track="var(--track)" />
                 </span>
               </button>
             );
@@ -377,20 +377,20 @@ export default function Weeks() {
 
       {/* that day's records — only when there are any */}
       {selData?.items.length ? (
-        <div className="mt-4 rounded-3xl bg-white p-4 shadow-soft">
-          <h2 className="font-golden text-xl leading-none text-ink">ON THIS DAY</h2>
+        <div className="mt-4 rounded-3xl bg-panel p-4 text-fg shadow-panel">
+          <h2 className="font-golden text-xl leading-none text-fg">ON THIS DAY</h2>
           <div className="mt-2 space-y-1.5">
             {selData.items.map((it, i) => (
-              <div key={i} className="flex items-center gap-3 rounded-xl bg-paper px-3.5 py-2.5">
+              <div key={i} className="flex items-center gap-3 rounded-xl bg-inset px-3.5 py-2.5">
                 <span
                   className="h-2 w-2 rounded-full"
                   style={{ background: it.kind === "ana" ? GOAL_ARCS[1] : GOAL_ARCS[2] }}
                 />
                 <span className="flex flex-1 items-baseline gap-2">
-                  <span className="font-golden text-[15px] leading-none text-ink">{it.title}</span>
-                  {it.detail && <span className="font-golden text-[12px] leading-none text-ink-muted">{it.detail}</span>}
+                  <span className="font-golden text-[15px] leading-none text-fg">{it.title}</span>
+                  {it.detail && <span className="font-golden text-[12px] leading-none text-fg-muted">{it.detail}</span>}
                 </span>
-                <span className="text-xs font-semibold text-ink-muted">{it.sub}</span>
+                <span className="text-xs font-semibold text-fg-muted">{it.sub}</span>
               </div>
             ))}
           </div>
@@ -398,27 +398,27 @@ export default function Weeks() {
       ) : null}
 
       {editGoals && (
-        <div className="fixed inset-0 z-[60] grid place-items-center bg-ink/30 px-6 backdrop-blur-[2px]" onClick={() => setEditGoals(false)}>
-          <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-paper p-6 shadow-lift" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[60] grid place-items-center bg-graphite/75 px-6 backdrop-blur-[2px]" onClick={() => setEditGoals(false)}>
+          <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-fg shadow-lift ring-1 ring-inset ring-white/15" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-center text-lg font-extrabold">Goals</h2>
             <div className="mt-4 space-y-3">
               {goalRows.map((g) => (
-                <div key={g.key} className="flex items-center justify-between rounded-2xl bg-white px-4 py-3 shadow-soft">
+                <div key={g.key} className="flex items-center justify-between rounded-2xl bg-panel px-4 py-3 shadow-panel">
                   <span className="text-sm font-bold">{g.label}</span>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => setGoal(g.key, Math.max(g.min, goals[g.key] - g.step))}
-                      className="grid h-8 w-8 place-items-center rounded-full bg-white text-base font-bold shadow-soft transition active:scale-95"
+                      className="grid h-8 w-8 place-items-center rounded-full bg-inset text-base font-bold text-fg transition active:scale-95"
                     >
                       −
                     </button>
                     <span className="w-14 text-center text-lg font-extrabold tabular-nums">
                       {goals[g.key]}
-                      {g.unit && <span className="ml-0.5 text-[11px] font-bold text-ink-muted">{g.unit}</span>}
+                      {g.unit && <span className="ml-0.5 text-[11px] font-bold text-fg-muted">{g.unit}</span>}
                     </span>
                     <button
                       onClick={() => setGoal(g.key, Math.min(g.max, goals[g.key] + g.step))}
-                      className="grid h-8 w-8 place-items-center rounded-full bg-white text-base font-bold shadow-soft transition active:scale-95"
+                      className="grid h-8 w-8 place-items-center rounded-full bg-inset text-base font-bold text-fg transition active:scale-95"
                     >
                       +
                     </button>
@@ -428,7 +428,7 @@ export default function Weeks() {
             </div>
             <button
               onClick={() => setEditGoals(false)}
-              className="btn-press mt-5 w-full rounded-full bg-ink py-3 text-sm font-bold text-white transition"
+              className="mt-5 w-full rounded-full bg-action py-3 text-sm font-bold text-on-action transition active:scale-[0.98]"
             >
               Done
             </button>

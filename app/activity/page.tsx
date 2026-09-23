@@ -670,7 +670,7 @@ export default function Activity() {
           value={actName}
           onChange={(e) => setActName(e.target.value)}
           maxLength={40}
-          className="mt-4 w-full rounded-2xl bg-white px-4 py-3.5 text-base font-bold shadow-soft outline-none focus:border-ink"
+          className="mt-4 w-full rounded-2xl bg-panel px-4 py-3.5 text-base font-bold text-fg shadow-panel outline-none placeholder:text-fg-muted focus:ring-1 focus:ring-inset focus:ring-white/20"
         />
 
         <div className="mt-4 overflow-hidden rounded-3xl shadow-soft">
@@ -682,16 +682,16 @@ export default function Activity() {
               <SIcon name={sport.icon} size={44} className="relative" />
             </div>
           )}
-          <div className="grid grid-cols-3 divide-x divide-black/5 border-b border-black/5 bg-white py-3.5">
+          <div className="grid grid-cols-3 divide-x divide-hair border-b border-hair bg-panel py-3.5 text-fg">
             {f.slice(0, 3).map((s) => (
               <div key={s.l} className="text-center">
                 <p className="text-lg font-extrabold tabular-nums">{s.v}</p>
-                <p className="mt-0.5 text-[11px] font-bold uppercase tracking-widest text-ink-muted">{s.l}</p>
+                <p className="mt-0.5 text-[11px] font-bold uppercase tracking-widest text-fg-muted">{s.l}</p>
               </div>
             ))}
           </div>
           {/* second stat row: the numbers Strava shows under the big three */}
-          <div className="flex items-center justify-center gap-5 bg-white pb-3 text-[11px] font-bold text-ink-muted">
+          <div className="flex items-center justify-center gap-5 bg-panel pb-3 text-[11px] font-bold text-fg-muted">
             {isGps && <span>↑ {Math.round(elevGain)} m elev</span>}
             <span>{hasCalorieEstimate ? `${Math.round(kcal)} est. kcal` : "Calories unavailable"}</span>
           </div>
@@ -704,14 +704,14 @@ export default function Activity() {
           placeholder="How'd it go?"
           rows={2}
           maxLength={280}
-          className="mt-3 w-full resize-none rounded-2xl bg-white px-4 py-3 text-sm font-medium shadow-soft outline-none placeholder:text-ink-muted focus:border-ink"
+          className="mt-3 w-full resize-none rounded-2xl bg-panel px-4 py-3 text-sm font-medium text-fg shadow-panel outline-none placeholder:text-fg-muted focus:ring-1 focus:ring-inset focus:ring-white/20"
         />
 
         {/* perceived exertion 1-10 */}
-        <div className="mt-3 rounded-2xl bg-white p-4 shadow-soft">
+        <div className="mt-3 rounded-2xl bg-panel p-4 text-fg shadow-panel">
           <div className="flex items-baseline justify-between">
             <p className="text-sm font-bold">How did that feel?</p>
-            <p className="text-sm font-extrabold tabular-nums text-volt-deep">{exertion}/10</p>
+            <p className="text-sm font-extrabold tabular-nums text-signal-good">{exertion}/10</p>
           </div>
           <input
             type="range"
@@ -721,7 +721,7 @@ export default function Activity() {
             onChange={(e) => setExertion(+e.target.value)}
             className="mt-2 w-full accent-volt"
           />
-          <div className="flex justify-between text-[11px] font-semibold text-ink-muted">
+          <div className="flex justify-between text-[11px] font-semibold text-fg-muted">
             <span>Easy</span>
             <span>Max effort</span>
           </div>
@@ -738,7 +738,7 @@ export default function Activity() {
               key={v.k}
               onClick={() => setVisibility(v.k)}
               className={`rounded-2xl border py-2.5 text-xs font-bold transition ${
-                visibility === v.k ? "border-ink bg-ink text-white" : "border-black/10 bg-white text-ink shadow-soft"
+                visibility === v.k ? "border-white bg-action text-on-action" : "border-hair bg-panel text-fg shadow-panel"
               }`}
             >
               {v.t}
@@ -748,13 +748,13 @@ export default function Activity() {
 
         {/* distance splits table */}
         {splits.length > 0 && (
-          <div className="mt-3 overflow-hidden rounded-2xl bg-white shadow-soft">
-            <div className="flex items-center justify-between border-b border-black/5 px-4 py-2.5">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-ink-muted">{splits[0]?.unit ?? (units === "imperial" ? "mi" : "km")}</span>
-              <span className="text-[11px] font-bold uppercase tracking-widest text-ink-muted">Pace</span>
+          <div className="mt-3 overflow-hidden rounded-2xl bg-panel text-fg shadow-panel">
+            <div className="flex items-center justify-between border-b border-hair px-4 py-2.5">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-fg-muted">{splits[0]?.unit ?? (units === "imperial" ? "mi" : "km")}</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-fg-muted">Pace</span>
             </div>
             {splits.map((s) => (
-              <div key={`${s.unit}-${s.n}`} className="flex items-center justify-between px-4 py-2 odd:bg-black/[0.02]">
+              <div key={`${s.unit}-${s.n}`} className="flex items-center justify-between px-4 py-2 odd:bg-white/[0.03]">
                 <span className="font-golden text-sm">{s.n}</span>
                 <span className="text-sm font-extrabold tabular-nums">
                   {Math.floor(s.seconds / 60)}:{String(s.seconds % 60).padStart(2, "0")}
@@ -842,7 +842,7 @@ export default function Activity() {
         <div className="absolute inset-x-4 bottom-[150px] z-10">
           <button
             onClick={() => setShowSplits(true)}
-            className="block w-full overflow-hidden rounded-2xl bg-white shadow-lift"
+            className="block w-full overflow-hidden rounded-2xl bg-sheet text-fg shadow-lift ring-1 ring-inset ring-white/15"
           >
             {(() => {
               const strip = gpsLost
@@ -867,13 +867,13 @@ export default function Activity() {
               {[f[0], f[2], f[1]].map((s, i) => (
                 <span key={s.l} className={`block ${i === 1 ? "text-center" : i === 0 ? "text-left" : "text-right"}`}>
                   <span
-                    className={`block font-extrabold leading-none tabular-nums tracking-tight text-ink ${
+                    className={`block font-extrabold leading-none tabular-nums tracking-tight text-fg ${
                       i === 1 ? "text-[34px]" : "text-[24px]"
                     }`}
                   >
                     {s.v}
                   </span>
-                  <span className="mt-1 block text-[11px] font-bold uppercase tracking-widest text-ink-muted">{s.l}</span>
+                  <span className="mt-1 block text-[11px] font-bold uppercase tracking-widest text-fg-muted">{s.l}</span>
                 </span>
               ))}
             </span>
@@ -913,22 +913,22 @@ export default function Activity() {
 
       {/* bottom sheet — recording hides the nav, so the sheet hugs the bottom */}
       <div
-        className={`absolute inset-x-0 bottom-0 z-10 rounded-t-3xl border-t border-black/5 bg-paper/95 shadow-[0_-8px_30px_rgba(14,31,26,0.12)] backdrop-blur-xl transition-[padding] duration-300 ${
+        className={`absolute inset-x-0 bottom-0 z-10 rounded-t-3xl border-t border-white/10 bg-sheet text-fg shadow-lift transition-[padding] duration-300 ${
           phase === "live" ? "pb-10" : "pb-32"
         }`}
       >
         {phase === "ready" && (
           <div className="px-5 pt-3">
-            <div className="mx-auto h-1 w-10 rounded-full bg-black/10" />
-            <button onClick={() => setSheet("picker")} className="mt-3 flex w-full items-center gap-3 rounded-2xl bg-white px-4 py-3 text-left shadow-soft transition active:scale-[0.99]">
+            <div className="mx-auto h-1 w-10 rounded-full bg-white/15" />
+            <button onClick={() => setSheet("picker")} className="mt-3 flex w-full items-center gap-3 rounded-2xl bg-panel px-4 py-3 text-left text-fg shadow-panel transition active:scale-[0.99]">
               <SIcon name={sport.icon} size={38} />
-              <span className="min-w-0 flex-1"><span className="block text-[11px] font-black uppercase tracking-[0.16em] text-ink-muted">ACTIVITY</span><span className="mt-0.5 block text-lg font-extrabold text-ink">{sport.label}</span></span>
-              <span className="font-golden text-2xl text-ink">›</span>
+              <span className="min-w-0 flex-1"><span className="block text-[11px] font-black uppercase tracking-[0.16em] text-fg-muted">ACTIVITY</span><span className="mt-0.5 block text-lg font-extrabold text-fg">{sport.label}</span></span>
+              <span className="font-golden text-2xl text-fg">›</span>
             </button>
             <div className="mt-3 flex items-center gap-3 px-1">
               <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${!isGps || gps === "ready" ? "bg-signal-good" : gps === "locating" ? "bg-signal-okay" : "bg-signal-work"}`} />
-              <span className="min-w-0 flex-1 text-sm font-bold text-ink">{!isGps ? "Timer ready · distance unavailable" : gps === "ready" ? acc != null ? `GPS ready · ±${acc} m` : "GPS ready" : gps === "locating" ? "Finding your GPS signal…" : "Location needed to record distance"}</span>
-              {isGps && gps !== "ready" && <button onClick={() => allowLocation(true)} className="shrink-0 text-xs font-black text-volt-deep">ENABLE</button>}
+              <span className="min-w-0 flex-1 text-sm font-bold text-fg">{!isGps ? "Timer ready · distance unavailable" : gps === "ready" ? acc != null ? `GPS ready · ±${acc} m` : "GPS ready" : gps === "locating" ? "Finding your GPS signal…" : "Location needed to record distance"}</span>
+              {isGps && gps !== "ready" && <button onClick={() => allowLocation(true)} className="shrink-0 text-xs font-black text-signal-good">ENABLE</button>}
             </div>
             <button onClick={start} className="btn-press mt-4 w-full rounded-full bg-volt py-4 text-[15px] font-black uppercase tracking-[0.1em] text-volt-ink shadow-lift">START {sport.label.toUpperCase()}</button>
           </div>
@@ -947,7 +947,7 @@ export default function Activity() {
               aria-label="Expand stats"
               className="block w-full touch-none py-2"
             >
-              <span className="mx-auto block h-1 w-10 rounded-full bg-black/15" />
+              <span className="mx-auto block h-1 w-10 rounded-full bg-white/15" />
             </button>
 
             {/* stable morphing controls — Strava-style: round buttons with a
@@ -971,7 +971,7 @@ export default function Activity() {
                 >
                   {isPaused ? <PlayIcon /> : <PauseIcon />}
                 </button>
-                <span className="text-[11px] font-bold text-ink">{isPaused ? "Resume" : "Pause"}</span>
+                <span className="text-[11px] font-bold text-fg">{isPaused ? "Resume" : "Pause"}</span>
               </div>
               <div
                 className={`flex flex-col items-center gap-1.5 transition-all duration-300 ease-out ${
@@ -985,7 +985,7 @@ export default function Activity() {
                 >
                   <StopIcon />
                 </button>
-                <span className="text-[11px] font-bold text-ink">Finish</span>
+                <span className="text-[11px] font-bold text-fg">Finish</span>
               </div>
             </div>
           </div>
@@ -998,13 +998,13 @@ export default function Activity() {
           Distance. Paused: an amber banner holds the timer and the hero swaps
           to the AVERAGE metric — exactly Strava's behavior. */}
       {phase === "live" && showSplits && (
-        <div className="absolute inset-0 z-20 flex animate-fade-up flex-col bg-paper">
+        <div className="absolute inset-0 z-20 flex animate-fade-up flex-col bg-graphite text-fg">
           {isPaused && (
             <div className="bg-signal-okay/25 pb-3 pt-4 text-center">
               <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#8A6410]">
                 {autoPaused ? "Auto-paused" : "Paused"}
               </p>
-              <p className="mt-1 text-4xl font-extrabold leading-none tabular-nums tracking-tight text-ink">{f[0].v}</p>
+              <p className="mt-1 text-4xl font-extrabold leading-none tabular-nums tracking-tight text-fg">{f[0].v}</p>
             </div>
           )}
           <button
@@ -1017,7 +1017,7 @@ export default function Activity() {
             aria-label="Collapse stats"
             className="touch-none py-3"
           >
-            <span className="mx-auto block h-1 w-10 rounded-full bg-black/15" />
+            <span className="mx-auto block h-1 w-10 rounded-full bg-white/15" />
           </button>
 
           <div className="flex flex-1 flex-col items-center justify-evenly px-6 pb-2">
@@ -1046,8 +1046,8 @@ export default function Activity() {
               const cls = { md: "text-4xl", lg: "text-6xl", hero: "text-[84px]" };
               return stack.map((m) => (
                 <div key={m.l} className="text-center">
-                  <p className={`font-extrabold leading-none tabular-nums tracking-tight text-ink ${cls[m.s]}`}>{m.v}</p>
-                  <p className="mt-2 text-[11px] font-bold uppercase tracking-widest text-ink-muted">{m.l}</p>
+                  <p className={`font-extrabold leading-none tabular-nums tracking-tight text-fg ${cls[m.s]}`}>{m.v}</p>
+                  <p className="mt-2 text-[11px] font-bold uppercase tracking-widest text-fg-muted">{m.l}</p>
                 </div>
               ));
             })()}
@@ -1072,7 +1072,7 @@ export default function Activity() {
               >
                 {isPaused ? <PlayIcon /> : <PauseIcon />}
               </button>
-              <span className="text-[11px] font-bold text-ink">{isPaused ? "Resume" : "Pause"}</span>
+              <span className="text-[11px] font-bold text-fg">{isPaused ? "Resume" : "Pause"}</span>
             </div>
             <div
               className={`flex flex-col items-center gap-1.5 transition-all duration-300 ease-out ${
@@ -1086,7 +1086,7 @@ export default function Activity() {
               >
                 <StopIcon />
               </button>
-              <span className="text-[11px] font-bold text-ink">Finish</span>
+              <span className="text-[11px] font-bold text-fg">Finish</span>
             </div>
           </div>
         </div>
@@ -1098,8 +1098,8 @@ export default function Activity() {
       )}
 
       {sheet === "mapType" && (
-        <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-up rounded-t-3xl bg-paper p-5 pb-28 shadow-lift">
-          <div className="mx-auto h-1 w-10 rounded-full bg-black/10" />
+        <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-up rounded-t-3xl bg-sheet p-5 pb-28 text-fg shadow-lift ring-1 ring-inset ring-white/15">
+          <div className="mx-auto h-1 w-10 rounded-full bg-white/15" />
           <p className="mt-4 text-base font-extrabold">Map type</p>
           <div className="mt-4 space-y-2">
             {([
@@ -1110,7 +1110,7 @@ export default function Activity() {
                 key={o.t}
                 onClick={() => { setSatellite(o.v); setSheet(null); }}
                 className={`flex w-full items-center gap-3.5 rounded-2xl px-4 py-3.5 text-left shadow-soft transition active:scale-[0.99] ${
-                  satellite === o.v ? "bg-volt-mist" : "bg-white"
+                  satellite === o.v ? "bg-signal-good/15 text-fg" : "bg-panel text-fg"
                 }`}
               >
                 <span className="flex-1 text-sm font-bold">{o.t}</span>
@@ -1122,8 +1122,8 @@ export default function Activity() {
       )}
 
       {sheet === "picker" && (
-        <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-up rounded-t-3xl bg-paper p-5 pb-28 shadow-lift">
-          <div className="mx-auto h-1 w-10 rounded-full bg-black/10" />
+        <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-up rounded-t-3xl bg-sheet p-5 pb-28 text-fg shadow-lift ring-1 ring-inset ring-white/15">
+          <div className="mx-auto h-1 w-10 rounded-full bg-white/15" />
           <p className="mt-4 text-base font-extrabold">Choose a sport</p>
           <div className="mt-4 max-h-[45vh] space-y-1.5 overflow-y-auto">
             {PROFILES.map((p) => (
@@ -1131,7 +1131,7 @@ export default function Activity() {
                 key={p.key}
                 onClick={() => pickSport(p)}
                 className={`flex w-full items-center gap-3.5 rounded-2xl px-4 py-3 text-left shadow-soft transition active:scale-[0.99] ${
-                  sport.key === p.key ? "bg-volt-mist" : "bg-white"
+                  sport.key === p.key ? "bg-signal-good/15 text-fg" : "bg-panel text-fg"
                 }`}
               >
                 <SIcon name={p.icon} size={40} />
@@ -1144,8 +1144,8 @@ export default function Activity() {
       )}
 
       {sheet === "settings" && (
-        <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-up rounded-t-3xl bg-paper p-5 pb-28 shadow-lift">
-          <div className="mx-auto h-1 w-10 rounded-full bg-black/10" />
+        <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-up rounded-t-3xl bg-sheet p-5 pb-28 text-fg shadow-lift ring-1 ring-inset ring-white/15">
+          <div className="mx-auto h-1 w-10 rounded-full bg-white/15" />
           <p className="mt-4 text-base font-extrabold">Record settings</p>
           <div className="mt-4 space-y-2">
             {([
@@ -1156,10 +1156,10 @@ export default function Activity() {
               <button
                 key={o.k}
                 onClick={() => toggleRecordSetting(o.k)}
-                className="flex w-full items-center gap-3 rounded-2xl bg-white px-4 py-3.5 text-left shadow-soft transition active:scale-[0.99]"
+                className="flex w-full items-center gap-3 rounded-2xl bg-panel px-4 py-3.5 text-left text-fg shadow-panel transition active:scale-[0.99]"
               >
                 <span className="flex-1 text-sm font-bold">{o.t}</span>
-                <span className={`relative h-7 w-12 rounded-full transition ${settings[o.k] ? "bg-volt-deep" : "bg-black/15"}`}>
+                <span className={`relative h-7 w-12 rounded-full transition ${settings[o.k] ? "bg-signal-good" : "bg-white/15"}`}>
                   <span
                     className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-soft transition-all ${
                       settings[o.k] ? "left-6" : "left-1"
@@ -1176,9 +1176,9 @@ export default function Activity() {
         <>
           <div className="absolute inset-0 z-20 bg-ink/50 backdrop-blur-[2px]" />
           <div className="absolute inset-0 z-30 grid place-items-center px-6">
-          <div className="w-full animate-pop rounded-3xl bg-paper p-6 text-center shadow-lift">
+          <div className="w-full animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15">
             <p className="text-lg font-extrabold">Stop {sport.label.toLowerCase()}?</p>
-            <p className="mt-1 text-sm text-ink-muted">{fmtTime(seconds)} recorded</p>
+            <p className="mt-1 text-sm text-fg-muted">{fmtTime(seconds)} recorded</p>
             <div className="mt-5 space-y-2.5">
               <button
                 onClick={toSave}
@@ -1188,7 +1188,7 @@ export default function Activity() {
               </button>
               <button
                 onClick={() => { setSheet(null); setPaused(false); setAutoPaused(false); slowSinceRef.current = null; }}
-                className="btn-press w-full rounded-full bg-ink py-3.5 text-[15px] font-bold text-white transition"
+                className="w-full rounded-full bg-action py-3.5 text-[15px] font-bold text-on-action transition active:scale-[0.98]"
               >
                 Resume
               </button>
@@ -1214,7 +1214,7 @@ export default function Activity() {
         <>
           <div className="absolute inset-0 z-20 bg-ink/50 backdrop-blur-[2px]" />
           <div className="absolute inset-0 z-30 grid place-items-center px-8">
-          <div className="w-full animate-pop rounded-3xl bg-paper p-6 text-center shadow-lift">
+          <div className="w-full animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15">
             <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-signal-work/12 text-signal-work">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 11.5-8 11.5S4 16 4 10a8 8 0 0 1 16 0z" /><circle cx="12" cy="10" r="3" /></svg>
             </span>
@@ -1222,13 +1222,13 @@ export default function Activity() {
             <div className="mt-5 space-y-2.5">
               <button
                 onClick={() => { localStorage.removeItem("ml_loc_perm"); setSheet("iosLocation"); }}
-                className="btn-press w-full rounded-full bg-ink py-3.5 text-[15px] font-bold text-white transition"
+                className="w-full rounded-full bg-action py-3.5 text-[15px] font-bold text-on-action transition active:scale-[0.98]"
               >
                 Try again
               </button>
               <button
                 onClick={() => setSheet(null)}
-                className="w-full rounded-full bg-white py-3.5 text-[15px] font-bold text-ink transition active:scale-[0.98]"
+                className="w-full rounded-full bg-inset py-3.5 text-[15px] font-bold text-fg transition active:scale-[0.98]"
               >
                 Not now
               </button>
@@ -1243,9 +1243,9 @@ export default function Activity() {
         <>
           <div className="absolute inset-0 z-40 bg-ink/50 backdrop-blur-[2px]" />
           <div className="absolute inset-0 z-50 grid place-items-center px-8">
-            <div className="w-full animate-pop rounded-3xl bg-paper p-6 text-center shadow-lift">
+            <div className="w-full animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15">
               <p className="text-base font-extrabold">Resume your workout?</p>
-              <p className="mt-1 text-sm font-bold text-ink-soft">{fmtTime(chk.sec)} recorded</p>
+              <p className="mt-1 text-sm font-bold text-fg-soft">{fmtTime(chk.sec)} recorded</p>
               <div className="mt-5 space-y-2.5">
                 <button
                   onClick={restoreCheckpoint}
@@ -1259,7 +1259,7 @@ export default function Activity() {
                     setChk(null);
                     setSheet(null);
                   }}
-                  className="w-full rounded-full bg-white py-3.5 text-[15px] font-bold text-ink transition active:scale-[0.98]"
+                  className="w-full rounded-full bg-inset py-3.5 text-[15px] font-bold text-fg transition active:scale-[0.98]"
                 >
                   Delete it
                 </button>
@@ -1327,7 +1327,7 @@ function DiscardConfirm({ sport, onKeep, onDiscard }: { sport: Profile; onKeep: 
     <>
       <div className="fixed inset-0 z-40 bg-ink/50 backdrop-blur-[2px]" />
       <div className="fixed inset-0 z-50 grid place-items-center px-10">
-      <div className="w-full max-w-[350px] animate-pop rounded-3xl bg-paper p-6 text-center shadow-lift">
+      <div className="w-full max-w-[350px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15">
         <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-signal-work/12 text-signal-work">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6M14 11v6" /></svg>
         </span>
@@ -1341,7 +1341,7 @@ function DiscardConfirm({ sport, onKeep, onDiscard }: { sport: Profile; onKeep: 
           </button>
           <button
             onClick={onKeep}
-            className="w-full rounded-full bg-white py-3.5 text-[15px] font-bold text-ink transition active:scale-[0.98]"
+            className="w-full rounded-full bg-inset py-3.5 text-[15px] font-bold text-fg transition active:scale-[0.98]"
           >
             Keep it
           </button>

@@ -296,7 +296,7 @@ export default function Tree() {
       <div className="flex items-center gap-3">
         <button
           onClick={() => (window.history.length > 1 ? router.back() : router.push("/streak"))}
-          className="grid h-9 w-9 place-items-center rounded-full bg-white text-ink shadow-soft"
+          className="grid h-9 w-9 place-items-center rounded-full bg-panel text-fg shadow-panel"
         >
           ←
         </button>
@@ -477,31 +477,31 @@ export default function Tree() {
 
       {/* Pack contents and exact probabilities. */}
       {packInfo && (
-        <div className="fixed inset-0 z-[75] flex items-end justify-center bg-ink/60 px-3 backdrop-blur-[3px]" onClick={() => setPackInfo(null)}>
-          <section className="mb-3 w-full max-w-[406px] animate-pop rounded-3xl bg-[#F7F4EA] p-5 shadow-lift" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[75] flex items-end justify-center bg-graphite/80 px-3 backdrop-blur-[3px]" onClick={() => setPackInfo(null)}>
+          <section className="mb-3 w-full max-w-[406px] animate-pop rounded-3xl bg-sheet p-5 text-fg shadow-lift ring-1 ring-inset ring-white/15" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-[11px] font-black tracking-[0.18em] text-ink-soft">DROP RATES · EACH DRAW</p>
-                <h3 className="mt-1 font-golden text-3xl leading-none text-ink">{packInfo.name}</h3>
+                <p className="text-[11px] font-black tracking-[0.18em] text-fg-soft">DROP RATES · EACH DRAW</p>
+                <h3 className="mt-1 font-golden text-3xl leading-none text-fg">{packInfo.name}</h3>
               </div>
-              <button onClick={() => setPackInfo(null)} aria-label="Close" className="grid h-9 w-9 place-items-center rounded-full bg-ink text-xl leading-none text-white">×</button>
+              <button onClick={() => setPackInfo(null)} aria-label="Close" className="grid h-9 w-9 place-items-center rounded-full bg-action text-xl leading-none text-on-action">×</button>
             </div>
             <div className="mt-5 space-y-2">
               {(["ball", "candy", "bell", "flake", "gift"] as const).map((type) => {
                 const rarity = RARITY_META[ORN_RARITY[type]];
                 return (
-                  <div key={type} className="flex items-center gap-3 rounded-2xl bg-white px-3 py-2.5">
+                  <div key={type} className="flex items-center gap-3 rounded-xl bg-inset px-3 py-2.5">
                     <svg viewBox="-12 -12 24 24" className="h-9 w-9"><Ornament x={0} y={0} o={{ type, color: type === "ball" ? BALL_COLORS[0] : type === "candy" || type === "gift" ? "#FF5A5F" : type === "bell" ? "#F5B23D" : "#BDECF0" }} /></svg>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-black text-ink">{ORN_NAMES[type]}</p>
+                      <p className="text-sm font-black text-fg">{ORN_NAMES[type]}</p>
                       <span className="text-[11px] font-black tracking-[0.13em]" style={{ color: rarity.bg }}>{rarity.label}</span>
                     </div>
-                    <span className="font-golden text-xl tabular-nums text-ink">{packInfo.odds[type]}%</span>
+                    <span className="font-golden text-xl tabular-nums text-fg">{packInfo.odds[type]}%</span>
                   </div>
                 );
               })}
             </div>
-            <p className="mt-4 text-center text-[11px] font-bold text-ink-soft">Duplicates can drop. Every draw is independent.</p>
+            <p className="mt-4 text-center text-[11px] font-bold text-fg-soft">Duplicates can drop. Every draw is independent.</p>
           </section>
         </div>
       )}
@@ -537,8 +537,8 @@ export default function Tree() {
           )}
 
           {opening.stage === "bubble" && (
-            <div className="w-full max-w-[300px] animate-pop rounded-3xl bg-paper p-6 text-center shadow-lift">
-              <p className="text-[11px] font-black tracking-[0.18em] text-ink-soft">PACK OPENED</p>
+            <div className="w-full max-w-[300px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15">
+              <p className="text-[11px] font-black tracking-[0.18em] text-fg-soft">PACK OPENED</p>
               <div className="mt-2 flex items-center justify-center gap-2">
                 {opening.won.map((o, i) => (
                   <div key={i} className="float-soft rounded-2xl px-2 py-3" style={{ animationDelay: `${i * 0.3}s`, background: RARITY_META[ORN_RARITY[o.type]].color }}>
@@ -547,12 +547,12 @@ export default function Tree() {
                   </div>
                 ))}
               </div>
-              <p className="mt-1 font-golden text-2xl leading-none text-ink">
+              <p className="mt-1 font-golden text-2xl leading-none text-fg">
                 {opening.won.map((o) => ORN_NAMES[o.type].toUpperCase()).join(" + ")}
               </p>
               <button
                 onClick={startPlacing}
-                className="btn-press mt-5 w-full rounded-full bg-ink py-3 text-sm font-extrabold text-white transition"
+                className="mt-5 w-full rounded-full bg-action py-3 text-sm font-extrabold text-on-action transition active:scale-[0.98]"
               >
                 Continue
               </button>
@@ -563,15 +563,15 @@ export default function Tree() {
 
       {/* not enough coins */}
       {broke && (
-        <div className="fixed inset-0 z-[70] grid place-items-center bg-ink/50 px-10 backdrop-blur-[2px]" onClick={() => setBroke(false)}>
-          <div className="w-full max-w-[280px] animate-pop rounded-3xl bg-paper p-6 text-center shadow-lift" onClick={(e) => e.stopPropagation()}>
-            <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-black/5 opacity-70">
+        <div className="fixed inset-0 z-[70] grid place-items-center bg-graphite/80 px-10 backdrop-blur-[2px]" onClick={() => setBroke(false)}>
+          <div className="w-full max-w-[280px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15" onClick={(e) => e.stopPropagation()}>
+            <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-inset opacity-70">
               <CoinIcon size={26} />
             </span>
-            <p className="mt-3 text-base font-extrabold text-ink">Not enough coins</p>
+            <p className="mt-3 text-base font-extrabold text-fg">Not enough coins</p>
             <button
               onClick={() => setBroke(false)}
-              className="btn-press mt-5 w-full rounded-full bg-ink py-3 text-sm font-bold text-white transition"
+              className="mt-5 w-full rounded-full bg-action py-3 text-sm font-bold text-on-action transition active:scale-[0.98]"
             >
               OK
             </button>

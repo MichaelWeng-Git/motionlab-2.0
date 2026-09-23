@@ -85,12 +85,12 @@ export default function Report() {
   if (empty) {
     return (
       <div className="px-5 pt-10">
-        <div className="flex flex-col items-center rounded-3xl bg-white p-8 text-center shadow-soft">
-          <span className="grid h-16 w-16 place-items-center rounded-3xl bg-paper"><ClapperIcon size={32} className="text-volt-deep" /></span>
+        <div className="flex flex-col items-center rounded-3xl bg-panel p-8 text-center text-fg shadow-panel">
+          <span className="grid h-16 w-16 place-items-center rounded-2xl bg-inset"><ClapperIcon size={32} className="text-signal-good" /></span>
           <h1 className="mt-4 text-xl font-extrabold">No report yet</h1>
           <Link
             href="/analyze"
-            className="btn-press mt-6 w-full rounded-full bg-ink py-3.5 text-[15px] font-bold text-white transition"
+            className="mt-6 w-full rounded-full bg-action py-3.5 text-[15px] font-bold text-on-action transition active:scale-[0.98]"
           >
             Analyze a video
           </Link>
@@ -129,7 +129,7 @@ export default function Report() {
       <button
         onClick={() => router.push("/")}
         aria-label="Back to home"
-        className="mb-1.5 flex h-6 w-10 items-center justify-center rounded-lg bg-white text-[13px] leading-none text-ink shadow-soft transition active:scale-95"
+        className="mb-1.5 flex h-6 w-10 items-center justify-center rounded-lg bg-panel text-[13px] leading-none text-fg shadow-panel transition active:scale-95"
       >
         ←
       </button>
@@ -175,18 +175,18 @@ export default function Report() {
 
       {/* The score's component parts, measured locally from tracked motion. */}
       {a.qualities.length >= 3 && (
-        <section className="mt-4 rounded-3xl bg-white p-4 shadow-soft">
+        <section className="mt-4 rounded-3xl bg-panel p-4 text-fg shadow-panel">
           <div className="flex items-center justify-between px-1">
             <div>
-              <p className="text-[11px] font-black tracking-[0.18em] text-ink-muted">MEASURED ON DEVICE</p>
-              <h2 className="mt-1 font-golden text-xl leading-none text-ink">MOVEMENT BREAKDOWN</h2>
+              <p className="text-[11px] font-black tracking-[0.18em] text-fg-muted">MEASURED ON DEVICE</p>
+              <h2 className="mt-1 font-golden text-xl leading-none text-fg">MOVEMENT BREAKDOWN</h2>
             </div>
             <span className="rounded-full bg-volt-mist px-3 py-1.5 text-[11px] font-black text-signal-good">NO AI SCORES</span>
           </div>
           <RadarChart data={a.qualities} target={RADAR_TARGET} />
           <div className="mt-1 flex items-center justify-center gap-4 text-[11px] font-semibold">
-            <span className="inline-flex items-center gap-1.5 text-ink"><span className="h-2 w-2 rounded-full bg-volt" /> You</span>
-            <span className="inline-flex items-center gap-1.5 text-ink-muted"><span className="inline-block h-0 w-4 border-t-2 border-dashed border-[#5B6472]" /> Target</span>
+            <span className="inline-flex items-center gap-1.5 text-fg"><span className="h-2 w-2 rounded-full bg-signal-good" /> You</span>
+            <span className="inline-flex items-center gap-1.5 text-fg-muted"><span className="inline-block h-0 w-4 border-t-2 border-dashed border-white/30" /> Target</span>
           </div>
         </section>
       )}
@@ -241,8 +241,8 @@ export default function Report() {
           />
         ) : isReal ? (
           /* past session: video was never stored (privacy) — say so honestly */
-          <div className="flex items-center gap-3.5 rounded-2xl bg-white p-4 shadow-soft">
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-paper"><FilmIcon className="text-volt-deep" /></span>
+          <div className="flex items-center gap-3.5 rounded-2xl bg-panel p-4 text-fg shadow-panel">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-inset"><FilmIcon className="text-signal-good" /></span>
             <div>
               <p className="text-sm font-bold">Replay not available</p>
             </div>
@@ -277,21 +277,21 @@ export default function Report() {
         )}
 
       {isReal && a.biomech && !a.biomech.bodyKnown && (
-        <section className="mt-4 rounded-3xl bg-signal-okay/15 p-5">
-          <h2 className="font-golden text-lg leading-none text-ink">MUSCLE LOAD NEEDS YOUR BODY</h2>
-          <p className="mt-2 text-[13px] font-semibold leading-relaxed text-ink">
+        <section className="mt-4 rounded-3xl bg-signal-okay/15 p-5 text-fg ring-1 ring-inset ring-signal-okay/25">
+          <h2 className="font-golden text-lg leading-none text-fg">MUSCLE LOAD NEEDS YOUR BODY</h2>
+          <p className="mt-2 text-[13px] font-semibold leading-relaxed text-fg-soft">
             Add both height and weight in Profile. Your joint angles are measured, but muscle load is withheld until it can be scaled to your body.
           </p>
-          <Link href="/account/training" className="mt-3 inline-flex rounded-full bg-ink px-4 py-2 text-xs font-bold text-white">
+          <Link href="/account/training" className="mt-3 inline-flex rounded-full bg-action px-4 py-2 text-xs font-bold text-on-action">
             Add body details
           </Link>
         </section>
       )}
 
       {isReal && a.biomechFailure && (
-        <section className="mt-4 rounded-3xl bg-signal-work/10 p-5">
+        <section className="mt-4 rounded-3xl bg-signal-work/10 p-5 text-fg ring-1 ring-inset ring-signal-work/20">
           <h2 className="font-golden text-lg leading-none text-signal-work">MECHANICS UNAVAILABLE</h2>
-          <p className="mt-2 text-[13px] font-semibold leading-relaxed text-ink">
+          <p className="mt-2 text-[13px] font-semibold leading-relaxed text-fg-soft">
             {a.biomechFailure.message}
           </p>
         </section>
@@ -331,11 +331,11 @@ function CoachNote({ tips, drill, onShow }: { tips: TipOut[]; drill: { title: st
 
   return (
     <section className="mt-6">
-      <h2 className="font-golden text-lg leading-none text-ink">WHAT MATTERS MOST</h2>
+      <h2 className="font-golden text-lg leading-none text-fg">WHAT MATTERS MOST</h2>
 
       <div className="mt-3 space-y-2">
         {sorted.map((t, i) => (
-          <div key={t.title} className="rounded-2xl bg-white shadow-soft">
+          <div key={t.title} className="rounded-2xl bg-panel text-fg shadow-panel">
             <button
               onClick={() => {
                 setOpen(open === i ? null : i);
@@ -346,15 +346,15 @@ function CoachNote({ tips, drill, onShow }: { tips: TipOut[]; drill: { title: st
               <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-[12px] font-extrabold text-white ${dot[t.rating]}`}>
                 {i + 1}
               </span>
-              <span className="flex-1 text-[14px] font-bold leading-snug text-ink">{t.title}</span>
+              <span className="flex-1 text-[14px] font-bold leading-snug text-fg">{t.title}</span>
               {onShow && t.when != null && t.cue && (
-                <span className="shrink-0 rounded-full bg-paper px-2.5 py-1 text-[11px] font-bold text-ink">
+                <span className="shrink-0 rounded-full bg-inset px-2.5 py-1 text-[11px] font-bold text-fg">
                   ▶ Show me
                 </span>
               )}
             </button>
             {open === i && (
-              <p className="px-4 pb-4 pl-[52px] text-[13px] leading-relaxed text-ink-muted">{t.detail}</p>
+              <p className="px-4 pb-4 pl-[52px] text-[13px] leading-relaxed text-fg-muted">{t.detail}</p>
             )}
           </div>
         ))}
@@ -398,12 +398,12 @@ function SessionLength({ id, observedS }: { id: string | null; observedS: number
   const OPTIONS = [10, 20, 30, 45, 60, 90];
 
   return (
-    <section className="mt-4 rounded-3xl bg-white p-5 shadow-soft">
+    <section className="mt-4 rounded-3xl bg-panel p-5 text-fg shadow-panel">
       <div className="flex items-baseline justify-between">
-        <h2 className="font-golden text-lg leading-none text-ink">SESSION LENGTH</h2>
+        <h2 className="font-golden text-lg leading-none text-fg">SESSION LENGTH</h2>
         {saved && <span className="text-[11px] font-extrabold text-signal-good">Saved</span>}
       </div>
-      <p className="mt-2 text-[12px] font-semibold leading-relaxed text-ink-soft">
+      <p className="mt-2 text-[12px] font-semibold leading-relaxed text-fg-soft">
         {mins == null
           ? `This clip covers ${observedS.toFixed(1)}s. Muscle load currently assumes a ${DEFAULT_SESSION_MIN} min session — tap the real length to correct it.`
           : fromWorkout
@@ -416,7 +416,7 @@ function SessionLength({ id, observedS }: { id: string | null; observedS: number
             key={m}
             onClick={() => commit(m)}
             className={`rounded-full px-3.5 py-2 text-[12px] font-bold transition active:scale-95 ${
-              mins === m ? "bg-ink text-white" : "bg-paper text-ink"
+              mins === m ? "bg-action text-on-action" : "bg-inset text-fg"
             }`}
           >
             {m} min

@@ -39,11 +39,11 @@ export function DailyCoinsTrack({ claims, onClaim }: { claims: string[]; onClaim
   }
 
   return (
-    <section className="relative mt-4 overflow-hidden rounded-3xl bg-white p-5 shadow-soft">
+    <section className="relative mt-4 overflow-hidden rounded-3xl bg-panel p-5 text-fg shadow-panel">
       <header className="flex items-center justify-between">
         <div>
-          <p className="font-golden text-2xl leading-none text-ink">DAILY COINS</p>
-          <p className="mt-1 text-[12px] font-bold text-ink-muted">Show up. Claim once.</p>
+          <p className="font-golden text-2xl leading-none text-fg">DAILY COINS</p>
+          <p className="mt-1 text-[12px] font-bold text-fg-muted">Show up. Claim once.</p>
         </div>
         <div className="flex items-center gap-1.5 rounded-full bg-cream px-3 py-2">
           <CoinIcon size={16} />
@@ -61,31 +61,31 @@ export function DailyCoinsTrack({ claims, onClaim }: { claims: string[]; onClaim
               disabled={!claimable}
               onClick={() => claim(node)}
               aria-label={claimable ? `Claim ${node.amount} coins` : node.label}
-              className={`flex min-w-0 flex-col items-center gap-2 rounded-2xl py-2.5 transition active:scale-95 ${claimable ? "bg-award-gold-wash" : node.state === "missed" ? "opacity-35" : ""}`}
+              className={`flex min-w-0 flex-col items-center gap-2 rounded-xl py-2.5 transition active:scale-95 ${claimable ? "bg-award-gold-wash text-ink" : node.state === "missed" ? "opacity-35" : ""}`}
             >
-              <span className={`grid h-9 w-9 place-items-center rounded-full border-2 ${complete ? "border-award-gold bg-award-gold" : claimable ? "border-award-gold bg-white" : "border-black/10 bg-paper"}`}>
+              <span className={`grid h-9 w-9 place-items-center rounded-full border-2 ${complete ? "border-award-gold bg-award-gold" : claimable ? "border-award-gold bg-white" : "border-hair bg-inset"}`}>
                 {complete ? (
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 4 4 10-10" /></svg>
                 ) : (
-                  <span className="font-golden text-[13px] text-ink-muted">{node.amount}</span>
+                  <span className={`font-golden text-[13px] ${claimable ? "text-ink-muted" : "text-fg-muted"}`}>{node.amount}</span>
                 )}
               </span>
-              <span className={`text-[11px] font-extrabold ${claimable ? "text-ink" : "text-ink-muted"}`}>{node.label}</span>
+              <span className={`text-[11px] font-extrabold ${claimable ? "text-ink" : "text-fg-muted"}`}>{node.label}</span>
             </button>
           );
         })}
       </div>
 
-      <div className="mt-4 flex items-center gap-3 border-t border-black/[0.06] pt-4">
-        <button onClick={() => setWeek((value) => value === 0 ? -1 : 0)} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-paper text-lg font-bold text-ink transition active:scale-95" aria-label={week === 0 ? "Show last week" : "Show this week"}>
+      <div className="mt-4 flex items-center gap-3 border-t border-hair pt-4">
+        <button onClick={() => setWeek((value) => value === 0 ? -1 : 0)} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-inset text-lg font-bold text-fg transition active:scale-95" aria-label={week === 0 ? "Show last week" : "Show this week"}>
           {week === 0 ? "‹" : "›"}
         </button>
         {week === 0 && reward ? (
-          <button onClick={() => claim(reward)} className="btn-press flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-ink text-sm font-extrabold text-white">
+          <button onClick={() => claim(reward)} className="flex h-11 flex-1 items-center justify-center gap-2 rounded-full bg-action text-sm font-extrabold text-on-action active:scale-[0.98]">
             <CoinIcon size={17} /> Claim {reward.amount}
           </button>
         ) : (
-          <div className="flex h-11 flex-1 items-center justify-center rounded-full bg-paper text-[12px] font-extrabold text-ink-muted">
+          <div className="flex h-11 flex-1 items-center justify-center rounded-full bg-inset text-[12px] font-extrabold text-fg-muted">
             {week === 0 ? "TODAY CLAIMED" : "LAST WEEK"}
           </div>
         )}

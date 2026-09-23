@@ -17,13 +17,13 @@ export default function ChargePage() {
   useEffect(() => { setDetail(getChargeDetail()); setRecovery(getRecoveryState()); }, []);
 
   if (detail === undefined) {
-    return <div className="px-5 pt-5"><div className="h-[310px] animate-pulse rounded-2xl bg-white/70" /></div>;
+    return <div className="px-5 pt-5"><div className="skel h-[310px] rounded-2xl" /></div>;
   }
 
   return (
     <div className="stagger px-5 pb-10 pt-3">
       <header className="flex items-center gap-2.5">
-        <button onClick={() => router.push("/")} className="flex h-7 w-11 items-center justify-center rounded-full bg-white text-[13px] text-ink shadow-soft active:scale-95">←</button>
+        <button onClick={() => router.push("/")} className="flex h-7 w-11 items-center justify-center rounded-full bg-panel text-[13px] text-fg shadow-panel active:scale-95">←</button>
         <h1 className="font-golden text-[24px] leading-none">Charge</h1>
       </header>
 
@@ -54,10 +54,10 @@ export default function ChargePage() {
             </div>
           </section>
 
-          <section className="mt-3 rounded-2xl bg-white p-5 shadow-soft">
+          <section className="mt-3 rounded-2xl bg-panel p-5 text-fg shadow-panel">
             <div className="flex items-baseline justify-between">
-              <h2 className="font-golden text-lg text-ink">LAST 7 DAYS</h2>
-              <span className="text-[11px] font-black tracking-wider text-ink-muted">TRAINING / CHARGE</span>
+              <h2 className="font-golden text-lg text-fg">LAST 7 DAYS</h2>
+              <span className="text-[11px] font-black tracking-wider text-fg-muted">TRAINING / CHARGE</span>
             </div>
             <div className="mt-5 grid grid-cols-7 gap-2">
               {detail.days.map((d) => {
@@ -66,9 +66,9 @@ export default function ChargePage() {
                 return (
                   <div key={d.date} className="text-center">
                     <div className="flex h-20 items-end justify-center">
-                      <span className="w-3 rounded-full" style={{ height, background: d.minutes > 0 ? "#17271F" : "#E5E9E5" }} />
+                      <span className="w-3 rounded-full" style={{ height, background: d.minutes > 0 ? "var(--fg)" : "var(--track)" }} />
                     </div>
-                    <p className="mt-2 font-golden text-[11px] text-ink-muted">{DAY[date.getDay()]}</p>
+                    <p className="mt-2 font-golden text-[11px] text-fg-muted">{DAY[date.getDay()]}</p>
                     <p className="mt-1 font-golden text-[12px]" style={{ color: d.charge == null ? "#AEB6AF" : CHARGE_META[d.charge >= 67 ? "primed" : d.charge >= 34 ? "steady" : "drained"].color }}>{d.charge ?? "—"}</p>
                   </div>
                 );
@@ -81,15 +81,15 @@ export default function ChargePage() {
             <Metric label="CHRONIC LOAD" value={`${Math.round(detail.chronicMinutes)} min`} sub="28-day baseline" />
           </section>
 
-          <section className="mt-3 rounded-2xl bg-white p-5 shadow-soft">
-            <h2 className="font-golden text-lg text-ink">WHAT MOVED IT</h2>
+          <section className="mt-3 rounded-2xl bg-panel p-5 text-fg shadow-panel">
+            <h2 className="font-golden text-lg text-fg">WHAT MOVED IT</h2>
             <div className="mt-4 space-y-3">
               <Signal label="Training rhythm" value={detail.consecutiveDays > 0 ? `${detail.consecutiveDays} days running` : "No active streak"} active={detail.consecutiveDays >= 4} />
               <Signal label="Yesterday" value={detail.restedYesterday ? "Rest day" : detail.days[5]?.minutes ? `${detail.days[5].minutes} min trained` : "No recorded training"} active={detail.restedYesterday} />
               <Signal label="Acute : chronic" value={detail.ratio == null ? "Baseline still forming" : `${detail.ratio.toFixed(2)} ×`} active={detail.ratio != null && detail.ratio >= 1.3} />
             </div>
             {detail.assumedWorkouts > 0 && <p className="mt-4 rounded-xl bg-award-gold-wash px-3 py-2 text-center text-[11px] font-bold text-[#8A6217]">{detail.assumedWorkouts} {detail.assumedWorkouts === 1 ? "session uses" : "sessions use"} the editable {DEFAULT_SESSION_MIN} min assumption</p>}
-            {recovery && <p className="mt-3 text-center text-[11px] font-bold text-ink-muted">{recoveryStateText(recovery)}{recovery.kind === "known" || recovery.kind === "assumed-duration" ? ` · ${recovery.pct}%` : ""}</p>}
+            {recovery && <p className="mt-3 text-center text-[11px] font-bold text-fg-muted">{recoveryStateText(recovery)}{recovery.kind === "known" || recovery.kind === "assumed-duration" ? ` · ${recovery.pct}%` : ""}</p>}
           </section>
         </>
       )}
@@ -98,9 +98,9 @@ export default function ChargePage() {
 }
 
 function Metric({ label, value, sub }: { label: string; value: string; sub: string }) {
-  return <div className="rounded-2xl bg-white p-4 shadow-soft"><p className="text-[11px] font-black tracking-[0.16em] text-ink-muted">{label}</p><p className="mt-2 font-golden text-2xl text-ink">{value}</p><p className="mt-1 text-[11px] font-bold text-ink-soft">{sub}</p></div>;
+  return <div className="rounded-2xl bg-panel p-4 text-fg shadow-panel"><p className="text-[11px] font-black tracking-[0.16em] text-fg-muted">{label}</p><p className="mt-2 font-golden text-2xl text-fg">{value}</p><p className="mt-1 text-[11px] font-bold text-fg-soft">{sub}</p></div>;
 }
 
 function Signal({ label, value, active }: { label: string; value: string; active: boolean }) {
-  return <div className="flex items-center justify-between gap-3"><span className="text-xs font-bold text-ink-soft">{label}</span><span className={`rounded-full px-3 py-1.5 text-[11px] font-black ${active ? "bg-[#FFF0D8] text-[#A86212]" : "bg-paper text-ink"}`}>{value}</span></div>;
+  return <div className="flex items-center justify-between gap-3"><span className="text-xs font-bold text-fg-soft">{label}</span><span className={`rounded-full px-3 py-1.5 text-[11px] font-black ${active ? "bg-award-gold-wash text-ink" : "bg-inset text-fg"}`}>{value}</span></div>;
 }

@@ -129,7 +129,7 @@ export default function Account() {
                 <>
                   <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg" style={{ background: item.tint }}>{item.icon}</span>
                   <span className="flex-1 text-[15px] font-bold">{item.label}</span>
-                  {item.hint && <span className="text-xs text-ink-muted">{item.hint}</span>}
+                  {item.hint && <span className="text-xs text-fg-muted">{item.hint}</span>}
                   <span className="font-bold text-white/60">›</span>
                 </>
               );
@@ -160,20 +160,20 @@ export default function Account() {
 
       {/* WhatsApp-style photo action sheet */}
       {photoSheet && (
-        <div className="fixed inset-0 z-[60] flex items-end justify-center bg-ink/40 backdrop-blur-[2px]" onClick={() => setPhotoSheet(false)}>
+        <div className="fixed inset-0 z-[60] flex items-end justify-center bg-graphite/75 backdrop-blur-[2px]" onClick={() => setPhotoSheet(false)}>
           <div
-            className="w-full max-w-[430px] animate-fade-up rounded-t-3xl bg-paper p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
+            className="w-full max-w-[430px] animate-fade-up rounded-t-3xl bg-sheet p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-fg ring-1 ring-inset ring-white/15"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="mx-auto h-1 w-10 rounded-full bg-black/10" />
+            <div className="mx-auto h-1 w-10 rounded-full bg-white/15" />
             <p className="mt-4 text-base font-extrabold">Profile photo</p>
-            <div className="mt-3 overflow-hidden rounded-2xl bg-white shadow-soft">
-              <button onClick={() => camRef.current?.click()} className="flex w-full items-center gap-3 px-4 py-3.5 text-left text-sm font-semibold transition active:bg-black/[0.03]">
-                <CameraIcon size={18} className="text-volt-deep" />
+            <div className="mt-3 overflow-hidden rounded-2xl bg-panel text-fg shadow-panel">
+              <button onClick={() => camRef.current?.click()} className="flex w-full items-center gap-3 px-4 py-3.5 text-left text-sm font-semibold transition active:bg-white/[0.04]">
+                <CameraIcon size={18} className="text-signal-good" />
                 Take photo
               </button>
-              <button onClick={() => libRef.current?.click()} className="flex w-full items-center gap-3 border-t border-black/5 px-4 py-3.5 text-left text-sm font-semibold transition active:bg-black/[0.03]">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-volt-deep">
+              <button onClick={() => libRef.current?.click()} className="flex w-full items-center gap-3 border-t border-hair px-4 py-3.5 text-left text-sm font-semibold transition active:bg-white/[0.04]">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-signal-good">
                   <rect x="3" y="5" width="18" height="14" rx="2.5" />
                   <circle cx="9" cy="10.5" r="1.6" />
                   <path d="M21 15.5l-4.5-4.5L7 20" />
@@ -181,7 +181,7 @@ export default function Account() {
                 Choose from library
               </button>
               {profile.photo && (
-                <button onClick={() => commitPhoto(undefined)} className="flex w-full items-center gap-3 border-t border-black/5 px-4 py-3.5 text-left text-sm font-semibold text-signal-work transition active:bg-black/[0.03]">
+                <button onClick={() => commitPhoto(undefined)} className="flex w-full items-center gap-3 border-t border-hair px-4 py-3.5 text-left text-sm font-semibold text-signal-work transition active:bg-white/[0.04]">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6.5 7l1 13h9l1-13" />
                   </svg>
@@ -189,7 +189,7 @@ export default function Account() {
                 </button>
               )}
             </div>
-            <button onClick={() => setPhotoSheet(false)} className="mt-3 w-full rounded-full bg-white py-3 text-sm font-bold text-ink shadow-soft transition active:scale-[0.98]">
+            <button onClick={() => setPhotoSheet(false)} className="mt-3 w-full rounded-full bg-inset py-3 text-sm font-bold text-fg transition active:scale-[0.98]">
               Cancel
             </button>
           </div>
@@ -198,18 +198,18 @@ export default function Account() {
 
       {/* photo preview & confirm */}
       {pending && (
-        <div className="fixed inset-0 z-[70] grid place-items-center bg-ink/40 px-6 backdrop-blur-[2px]">
-          <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-paper p-6 text-center shadow-lift">
+        <div className="fixed inset-0 z-[70] grid place-items-center bg-graphite/75 px-6 backdrop-blur-[2px]">
+          <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15">
             <h2 className="text-lg font-extrabold">Preview</h2>
             <div className="mt-5 flex justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={pending} alt="" className="h-40 w-40 rounded-full object-cover shadow-lift ring-4 ring-white" />
             </div>
             <div className="mt-6 flex gap-2.5">
-              <button onClick={() => setPending(null)} className="flex-1 rounded-full bg-white py-3 text-sm font-bold text-ink transition active:scale-[0.98]">
+              <button onClick={() => setPending(null)} className="flex-1 rounded-full bg-inset py-3 text-sm font-bold text-fg transition active:scale-[0.98]">
                 Cancel
               </button>
-              <button onClick={() => commitPhoto(pending)} className="btn-press flex-1 rounded-full bg-ink py-3 text-sm font-bold text-white transition">
+              <button onClick={() => commitPhoto(pending)} className="flex-1 rounded-full bg-action py-3 text-sm font-bold text-on-action transition active:scale-[0.98]">
                 Set as photo
               </button>
             </div>
@@ -219,16 +219,16 @@ export default function Account() {
 
       {/* confirm dialog */}
       {confirmOut && (
-        <div className="fixed inset-0 z-[60] grid place-items-center bg-ink/30 px-6 backdrop-blur-[2px]" onClick={() => setConfirmOut(false)}>
+        <div className="fixed inset-0 z-[60] grid place-items-center bg-graphite/75 px-6 backdrop-blur-[2px]" onClick={() => setConfirmOut(false)}>
           <div
-            className="w-full max-w-[340px] animate-pop rounded-3xl bg-paper p-6 text-center shadow-lift"
+            className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-lg font-extrabold">Log out?</h2>
             <div className="mt-5 flex gap-2.5">
               <button
                 onClick={() => { setConfirmOut(false); setLogoutError(""); }}
-                className="flex-1 rounded-full bg-white py-3 text-sm font-bold text-ink transition active:scale-[0.98]"
+                className="flex-1 rounded-full bg-inset py-3 text-sm font-bold text-fg transition active:scale-[0.98]"
               >
                 Cancel
               </button>

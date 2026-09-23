@@ -73,7 +73,7 @@ export default function LoadPage() {
       <div className="flex items-center gap-2.5">
         <button
           onClick={() => router.push("/")}
-          className="flex h-7 w-11 items-center justify-center rounded-full bg-white text-[13px] leading-none text-ink shadow-soft transition active:scale-95"
+          className="flex h-7 w-11 items-center justify-center rounded-full bg-panel text-[13px] leading-none text-fg shadow-panel transition active:scale-95"
         >
           ←
         </button>
@@ -81,16 +81,16 @@ export default function LoadPage() {
       </div>
 
       {!month ? (
-        <div className="mt-3 rounded-2xl bg-white p-6 text-center shadow-soft">
-          <p className="font-golden text-lg text-ink">NOTHING TO SHOW YET</p>
-          <p className="mt-2 text-[13px] font-semibold leading-relaxed text-ink-soft">
+        <div className="mt-3 rounded-2xl bg-panel p-6 text-center text-fg shadow-panel">
+          <p className="font-golden text-lg text-fg">NOTHING TO SHOW YET</p>
+          <p className="mt-2 text-[13px] font-semibold leading-relaxed text-fg-soft">
             Analyse a video or record a workout and the days start filling in.
           </p>
         </div>
       ) : (
         <>
           {/* the SAME dial the Home LOAD tile shows — identical number */}
-          <div className="mt-3 rounded-2xl bg-white px-5 pb-4 pt-5 shadow-soft">
+          <div className="mt-3 rounded-2xl bg-panel px-5 pb-4 pt-5 text-fg shadow-panel">
             <div className="mx-auto w-full max-w-[220px]">
               <Gauge
                 pct={month.week / 100}
@@ -98,8 +98,8 @@ export default function LoadPage() {
                 label="LAST 7 DAYS"
                 big
                 color={loadColor(month.week)}
-                valueColor="#17271F"
-                labelColor="#51604F"
+                valueColor="var(--fg)"
+                labelColor="var(--fg-muted)"
               />
             </div>
             {month.needsLength > 0 && (
@@ -162,11 +162,11 @@ export default function LoadPage() {
 
           {/* THE BODY RIGHT NOW — identical source to the Home MUSCLES card */}
           {rows.length > 0 && (
-            <div className="mt-3 overflow-hidden rounded-2xl bg-white px-5 py-4 shadow-soft">
+            <div className="mt-3 overflow-hidden rounded-2xl bg-panel px-5 py-4 text-fg shadow-panel">
               <div className="flex items-baseline justify-between">
-                <p className="font-golden text-[13px] leading-none text-ink">{recoveryStateText(recovery).toUpperCase()}</p>
+                <p className="font-golden text-[13px] leading-none text-fg">{recoveryStateText(recovery).toUpperCase()}</p>
                 {picked ? (
-                  <button onClick={() => setPicked(null)} className="text-[11px] font-bold text-ink-muted underline-offset-2 hover:underline">
+                  <button onClick={() => setPicked(null)} className="text-[11px] font-bold text-fg-muted underline-offset-2 hover:underline">
                     show all
                   </button>
                 ) : recovery.kind === "known" || recovery.kind === "assumed-duration" ? (
@@ -184,16 +184,16 @@ export default function LoadPage() {
                       key={g}
                       onClick={() => setPicked(on ? null : g)}
                       className={`flex w-full items-center gap-2.5 rounded-xl px-2.5 py-[5px] text-left transition active:scale-[0.99] ${
-                        on ? "bg-ink" : "bg-black/[0.035]"
+                        on ? "bg-action" : "bg-inset"
                       }`}
                     >
-                      <span className={`w-[100px] shrink-0 whitespace-nowrap text-[11px] font-bold ${on ? "text-white" : "text-ink"}`}>
+                      <span className={`w-[100px] shrink-0 whitespace-nowrap text-[11px] font-bold ${on ? "text-on-action" : "text-fg"}`}>
                         {niceName(g)}
                       </span>
-                      <span className="h-[5px] flex-1 overflow-hidden rounded-full" style={{ background: on ? "rgba(255,255,255,0.15)" : "rgba(20,24,27,0.08)" }}>
+                      <span className={`h-[5px] flex-1 overflow-hidden rounded-full ${on ? "bg-graphite/15" : "bg-track"}`}>
                         <span className="block h-full rounded-full" style={{ width: `${Math.round(v * 100)}%`, background: MINT }} />
                       </span>
-                      <span className={`w-7 shrink-0 text-right font-golden text-[11px] ${on ? "text-white" : "text-ink-muted"}`}>
+                      <span className={`w-7 shrink-0 text-right font-golden text-[11px] ${on ? "text-on-action" : "text-fg-muted"}`}>
                         {Math.round(v * 100)}
                       </span>
                     </button>
@@ -203,8 +203,8 @@ export default function LoadPage() {
             </div>
           )}
           {rows.length === 0 && muscles && (
-            <div className="mt-3 rounded-2xl bg-white p-5 text-center shadow-soft">
-              <p className="text-[13px] font-semibold text-ink-soft">{recoveryStateText(recovery)}</p>
+            <div className="mt-3 rounded-2xl bg-panel p-5 text-center text-fg shadow-panel">
+              <p className="text-[13px] font-semibold text-fg-soft">{recoveryStateText(recovery)}</p>
             </div>
           )}
         </>

@@ -69,9 +69,10 @@ export default function Home() {
   // CHARGE: today's readiness (lib/charge) — the third invented metric
   const [charge, setCharge] = useState<Charge | null>(null);
 
-  // MUSCLES: the AI model's read of what the body worked (lib/muscles —
-  // real analyses + meals in, per-muscle load out; null = nothing to show)
+  // MUSCLES: the deterministic biomechanics read of what the body worked
+  // (real analyses + meals in, per-muscle load out; null = nothing to show)
   const [muscles, setMuscles] = useState<MuscleState | null>(null);
+  const [musclesReady, setMusclesReady] = useState(false);
   const recovery = getRecoveryState(muscles);
   // true-3D body is the default; only fall back to the flat figures if the
   // model is genuinely missing. Optimistic so the old images never flash in.
@@ -108,8 +109,21 @@ export default function Home() {
     // paint the last known state INSTANTLY (animations start right away),
     // then swap in the fresh model read when it lands
     const cached = getCachedMuscleState();
-    if (cached) setMuscles(cached);
-    const refresh = () => { fetchMuscleState().then((m) => { if (!dead && m) setMuscles(m); }); };
+    if (cached) {
+      setMuscles(cached);
+      setMusclesReady(true);
+    }
+    const refresh = () => {
+      fetchMuscleState()
+        .then((m) => {
+          if (dead) return;
+          setMuscles(m);
+          setMusclesReady(true);
+        })
+        .catch(() => {
+          if (!dead) setMusclesReady(true);
+        });
+    };
     refresh();
     // LIVE RECOVERY: the load is a pure function of elapsed hours, so re-running
     // it on a timer (and whenever the tab comes back) makes the body genuinely
@@ -454,7 +468,7 @@ export default function Home() {
         </Link>
         </div>
 
-        {/* MUSCLES — the AI-read body, spinnable, standing tall on the right */}
+        {/* MUSCLES — the measured body, spinnable, standing tall on the right */}
         <div className="h-full" ref={musclesRef}>
           <div className="flex h-full flex-col overflow-hidden rounded-2xl bg-white/[0.07] p-4 pb-3 ring-1 ring-inset ring-white/15">
             <Link href="/muscles" className="flex items-center justify-center gap-2">
@@ -483,7 +497,7 @@ export default function Home() {
               />
             ) : (
               <p className="mt-1.5 text-center text-[11px] font-bold text-white/55">
-                {muscles ? recoveryStateText(recovery) : "Reading your sessions…"}
+                {musclesReady ? recoveryStateText(recovery) : "Reading your sessions…"}
               </p>
             )}
           </div>
@@ -700,8 +714,8 @@ export default function Home() {
 
       {/* ring completed! — centered reward bubble, one ring at a time */}
       {ringQueue.length > 0 && (
-        <div className="fixed inset-0 z-[60] grid place-items-center bg-ink/40 px-10 backdrop-blur-[2px]">
-          <div className="w-full max-w-[300px] animate-pop rounded-3xl bg-paper p-6 text-center shadow-lift">
+        <div className="fixed inset-0 z-[60] grid place-items-center bg-graphite/75 px-10 backdrop-blur-[2px]">
+          <div className="w-full max-w-[300px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15">
             <span
               className="mx-auto grid h-14 w-14 place-items-center rounded-full"
               style={{ background: `${ringQueue[0].color}1f` }}
@@ -710,12 +724,12 @@ export default function Home() {
                 <path d="M5 12.5l4.5 4.5L19 7.5" />
               </svg>
             </span>
-            <p className="mt-3 text-base font-extrabold leading-snug text-ink">
+            <p className="mt-3 text-base font-extrabold leading-snug text-fg">
               You finished your {ringQueue[0].label} ring!
             </p>
             <button
               onClick={claimRing}
-              className="btn-press mt-5 flex w-full items-center justify-center gap-1.5 rounded-full bg-ink py-3 text-sm font-extrabold text-white transition"
+              className="mt-5 flex w-full items-center justify-center gap-1.5 rounded-full bg-action py-3 text-sm font-extrabold text-on-action transition active:scale-[0.98]"
             >
               Claim {RING_COIN}
               <CoinIcon size={15} />

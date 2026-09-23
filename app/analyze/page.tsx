@@ -583,10 +583,10 @@ export default function Analyze() {
             watching?
           </h1>
           {fileMeta && (
-            <div className="mt-4 flex items-center justify-between rounded-2xl bg-white px-4 py-3 shadow-soft">
+            <div className="mt-4 flex items-center justify-between rounded-2xl bg-panel px-4 py-3 text-fg shadow-panel">
               <div className="min-w-0">
-                <p className="truncate text-xs font-black text-ink">{fileMeta.name}</p>
-                <p className="mt-0.5 text-[11px] font-bold text-ink-muted">{formatBytes(fileMeta.bytes)} · processed on this device</p>
+                <p className="truncate text-xs font-black text-fg">{fileMeta.name}</p>
+                <p className="mt-0.5 text-[11px] font-bold text-fg-muted">{formatBytes(fileMeta.bytes)} · processed on this device</p>
               </div>
               <button onClick={cancelAnalysis} className="ml-3 text-[11px] font-black text-signal-work">CHANGE</button>
             </div>
@@ -595,13 +595,13 @@ export default function Analyze() {
             <p className="mt-3 rounded-2xl bg-award-gold-wash px-4 py-3 text-[11px] font-bold leading-relaxed text-[#805B17]">Large video. MotionLab samples at most 300 frames, but decoding can still take longer and use more memory.</p>
           )}
           {!picker ? (
-            <div className="mt-6 flex flex-col items-center gap-4 rounded-3xl bg-white p-10 shadow-soft">
-              <span className="h-8 w-8 animate-spin rounded-full border-[3px] border-black/10 border-t-ink" />
-              <p className="text-sm font-bold text-ink-soft">Looking for people in your video…</p>
+            <div className="mt-6 flex flex-col items-center gap-4 rounded-3xl bg-panel p-10 text-fg shadow-panel">
+              <span className="h-8 w-8 animate-spin rounded-full border-[3px] border-white/10 border-t-signal-good" />
+              <p className="text-sm font-bold text-fg-soft">Looking for people in your video…</p>
             </div>
           ) : (
             <>
-              <p className="mt-3 rounded-2xl bg-white px-4 py-3 text-sm font-extrabold text-ink shadow-soft">
+              <p className="mt-3 rounded-2xl bg-panel px-4 py-3 text-sm font-extrabold text-fg shadow-panel">
                 Tap the person to analyze
               </p>
               <div className="relative mt-4 overflow-hidden rounded-3xl bg-ink">
@@ -641,9 +641,9 @@ export default function Analyze() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[11px] font-black tracking-[0.2em] text-signal-good">MOTION ANALYSIS</p>
-            <h1 className="mt-1 font-golden text-[28px] leading-none text-ink">READING YOUR MOVE</h1>
+            <h1 className="mt-1 font-golden text-[28px] leading-none text-fg">READING YOUR MOVE</h1>
           </div>
-          <button onClick={cancelAnalysis} className="rounded-full bg-white px-3 py-2 text-[11px] font-black text-signal-work shadow-soft">CANCEL</button>
+          <button onClick={cancelAnalysis} className="rounded-full bg-panel px-3 py-2 text-[11px] font-black text-signal-work shadow-panel">CANCEL</button>
         </div>
 
         <section className="mt-4 overflow-hidden rounded-3xl bg-graphite shadow-lift">
@@ -665,7 +665,7 @@ export default function Analyze() {
                 const active = i === stage;
                 return <div key={s.label} className="flex flex-1 items-center last:flex-none">
                   <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-[11px] font-black ${skipped ? "bg-white/10 text-white/35" : done ? "bg-[#7FD9AE] text-ink" : active ? "border-2 border-[#7FD9AE] text-[#7FD9AE]" : "border border-white/15 text-white/30"}`}>{skipped ? "—" : done ? "✓" : i + 1}</span>
-                  {i < STAGES.length - 1 && <span className={`h-px flex-1 ${done ? "bg-[#7FD9AE]/60" : "bg-white/10"}`} />}
+                  {i < STAGES.length - 1 && <span className={`h-px flex-1 ${done ? "bg-signal-good/60" : "bg-white/10"}`} />}
                 </div>;
               })}
             </div>
@@ -681,7 +681,7 @@ export default function Analyze() {
       {step === "duration" && (
         <div className="animate-fade-up px-5 pt-5">
           <p className="text-[11px] font-black tracking-[0.2em] text-signal-good">ANALYSIS COMPLETE</p>
-          <h1 className="mt-2 font-golden text-4xl leading-none text-ink">HOW LONG DID<br />YOU TRAIN?</h1>
+          <h1 className="mt-2 font-golden text-4xl leading-none text-fg">HOW LONG DID<br />YOU TRAIN?</h1>
           <section className="mt-6 rounded-3xl bg-graphite p-5 text-white shadow-lift">
             <p className="text-[12px] font-bold leading-relaxed text-white/65">The video is a sample. Your answer sets the session load and recovery from the first screen.</p>
             <label className="mt-5 flex items-end justify-center gap-2" htmlFor="session-minutes">
@@ -703,8 +703,8 @@ export default function Analyze() {
               ))}
             </div>
           </section>
-          <button onClick={() => finishAnalysis(sessionMinutes)} className="btn-press mt-4 w-full rounded-full bg-ink py-4 text-[15px] font-extrabold text-white">SAVE {sessionMinutes} MIN SESSION</button>
-          <button onClick={() => finishAnalysis()} className="mt-3 w-full py-3 text-[12px] font-bold text-ink-muted">Skip — use the visible {DEFAULT_SESSION_MIN} min assumption</button>
+          <button onClick={() => finishAnalysis(sessionMinutes)} className="mt-4 w-full rounded-full bg-action py-4 text-[15px] font-extrabold text-on-action active:scale-[0.98]">SAVE {sessionMinutes} MIN SESSION</button>
+          <button onClick={() => finishAnalysis()} className="mt-3 w-full py-3 text-[12px] font-bold text-fg-muted">Skip — use the visible {DEFAULT_SESSION_MIN} min assumption</button>
         </div>
       )}
 
@@ -718,8 +718,8 @@ export default function Analyze() {
             </svg>
           </span>
           <h1 className="mt-5 text-2xl font-extrabold">Sport not detected</h1>
-          <div className="mx-auto mt-4 max-w-[300px] rounded-2xl bg-white p-4 shadow-soft">
-            <p className="text-sm leading-relaxed text-ink-muted">
+          <div className="mx-auto mt-4 max-w-[300px] rounded-2xl bg-panel p-4 text-fg shadow-panel">
+            <p className="text-sm leading-relaxed text-fg-muted">
               {seenDesc
                 ? `This looks like ${seenDesc} — not a sport or exercise. Nothing was saved.`
                 : "We couldn't spot a sport or exercise movement in this video. Nothing was saved."}
@@ -727,7 +727,7 @@ export default function Analyze() {
           </div>
           <button
             onClick={() => { setStep("pick"); setVideoUrl(null); setSeenDesc(""); }}
-            className="btn-press mt-7 w-full rounded-full bg-ink py-4 text-[15px] font-bold text-white transition"
+            className="mt-7 w-full rounded-full bg-action py-4 text-[15px] font-bold text-on-action transition active:scale-[0.98]"
           >
             Try another video
           </button>
@@ -740,12 +740,12 @@ export default function Analyze() {
             <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4" /><path d="M5 20.5c.6-3.5 3.5-5.5 7-5.5s6.4 2 7 5.5" /><path d="M3.5 3.5l17 17" /></svg>
           </span>
           <h1 className="mt-5 text-2xl font-extrabold">Couldn&apos;t analyze that one</h1>
-          <div className="mx-auto mt-4 max-w-[300px] rounded-2xl bg-white p-4 shadow-soft">
-            <p className="text-sm leading-relaxed text-ink-muted">{errorMsg}</p>
+          <div className="mx-auto mt-4 max-w-[300px] rounded-2xl bg-panel p-4 text-fg shadow-panel">
+            <p className="text-sm leading-relaxed text-fg-muted">{errorMsg}</p>
           </div>
           <button
             onClick={() => { setStep("pick"); setVideoUrl(null); }}
-            className="mt-7 w-full rounded-full bg-ink py-4 text-[15px] font-bold text-white shadow-lift transition active:scale-[0.98]"
+            className="mt-7 w-full rounded-full bg-action py-4 text-[15px] font-bold text-on-action shadow-panel transition active:scale-[0.98]"
           >
             Try another video
           </button>

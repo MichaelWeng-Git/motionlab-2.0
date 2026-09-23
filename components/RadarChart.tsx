@@ -58,29 +58,30 @@ export function RadarChart({
           key={ri}
           points={dims.map((_, i) => pt(i, R * rr).join(",")).join(" ")}
           fill="none"
-          stroke="rgba(14,31,26,0.08)"
+          stroke="var(--hair)"
           strokeWidth="1"
         />
       ))}
       {/* spokes */}
       {dims.map((_, i) => {
         const [x, y] = pt(i, R);
-        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="rgba(14,31,26,0.08)" strokeWidth="1" />;
+        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="var(--hair)" strokeWidth="1" />;
       })}
       {/* target ring (goal line) — dashed, sits behind your shape */}
       {target != null && (
         <polygon
           points={dims.map((_, i) => pt(i, R * (target / 100)).join(",")).join(" ")}
           fill="none"
-          stroke="#5B6472"
+          stroke="var(--fg-muted)"
+          opacity="0.65"
           strokeWidth="1.5"
           strokeDasharray="4 4"
         />
       )}
       {/* value area */}
-      <path d={areaPath} fill="rgba(53,133,90,0.18)" stroke="#FF4E1A" strokeWidth="2.5" strokeLinejoin="round" />
+      <path d={areaPath} className="fill-signal-good/20 stroke-signal-good" strokeWidth="2.5" strokeLinejoin="round" />
       {valuePts.map(([x, y], i) => (
-        <circle key={i} cx={x} cy={y} r="3.5" fill="#FF4E1A" />
+        <circle key={i} cx={x} cy={y} r="3.5" className="fill-signal-good" />
       ))}
       {/* labels: anchor by side so words stay inside the viewBox; long words wrap to 2 lines */}
       {dims.map((d, i) => {
@@ -95,11 +96,11 @@ export function RadarChart({
         const baseY = isTop ? ly - (twoLine ? 16 : 4) : ly;
         return (
           <g key={i}>
-            <text x={lx} y={baseY} textAnchor={anchor} className="fill-ink text-[12px] font-bold">
+            <text x={lx} y={baseY} textAnchor={anchor} className="fill-fg text-[12px] font-bold">
               {line1}
             </text>
             {twoLine && (
-              <text x={lx} y={baseY + 13} textAnchor={anchor} className="fill-ink text-[12px] font-bold">
+              <text x={lx} y={baseY + 13} textAnchor={anchor} className="fill-fg text-[12px] font-bold">
                 {line2}
               </text>
             )}
@@ -107,7 +108,7 @@ export function RadarChart({
               x={lx}
               y={baseY + (twoLine ? 26 : 13)}
               textAnchor={anchor}
-              className="fill-ink-muted text-[11px] font-semibold tabular-nums"
+              className="fill-fg-muted text-[11px] font-semibold tabular-nums"
             >
               {Math.round(d.value)}
             </text>
