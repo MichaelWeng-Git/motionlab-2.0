@@ -834,12 +834,11 @@ export default function Activity() {
         ) : null}
       </div>
 
-      {/* CURRENT STRAVA (2025 record redesign): the map stays FULL SCREEN and a
-          floating white card carries ONE row of three stats — Time, the sport's
-          average metric (center, larger), Distance — labels BELOW the numbers.
-          A thin status strip tops the card; tapping it expands to full stats. */}
+      {/* The map stays full screen. The live card gives one sport-specific
+          metric the hero row (run = time, ride = distance), then keeps the
+          other three measured fields in one quiet row below it. */}
       {phase === "live" && !showSplits && (
-        <div className="absolute inset-x-4 bottom-[150px] z-10">
+        <div className="absolute inset-x-4 bottom-[190px] z-10">
           <button
             onClick={() => setShowSplits(true)}
             className="block w-full overflow-hidden rounded-2xl bg-sheet text-fg ring-1 ring-inset ring-hair"
@@ -863,20 +862,27 @@ export default function Activity() {
                 </span>
               );
             })()}
-            <span className="flex items-end justify-between px-5 pb-3.5 pt-2">
-              {[f[0], f[2], f[1]].map((s, i) => (
-                <span key={s.l} className={`block ${i === 1 ? "text-center" : i === 0 ? "text-left" : "text-right"}`}>
-                  <span
-                    className={`block font-extrabold leading-none tabular-nums tracking-tight text-fg ${
-                      i === 1 ? "text-[34px]" : "text-[24px]"
-                    }`}
-                  >
-                    {s.v}
+            {(() => {
+              const primaryIndex = sport.key === "ride" ? 1 : 0;
+              const primary = f[primaryIndex];
+              const secondary = f.filter((_, index) => index !== primaryIndex);
+              return (
+                <span className="block">
+                  <span className="block px-5 pb-3 pt-2 text-left">
+                    <span className="block font-golden text-[48px] leading-none tabular-nums text-fg">{primary.v}</span>
+                    <span className="mt-1 block text-[11px] font-bold uppercase tracking-widest text-fg-muted">{primary.l}</span>
                   </span>
-                  <span className="mt-1 block text-[11px] font-bold uppercase tracking-widest text-fg-muted">{s.l}</span>
+                  <span className="grid grid-cols-3 gap-3 border-t border-hair px-5 py-3">
+                    {secondary.map((metric) => (
+                      <span key={metric.l} className="min-w-0 text-left">
+                        <span className="block truncate font-golden text-[19px] leading-none tabular-nums text-fg">{metric.v}</span>
+                        <span className="mt-1 block text-[11px] font-bold uppercase leading-tight tracking-wider text-fg-muted">{metric.l}</span>
+                      </span>
+                    ))}
+                  </span>
                 </span>
-              ))}
-            </span>
+              );
+            })()}
           </button>
         </div>
       )}
@@ -992,11 +998,8 @@ export default function Activity() {
         )}
       </div>
 
-      {/* FULLSCREEN stats — Strava's 2025 expanded record view: metrics stacked
-          full-width and CENTERED with pure whitespace (no divider lines).
-          Recording: Time (small, top) → CURRENT pace/speed as the giant hero →
-          Distance. Paused: an amber banner holds the timer and the hero swaps
-          to the AVERAGE metric — exactly Strava's behavior. */}
+      {/* Expanded live stats preserve the same hierarchy as the compact card:
+          one primary metric, then the remaining three in a single row. */}
       {phase === "live" && showSplits && (
         <div className="absolute inset-0 z-20 flex animate-fade-up flex-col bg-graphite text-fg">
           {isPaused && (
@@ -1004,7 +1007,6 @@ export default function Activity() {
               <p className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#8A6410]">
                 {autoPaused ? "Auto-paused" : "Paused"}
               </p>
-              <p className="mt-1 text-4xl font-extrabold leading-none tabular-nums tracking-tight text-fg">{f[0].v}</p>
             </div>
           )}
           <button
@@ -1020,36 +1022,27 @@ export default function Activity() {
             <span className="mx-auto block h-1 w-10 rounded-full bg-track" />
           </button>
 
-          <div className="flex flex-1 flex-col items-center justify-evenly px-6 pb-2">
+          <div className="flex flex-1 flex-col justify-center gap-14 px-6 pb-2">
             {(() => {
-              type M = { v: string; l: string; s: "md" | "lg" | "hero" };
-              const stack: M[] = isGps
-                ? isPaused
-                  ? [
-                      { ...f[2], s: "hero" }, // average takes the hero slot while paused
-                      { ...f[1], s: "lg" },
-                      ...(sport.key === "ride" ? [{ v: `${Math.round(elevGain)} m`, l: "Elev gain", s: "md" as const }] : []),
-                    ]
-                  : [
-                      { ...f[0], s: "md" }, // Time up top
-                      { ...(f[3] ?? f[2]), s: "hero" }, // current pace / speed — the giant one
-                      { ...f[1], s: "lg" }, // Distance
-                      { ...f[2], s: "md" }, // average
-                      ...(sport.key === "ride" ? [{ v: `${Math.round(elevGain)} m`, l: "Elev gain", s: "md" as const }] : []),
-                    ]
-                : [
-                    { ...f[0], s: "md" },
-                    { ...f[1], s: "hero" },
-                    { ...f[2], s: "lg" },
-                    { v: hasCalorieEstimate ? `${Math.round(kcal)}` : "—", l: "Est. calories", s: "md" },
-                  ];
-              const cls = { md: "text-4xl", lg: "text-6xl", hero: "text-[84px]" };
-              return stack.map((m) => (
-                <div key={m.l} className="text-center">
-                  <p className={`font-extrabold leading-none tabular-nums tracking-tight text-fg ${cls[m.s]}`}>{m.v}</p>
-                  <p className="mt-2 text-[11px] font-bold uppercase tracking-widest text-fg-muted">{m.l}</p>
-                </div>
-              ));
+              const primaryIndex = sport.key === "ride" ? 1 : 0;
+              const primary = f[primaryIndex];
+              const secondary = f.filter((_, index) => index !== primaryIndex);
+              return (
+                <>
+                  <div className="text-center">
+                    <p className="font-golden text-[88px] leading-none tabular-nums text-fg">{primary.v}</p>
+                    <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.18em] text-fg-muted">{primary.l}</p>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 border-y border-hair py-5">
+                    {secondary.map((metric) => (
+                      <div key={metric.l} className="min-w-0 text-center">
+                        <p className="truncate font-golden text-3xl leading-none tabular-nums text-fg">{metric.v}</p>
+                        <p className="mt-2 text-[11px] font-bold uppercase leading-tight tracking-wider text-fg-muted">{metric.l}</p>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              );
             })()}
           </div>
 
