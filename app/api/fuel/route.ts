@@ -1,16 +1,16 @@
 // Server-side fuel scanner: one meal photo in, macro estimate out.
 // Same key/channel as the coach; the photo is analyzed and dropped, never stored.
 
+import { parseFuelModelOutput, readFuelRequest } from "@/lib/fuel-api";
+
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
   const key = process.env.OPENAI_API_KEY;
   if (!key) return Response.json({ ok: false, error: "no-key" }, { status: 500 });
 
-  const { image } = (await req.json()) as { image?: string };
-  if (!image?.startsWith("data:image/")) {
-    return Response.json({ ok: false, error: "no-image" }, { status: 400 });
-  }
+  const request = await readFuelRequest(req);
+  if (!request.ok) return Response.json({ ok: false, error: request.error }, { status: request.status });
 
   const system = `You are the fuel scanner inside MotionLab, an app for amateur athletes.
 You get ONE photo of a meal. Estimate what an athlete needs to know about it.
@@ -37,13 +37,26 @@ dishes, pick the closer one and lower the confidence.`;
         max_tokens: 200,
         messages: [
           { role: "system", content: system },
-          { role: "user", content: [{ type: "image_url", image_url: { url: image, detail: "low" } }] },
+          { role: "user", content: [{ type: "image_url", image_url: { url: request.image, detail: "low" } }] },
         ],
       }),
     });
     if (!r.ok) return Response.json({ ok: false, error: "upstream" }, { status: 502 });
     const data = await r.json();
-    const out = JSON.parse(data.choices?.[0]?.message?.content ?? "{}");
+    const content = data?.choices?.[0]?.message?.content;
+    if (typeof content !== "string") {
+      return Response.json({ ok: false, error: "invalid-model-output" }, { status: 502 });
+    }
+
+    let raw: unknown;
+    try {
+      raw = JSON.parse(content);
+    } catch {
+      return Response.json({ ok: false, error: "invalid-model-output" }, { status: 502 });
+    }
+
+    const out = parseFuelModelOutput(raw);
+    if (!out) return Response.json({ ok: false, error: "invalid-model-output" }, { status: 502 });
     return Response.json({ ok: true, ...out });
   } catch {
     return Response.json({ ok: false, error: "failed" }, { status: 500 });

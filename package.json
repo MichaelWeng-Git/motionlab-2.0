@@ -26,7 +26,8 @@
     "onnxruntime-web": "^1.19.2",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "three": "^0.185.1"
+    "three": "^0.185.1",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@gradio/client": "^2.5.1",
