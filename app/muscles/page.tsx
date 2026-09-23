@@ -59,7 +59,7 @@ export default function MusclesPage() {
       {state === undefined ? (
         <div className="skel mt-3 h-[560px] rounded-2xl" />
       ) : !state || recovery.kind === "empty" || recovery.kind === "unmeasured" ? (
-        <section className="mt-3 overflow-hidden rounded-2xl bg-graphite p-6 text-white shadow-lift">
+        <section className="mt-3 overflow-hidden rounded-2xl bg-graphite ring-1 ring-inset ring-hair p-6 text-white">
           <p className="text-[11px] font-black tracking-[0.18em] text-[#7FD9AE]">MEASURED FROM MOVEMENT</p>
           <h2 className="mt-12 font-golden text-3xl leading-none">NO MUSCLE DATA YET</h2>
           <p className="mt-3 text-sm font-semibold leading-relaxed text-white/75">Analyse a clear full-body video to measure which muscle groups carried the session.</p>
@@ -95,7 +95,7 @@ export default function MusclesPage() {
             </div>
           </section>
 
-          <section className="mt-3 rounded-2xl bg-graphite p-5 text-white shadow-lift">
+          <section className="mt-3 rounded-2xl bg-graphite ring-1 ring-inset ring-hair p-5 text-white">
             <div className="flex items-baseline justify-between">
               <h2 className="font-golden text-lg">14-DAY HISTORY</h2>
               <span className="text-[11px] font-black tracking-wider text-fg-muted">MEASURED SESSION LOAD</span>

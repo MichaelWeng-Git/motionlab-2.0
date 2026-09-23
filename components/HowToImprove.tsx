@@ -87,7 +87,7 @@ export function HowToImprove({ tips, drill, sport }: { tips: TipOut[]; drill?: {
   if (!items.length) return null;
 
   return (
-    <section className="mt-4 overflow-hidden rounded-2xl bg-graphite p-4 text-white shadow-lift">
+    <section className="mt-4 overflow-hidden rounded-2xl bg-graphite ring-1 ring-inset ring-hair p-4 text-white">
       <div className="px-1 pt-1">
         <p className="text-[11px] font-black tracking-[0.18em] text-[#7FD9AE]">NEXT SESSION</p>
         <div className="flex items-center gap-2">

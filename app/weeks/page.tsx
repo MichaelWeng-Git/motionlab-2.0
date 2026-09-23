@@ -238,7 +238,7 @@ export default function Weeks() {
         <h1 className="font-golden text-[24px] leading-none">12 WEEKS</h1>
       </div>
 
-      <section className="mt-4 overflow-hidden rounded-3xl bg-graphite p-5 shadow-lift">
+      <section className="mt-4 overflow-hidden rounded-3xl bg-graphite ring-1 ring-inset ring-hair p-5">
         <div className="flex items-end justify-between">
           <div>
             <p className="font-golden text-[34px] leading-none text-white">{activeDays12}</p>
@@ -398,7 +398,7 @@ export default function Weeks() {
 
       {editGoals && (
         <div className="fixed inset-0 z-[60] grid place-items-center bg-graphite/75 px-6 backdrop-blur-[2px]" onClick={() => setEditGoals(false)}>
-          <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-fg shadow-lift ring-1 ring-inset ring-hair" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-fg ring-1 ring-inset ring-hair" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-center text-lg font-extrabold">Goals</h2>
             <div className="mt-4 space-y-3">
               {goalRows.map((g) => (

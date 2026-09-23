@@ -135,7 +135,7 @@ export default function Report() {
       </button>
 
       {/* hero: one score, one activity, one takeaway. */}
-      <section className="relative overflow-hidden rounded-3xl bg-graphite p-6 text-white shadow-lift">
+      <section className="relative overflow-hidden rounded-3xl bg-graphite ring-1 ring-inset ring-hair p-6 text-white">
         <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-signal-good/60 blur-3xl" />
         {isReal && <ShareButton a={a} cover={cover} videoUrl={hasReplay ? replay!.videoUrl : undefined} />}
         <div className="relative flex items-start justify-between pr-11">
@@ -149,7 +149,7 @@ export default function Report() {
         <div className="relative mt-5 border-t border-white/10 pt-4">
           {/* PR celebration — beats every previous session of this sport */}
           {isReal && best && a.score > best.score && (
-            <span className="inline-flex animate-pop items-center gap-1 rounded-full bg-volt px-3 py-1 text-xs font-extrabold text-volt-ink shadow-lift">
+            <span className="inline-flex animate-pop items-center gap-1 rounded-full bg-volt px-3 py-1 text-xs font-extrabold text-volt-ink">
               New personal best&nbsp;+{a.score - best.score}
             </span>
           )}

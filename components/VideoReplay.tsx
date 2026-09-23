@@ -306,7 +306,7 @@ export function VideoReplay({
       </div>
 
       {debugControls && (
-        <div className="mt-3 rounded-2xl bg-graphite px-4 py-3 text-white">
+        <div className="mt-3 rounded-2xl bg-graphite ring-1 ring-inset ring-hair px-4 py-3 text-white">
           <button onClick={() => setDebugPose((value) => !value)} className="flex w-full items-center justify-between text-left">
             <span><span className="block text-xs font-extrabold">Pose correction overlay</span><span className="mt-0.5 block text-[11px] font-bold text-white/55">Developer diagnostic · accepted, corrected, rebuilt</span></span>
             <span className={`relative h-7 w-12 shrink-0 rounded-full transition ${debugPose ? "bg-volt-deep" : "bg-track"}`}><i className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-all ${debugPose ? "left-6" : "left-1"}`} /></span>

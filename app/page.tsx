@@ -693,7 +693,7 @@ export default function Home() {
             className="absolute left-1/2 w-[290px] -translate-x-1/2 animate-bob"
             style={{ top: Math.min(introRect.top + introRect.height + 18, (typeof window !== "undefined" ? window.innerHeight : 800) - 170) }}
           >
-            <div className="relative rounded-2xl bg-ink p-4 text-white shadow-lift">
+            <div className="relative rounded-2xl bg-ink p-4 text-white">
               <span className="absolute -top-[7px] left-1/2 h-3.5 w-3.5 -translate-x-1/2 rotate-45 rounded-[3px] bg-ink" />
               <p className="font-golden text-xl leading-none text-white">{INTRO[introStep].t}</p>
               <p className="mt-2 text-[13px] font-bold leading-snug text-white/90">{INTRO[introStep].d}</p>
@@ -715,7 +715,7 @@ export default function Home() {
       {/* ring completed! — centered reward bubble, one ring at a time */}
       {ringQueue.length > 0 && (
         <div className="fixed inset-0 z-[60] grid place-items-center bg-graphite/75 px-10 backdrop-blur-[2px]">
-          <div className="w-full max-w-[300px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair">
+          <div className="w-full max-w-[300px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg ring-1 ring-inset ring-hair">
             <span
               className="mx-auto grid h-14 w-14 place-items-center rounded-full"
               style={{ background: `${ringQueue[0].color}1f` }}

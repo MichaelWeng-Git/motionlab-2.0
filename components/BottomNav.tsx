@@ -77,7 +77,7 @@ export function BottomNav() {
             >
               <button
                 onClick={() => go("/analyze")}
-                className={`flex w-[96px] flex-col items-center gap-1.5 rounded-2xl bg-graphite py-3.5 text-white shadow-lift ring-1 ring-inset ring-hair transition-all duration-500 ${
+                className={`flex w-[96px] flex-col items-center gap-1.5 rounded-2xl bg-graphite py-3.5 text-white ring-1 ring-inset ring-hair transition-all duration-500 ${
                   open ? "translate-x-0 scale-100" : "translate-x-8 scale-90"
                 }`}
                 style={{ transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)" }}
@@ -87,7 +87,7 @@ export function BottomNav() {
               </button>
               <button
                 onClick={() => go("/fuel")}
-                className={`mb-7 flex w-[96px] flex-col items-center gap-1.5 rounded-2xl bg-signal-okay py-3.5 text-white shadow-lift transition-all duration-500 ${
+                className={`mb-7 flex w-[96px] flex-col items-center gap-1.5 rounded-2xl bg-signal-okay py-3.5 text-white transition-all duration-500 ${
                   open ? "translate-y-0 scale-100" : "translate-y-4 scale-90"
                 }`}
                 style={{ transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)" }}
@@ -99,7 +99,7 @@ export function BottomNav() {
               </button>
               <button
                 onClick={() => go("/activity")}
-                className={`flex w-[96px] flex-col items-center gap-1.5 rounded-2xl bg-signal-good py-3.5 text-white shadow-lift transition-all duration-500 ${
+                className={`flex w-[96px] flex-col items-center gap-1.5 rounded-2xl bg-signal-good py-3.5 text-white transition-all duration-500 ${
                   open ? "translate-x-0 scale-100" : "-translate-x-8 scale-90"
                 }`}
                 style={{ transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)" }}
@@ -114,7 +114,7 @@ export function BottomNav() {
             <button
               onClick={openLauncher}
               aria-expanded={open}
-              className={`grid h-9 w-12 place-items-center rounded-full bg-white text-on-action shadow-soft transition-all duration-300 active:scale-95 ${
+              className={`grid h-9 w-12 place-items-center rounded-full bg-white text-on-action transition-all duration-300 active:scale-95 ${
                 open ? "rotate-45" : ""
               }`}
             >

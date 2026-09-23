@@ -101,7 +101,7 @@ export default function History() {
         <div className="mt-2.5 grid grid-cols-2 gap-3">
         <Link
           href="/videos"
-          className="relative flex aspect-square flex-col justify-between overflow-hidden rounded-3xl bg-ink p-4 text-white shadow-lift transition active:scale-[0.98]"
+          className="relative flex aspect-square flex-col justify-between overflow-hidden rounded-3xl bg-ink p-4 text-white transition active:scale-[0.98]"
         >
           <div className="relative flex items-center justify-between">
             <span className="grid h-9 w-9 place-items-center rounded-full bg-track backdrop-blur"><PlayIcon size={14} className="text-white" /></span>
@@ -117,7 +117,7 @@ export default function History() {
 
         <Link
           href="/activities"
-          className="relative flex aspect-square flex-col justify-between overflow-hidden rounded-3xl p-4 shadow-lift transition active:scale-[0.98]"
+          className="relative flex aspect-square flex-col justify-between overflow-hidden rounded-3xl p-4 transition active:scale-[0.98]"
         >
           {/* deep-night sky with the earth slowly turning */}
           <div className="absolute inset-0 bg-[#0E2F45]" />
@@ -193,7 +193,7 @@ export default function History() {
           const families = medalCollection({ analyses: medalStats.total, bestScore: medalStats.bestScore, streakDays: medalStats.streakDays, recordedWorkouts: acts });
           const earnedCount = earnedMedalIds(families).length;
           return (
-            <Link href="/medals" className="block overflow-hidden rounded-2xl bg-graphite p-5 text-white shadow-lift transition active:scale-[0.99]">
+            <Link href="/medals" className="block overflow-hidden rounded-2xl bg-graphite ring-1 ring-inset ring-hair p-5 text-white transition active:scale-[0.99]">
               <div className="flex items-start justify-between">
                 <div><p className="text-[11px] font-black tracking-[0.18em] text-award-gold-light">PERFORMANCE CABINET</p><h2 className="mt-1 font-golden text-2xl leading-none">MEDALS</h2></div>
                 <span className="font-golden text-lg text-white/60">{earnedCount} / 12 ›</span>

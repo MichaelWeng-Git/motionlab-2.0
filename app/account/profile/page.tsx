@@ -122,7 +122,7 @@ export default function ProfileEdit() {
             className={`relative h-7 w-12 rounded-full transition-colors ${priv ? "bg-signal-good" : "bg-track"}`}
           >
             <span
-              className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow-soft transition-all ${
+              className={`absolute top-0.5 h-6 w-6 rounded-full bg-white transition-all ${
                 priv ? "left-[22px]" : "left-0.5"
               }`}
             />

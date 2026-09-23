@@ -110,7 +110,7 @@ export default function LoadPage() {
           </div>
 
           {/* THIS MONTH — one square per day, greener = harder */}
-          <div className="mt-3 rounded-2xl px-5 pb-5 pt-4 text-white shadow-lift" style={{ background: SURFACE.graphite }}>
+          <div className="mt-3 rounded-2xl px-5 pb-5 pt-4 text-white" style={{ background: SURFACE.graphite }}>
             <div className="flex items-baseline justify-between">
               <p className="font-golden text-[15px] leading-none">{MONTH[month.monthIndex]}</p>
               <p className="font-golden text-[15px] leading-none" style={{ color: MINT }}>

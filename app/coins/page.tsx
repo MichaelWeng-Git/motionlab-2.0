@@ -12,7 +12,7 @@ export default function CoinsPage() {
   useEffect(() => { setBalance(getCoinBalance()); setHistory(getCoinHistory()); }, []);
   return <div className="stagger px-5 pb-10 pt-3">
     <header className="flex items-center gap-2.5"><button onClick={() => router.back()} className="flex h-7 w-11 items-center justify-center rounded-full bg-panel text-[13px] text-fg shadow-panel">←</button><h1 className="font-golden text-[24px] leading-none">Coins</h1></header>
-    <section className="relative mt-3 overflow-hidden rounded-3xl bg-graphite p-5 text-white shadow-lift">
+    <section className="relative mt-3 overflow-hidden rounded-3xl bg-graphite ring-1 ring-inset ring-hair p-5 text-white">
       <div className="absolute -right-12 -top-14 h-40 w-40 rounded-full bg-[#F5B23D]/20 blur-3xl" />
       <p className="relative text-[11px] font-black tracking-[0.2em] text-[#F5CF69]">SPENDABLE BALANCE</p>
       <div className="relative mt-4 flex items-center gap-3"><CoinIcon size={42} /><span className="font-golden text-6xl leading-none">{balance}</span></div>

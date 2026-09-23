@@ -308,12 +308,12 @@ export default function Tree() {
 
       {/* the fir — night scene. While placing/editing, ONLY the tree (and its
           instruction) lift above the blur — the card itself stays dimmed too. */}
-      <div className="relative mt-5 overflow-hidden rounded-3xl bg-gradient-to-b from-[#0E1B2E] via-[#12283C] to-[#1C4A32] p-5 text-center shadow-lift">
+      <div className="relative mt-5 overflow-hidden rounded-3xl bg-gradient-to-b from-[#0E1B2E] via-[#12283C] to-[#1C4A32] p-5 text-center">
         {/* rearrange the layout */}
         {!focused && hung.length > 0 && (
           <button
             onClick={() => setEditing(true)}
-            className="absolute right-5 top-5 z-10 flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-[11px] font-bold text-on-action shadow-soft transition active:scale-95"
+            className="absolute right-5 top-5 z-10 flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-[11px] font-bold text-on-action transition active:scale-95"
           >
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M16.5 3.9a2.1 2.1 0 0 1 3 3L7 19.4l-4 1 1-4L16.5 3.9z" />
@@ -422,7 +422,7 @@ export default function Tree() {
       <DailyCoinsTrack claims={dailyClaims} onClaim={claimDaily} />
 
       {/* SHOP — premium pack shelf with visible, truthful drop rules. */}
-      <div className="relative mt-4 overflow-hidden rounded-3xl bg-graphite p-4 shadow-lift">
+      <div className="relative mt-4 overflow-hidden rounded-3xl bg-graphite ring-1 ring-inset ring-hair p-4">
         <div className="pointer-events-none absolute -right-12 -top-16 h-44 w-44 rounded-full bg-signal-good/55 blur-2xl" />
         <div className="relative flex items-start justify-between px-1 pb-4 pt-1">
           <div>
@@ -430,7 +430,7 @@ export default function Tree() {
             <h2 className="font-golden text-3xl leading-none text-white">PACK SHOP</h2>
             <p className="mt-1 text-xs font-bold text-white/70">{discovered} / 5 ornament types found</p>
           </div>
-          <button onClick={() => router.push("/coins")} aria-label="Open coin history" className="flex h-9 items-center gap-1.5 rounded-full border border-white/10 bg-track pl-2 pr-3 shadow-soft backdrop-blur">
+          <button onClick={() => router.push("/coins")} aria-label="Open coin history" className="flex h-9 items-center gap-1.5 rounded-full border border-white/10 bg-track pl-2 pr-3 backdrop-blur">
             <CoinIcon size={17} />
             <span className="font-golden text-lg tabular-nums text-white">{coins}</span>
           </button>
@@ -478,7 +478,7 @@ export default function Tree() {
       {/* Pack contents and exact probabilities. */}
       {packInfo && (
         <div className="fixed inset-0 z-[75] flex items-end justify-center bg-graphite/80 px-3 backdrop-blur-[3px]" onClick={() => setPackInfo(null)}>
-          <section className="mb-3 w-full max-w-[406px] animate-pop rounded-3xl bg-sheet p-5 text-fg shadow-lift ring-1 ring-inset ring-hair" onClick={(e) => e.stopPropagation()}>
+          <section className="mb-3 w-full max-w-[406px] animate-pop rounded-3xl bg-sheet p-5 text-fg ring-1 ring-inset ring-hair" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[11px] font-black tracking-[0.18em] text-fg-soft">DROP RATES · EACH DRAW</p>
@@ -515,13 +515,13 @@ export default function Tree() {
               <span className="pack-burst absolute left-1/2 top-1/2 -ml-20 -mt-20 h-40 w-40 rounded-full bg-[#F5B23D]/70" />
               <div className="pack-wiggle relative">
                 <div
-                  className={`relative grid h-48 w-36 place-items-center overflow-hidden rounded-2xl border-2 shadow-lift ${
+                  className={`relative grid h-48 w-36 place-items-center overflow-hidden rounded-2xl border-2 ${
                     opening.pack.deluxe ? "bg-gradient-to-b from-[#F5B23D] to-[#C98F1B]" : "bg-gradient-to-b from-volt to-volt-deep"
                   } ${opening.pack.deluxe ? "border-award-gold-pale" : "border-[#4F8A6B]"}`}
                 >
                   {opening.pack.deluxe && <span className="pack-foil pointer-events-none absolute inset-0 opacity-50" />}
                   <MiniPackTree size={2.2} />
-                  <span className="absolute right-2 top-3 grid h-9 min-w-9 place-items-center rounded-full bg-white px-1 font-golden text-lg text-on-action shadow-soft">×{opening.pack.rolls}</span>
+                  <span className="absolute right-2 top-3 grid h-9 min-w-9 place-items-center rounded-full bg-white px-1 font-golden text-lg text-on-action">×{opening.pack.rolls}</span>
                   <span className="absolute bottom-2 text-[11px] font-extrabold uppercase tracking-wide text-white/80">
                     {opening.pack.name}
                   </span>
@@ -537,7 +537,7 @@ export default function Tree() {
           )}
 
           {opening.stage === "bubble" && (
-            <div className="w-full max-w-[300px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair">
+            <div className="w-full max-w-[300px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg ring-1 ring-inset ring-hair">
               <p className="text-[11px] font-black tracking-[0.18em] text-fg-soft">PACK OPENED</p>
               <div className="mt-2 flex items-center justify-center gap-2">
                 {opening.won.map((o, i) => (
@@ -564,7 +564,7 @@ export default function Tree() {
       {/* not enough coins */}
       {broke && (
         <div className="fixed inset-0 z-[70] grid place-items-center bg-graphite/80 px-10 backdrop-blur-[2px]" onClick={() => setBroke(false)}>
-          <div className="w-full max-w-[280px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-[280px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg ring-1 ring-inset ring-hair" onClick={(e) => e.stopPropagation()}>
             <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-inset opacity-70">
               <CoinIcon size={26} />
             </span>
@@ -595,15 +595,15 @@ function MiniPackTree({ size = 1 }: { size?: number }) {
 function PackArt({ deluxe, rolls }: { deluxe: boolean; rolls: number }) {
   return (
     <div className="relative h-[126px] w-[94px] shrink-0">
-      <div className={`absolute inset-x-2 bottom-1 top-1 overflow-hidden rounded-[18px] border-2 shadow-soft ${deluxe ? "border-award-gold-light bg-award-gold" : "border-heat-2 bg-heat-1"}`}>
+      <div className={`absolute inset-x-2 bottom-1 top-1 overflow-hidden rounded-[18px] border-2 ${deluxe ? "border-award-gold-light bg-award-gold" : "border-heat-2 bg-heat-1"}`}>
         <div className="absolute inset-x-0 top-0 h-3 border-b border-white/25 bg-black/10" />
         <div className="absolute left-1/2 top-7 h-1.5 w-7 -translate-x-1/2 rounded-full bg-black/20" />
-        <div className="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-2xl border border-white/25 bg-graphite">
+        <div className="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-2xl border border-white/25 bg-graphite ring-1 ring-inset ring-hair">
           <span className="font-golden text-xl tracking-tight text-white">ML</span>
         </div>
         <div className="absolute inset-x-0 bottom-2 text-center text-[11px] font-black tracking-[0.12em] text-white">ORNAMENTS</div>
       </div>
-      <span className="absolute right-0 top-0 grid h-9 min-w-9 place-items-center rounded-full border-2 border-white bg-graphite px-1 font-golden text-lg text-white shadow-soft">×{rolls}</span>
+      <span className="absolute right-0 top-0 grid h-9 min-w-9 place-items-center rounded-full border-2 border-white bg-graphite px-1 font-golden text-lg text-white">×{rolls}</span>
     </div>
   );
 }

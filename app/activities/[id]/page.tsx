@@ -38,7 +38,7 @@ export default function ActivityDetailPage() {
   return <div className="stagger pb-10">
     <header className="flex items-center gap-3 px-5 pt-6"><Link href="/activities" className="grid h-9 w-9 place-items-center rounded-full bg-panel text-fg shadow-panel">←</Link><div className="min-w-0"><p className="text-[11px] font-black uppercase tracking-[0.16em] text-fg-muted">{activity.sport}</p><h1 className="truncate font-golden text-[24px] leading-none">{activity.name ?? activity.sport}</h1></div></header>
 
-    <section className="mt-4 overflow-hidden bg-graphite text-white shadow-lift">
+    <section className="mt-4 overflow-hidden bg-graphite text-white">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {activity.thumb ? <img src={activity.thumb} alt="Recorded route" className="h-64 w-full object-cover" /> : hasRoute ? <RouteMap center={activity.path![0]} path={activity.path!} fit interactive={false} className="h-64 w-full" /> : <div className="grid h-40 place-items-center"><p className="text-sm font-bold text-white/60">{isGps ? "No GPS route was recorded" : "Timed activity"}</p></div>}
       <div className="px-5 py-5"><p className="text-sm font-semibold text-white/65">{new Date(activity.date).toLocaleString(undefined, { weekday: "long", day: "numeric", month: "long", hour: "numeric", minute: "2-digit" })}</p><div className={`mt-5 grid ${isGps ? "grid-cols-3" : "grid-cols-1"}`}>

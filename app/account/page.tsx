@@ -199,11 +199,11 @@ export default function Account() {
       {/* photo preview & confirm */}
       {pending && (
         <div className="fixed inset-0 z-[70] grid place-items-center bg-graphite/75 px-6 backdrop-blur-[2px]">
-          <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair">
+          <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg ring-1 ring-inset ring-hair">
             <h2 className="text-lg font-extrabold">Preview</h2>
             <div className="mt-5 flex justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={pending} alt="" className="h-40 w-40 rounded-full object-cover shadow-lift ring-4 ring-white" />
+              <img src={pending} alt="" className="h-40 w-40 rounded-full object-cover ring-4 ring-white" />
             </div>
             <div className="mt-6 flex gap-2.5">
               <button onClick={() => setPending(null)} className="flex-1 rounded-full bg-inset py-3 text-sm font-bold text-fg transition active:scale-[0.98]">
@@ -221,7 +221,7 @@ export default function Account() {
       {confirmOut && (
         <div className="fixed inset-0 z-[60] grid place-items-center bg-graphite/75 px-6 backdrop-blur-[2px]" onClick={() => setConfirmOut(false)}>
           <div
-            className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair"
+            className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg ring-1 ring-inset ring-hair"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-lg font-extrabold">Log out?</h2>

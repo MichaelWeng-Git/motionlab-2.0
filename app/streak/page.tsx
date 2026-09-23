@@ -136,7 +136,7 @@ export default function Streak() {
                   <span
                     className={`relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-full border ${
                       reached
-                        ? "border-[#F5B23D]/50 bg-[#FFF1DC] shadow-soft"
+                        ? "border-[#F5B23D]/50 bg-[#FFF1DC]"
                         : "border-white/10 bg-inset"
                     }`}
                   >

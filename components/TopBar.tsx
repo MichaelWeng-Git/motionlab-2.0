@@ -113,7 +113,7 @@ export function TopBar() {
   return (
     <header
       className={`sticky top-0 z-40 border-b transition-all duration-300 ${
-        scrolled ? "border-white/10 bg-graphite/95 shadow-lift backdrop-blur-2xl" : "border-white/5 bg-graphite/90 backdrop-blur-xl"
+        scrolled ? "border-white/10 bg-graphite/95 backdrop-blur-2xl" : "border-white/5 bg-graphite/90 backdrop-blur-xl"
       }`}
     >
       <div
@@ -146,7 +146,7 @@ export function TopBar() {
           <Link
             href="/streak"
             aria-label="My streak"
-            className={`flex h-9 items-center gap-1 rounded-full pl-1.5 pr-2.5 shadow-soft transition active:scale-95 ${
+            className={`flex h-9 items-center gap-1 rounded-full pl-1.5 pr-2.5 transition active:scale-95 ${
               streak > 0 ? "bg-award-gold-wash/15 text-award-gold-light" : "bg-track text-white/55"
             } ${flamePop ? "streak-pop" : ""}`}
           >
@@ -168,7 +168,7 @@ export function TopBar() {
         <div data-ask className="absolute left-1/2 top-full z-50 mt-2 w-[min(88%,340px)] -translate-x-1/2">
           <form
             onSubmit={submitAsk}
-            className="rise-in flex items-center gap-2 rounded-2xl bg-sheet p-1.5 pl-3 text-fg shadow-lift ring-1 ring-inset ring-hair"
+            className="rise-in flex items-center gap-2 rounded-2xl bg-sheet p-1.5 pl-3 text-fg ring-1 ring-inset ring-hair"
           >
             <SparkleIcon />
             <input

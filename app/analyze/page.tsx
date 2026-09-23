@@ -624,7 +624,7 @@ export default function Analyze() {
                       style={{ height: `${Math.max(44, p.diag * 420)}px`, width: `${Math.max(44, p.diag * 420)}px` }}
                     >
                       <span className="absolute inset-0 animate-pulse rounded-full border-[3px] border-volt shadow-[0_0_0_2px_rgba(0,0,0,0.35)]" />
-                      <span className="absolute -top-3 left-1/2 grid h-7 w-7 -translate-x-1/2 place-items-center rounded-full bg-volt text-xs font-extrabold text-volt-ink shadow-lift">
+                      <span className="absolute -top-3 left-1/2 grid h-7 w-7 -translate-x-1/2 place-items-center rounded-full bg-volt text-xs font-extrabold text-volt-ink">
                         {i + 1}
                       </span>
                     </span>
@@ -646,7 +646,7 @@ export default function Analyze() {
           <button onClick={cancelAnalysis} className="rounded-full bg-panel px-3 py-2 text-[11px] font-black text-signal-work shadow-panel">CANCEL</button>
         </div>
 
-        <section className="mt-4 overflow-hidden rounded-3xl bg-graphite shadow-lift">
+        <section className="mt-4 overflow-hidden rounded-3xl bg-graphite ring-1 ring-inset ring-hair">
           <div className="relative overflow-hidden bg-black">
             <video ref={videoRef} className="w-full" playsInline muted />
             <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
@@ -682,7 +682,7 @@ export default function Analyze() {
         <div className="animate-fade-up px-5 pt-5">
           <p className="text-[11px] font-black tracking-[0.2em] text-signal-good">ANALYSIS COMPLETE</p>
           <h1 className="mt-2 font-golden text-4xl leading-none text-fg">HOW LONG DID<br />YOU TRAIN?</h1>
-          <section className="mt-6 rounded-3xl bg-graphite p-5 text-white shadow-lift">
+          <section className="mt-6 rounded-3xl bg-graphite ring-1 ring-inset ring-hair p-5 text-white">
             <p className="text-[12px] font-bold leading-relaxed text-white/65">The video is a sample. Your answer sets the session load and recovery from the first screen.</p>
             <label className="mt-5 flex items-end justify-center gap-2" htmlFor="session-minutes">
               <input

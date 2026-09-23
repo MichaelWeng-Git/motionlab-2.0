@@ -16,7 +16,7 @@ export default function Loading() {
       </div>
       <div className="mt-4"><SkelBar h={72} r={24} /></div>
       {/* the day card: graphite block with a ring-sized hole on the left */}
-      <div className="mt-4 flex items-center gap-5 rounded-2xl bg-graphite px-5 py-4">
+      <div className="mt-4 flex items-center gap-5 rounded-2xl bg-graphite ring-1 ring-inset ring-hair px-5 py-4">
         <span className="h-[132px] w-[132px] shrink-0 rounded-full ring-[12px] ring-hair" />
         <div className="flex-1 space-y-3">
           {[0, 1, 2].map((i) => (

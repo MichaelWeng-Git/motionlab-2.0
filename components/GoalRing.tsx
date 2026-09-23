@@ -146,7 +146,7 @@ export function GoalCardShell({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl px-5 py-4 text-white shadow-lift ${className}`}
+      className={`relative overflow-hidden rounded-2xl px-5 py-4 text-white ${className}`}
       style={{ background }}
     >
       <span

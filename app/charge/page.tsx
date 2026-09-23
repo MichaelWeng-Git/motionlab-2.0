@@ -28,7 +28,7 @@ export default function ChargePage() {
       </header>
 
       {!detail ? (
-        <section className="mt-3 overflow-hidden rounded-2xl bg-graphite p-6 text-white shadow-lift">
+        <section className="mt-3 overflow-hidden rounded-2xl bg-graphite ring-1 ring-inset ring-hair p-6 text-white">
           <span className="grid h-12 w-12 place-items-center rounded-2xl bg-track">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="#7FD9AE"><path d="M13 2.5 5 13.5h5.5L11 21.5l8-11h-5.5L13 2.5z" /></svg>
           </span>
@@ -38,7 +38,7 @@ export default function ChargePage() {
         </section>
       ) : (
         <>
-          <section className="relative mt-3 overflow-hidden rounded-2xl bg-graphite p-5 text-white shadow-lift">
+          <section className="relative mt-3 overflow-hidden rounded-2xl bg-graphite ring-1 ring-inset ring-hair p-5 text-white">
             <div className="absolute -right-16 -top-20 h-52 w-52 rounded-full opacity-25 blur-3xl" style={{ background: CHARGE_META[detail.state].color }} />
             <div className="relative flex items-start justify-between">
               <div>

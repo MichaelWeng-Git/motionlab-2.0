@@ -198,7 +198,7 @@ export default function Fuel() {
         })}</div> : <div className="mt-4 rounded-xl bg-inset px-5 py-8 text-center ring-1 ring-inset ring-hair"><MealIcon /><p className="mt-3 font-golden text-lg text-white">NO MEALS LOGGED</p></div>}
       </section>
 
-      {deleted && <div className="fixed bottom-24 left-1/2 z-[80] flex w-[calc(100%_-_32px)] max-w-[398px] -translate-x-1/2 items-center rounded-2xl bg-ink px-4 py-3 text-white shadow-lift"><span className="flex-1 truncate text-xs font-bold">Deleted {deleted.dish}</span><button onClick={undoDelete} className="ml-3 text-xs font-black text-signal-good">UNDO</button></div>}
+      {deleted && <div className="fixed bottom-24 left-1/2 z-[80] flex w-[calc(100%_-_32px)] max-w-[398px] -translate-x-1/2 items-center rounded-2xl bg-ink px-4 py-3 text-white"><span className="flex-1 truncate text-xs font-bold">Deleted {deleted.dish}</span><button onClick={undoDelete} className="ml-3 text-xs font-black text-signal-good">UNDO</button></div>}
     </div>
   );
 }

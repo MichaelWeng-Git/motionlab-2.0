@@ -33,7 +33,7 @@ export function CoachMark() {
   return (
     // resting position clears the + button — the bob only ever moves UP from here
     <div className="pointer-events-none fixed bottom-[78px] left-1/2 z-50 -translate-x-1/2 animate-bob">
-      <div className="relative rounded-2xl bg-ink px-4 py-2.5 text-sm font-semibold text-white shadow-lift">
+      <div className="relative rounded-2xl bg-ink px-4 py-2.5 text-sm font-semibold text-white">
         Start here — upload your first video
         {/* arrow */}
         <span className="absolute -bottom-[7px] left-1/2 h-3.5 w-3.5 -translate-x-1/2 rotate-45 rounded-[3px] bg-ink" />

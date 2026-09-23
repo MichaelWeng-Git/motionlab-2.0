@@ -673,7 +673,7 @@ export default function Activity() {
           className="mt-4 w-full rounded-2xl bg-panel px-4 py-3.5 text-base font-bold text-fg shadow-panel outline-none placeholder:text-fg-muted focus:ring-1 focus:ring-inset focus:ring-white/20"
         />
 
-        <div className="mt-4 overflow-hidden rounded-3xl shadow-soft">
+        <div className="mt-4 overflow-hidden rounded-3xl">
           {isGps && path.length > 1 ? (
             <LeafletMap center={path[0]} path={path} fit interactive={false} className="h-44 w-full" />
           ) : (
@@ -768,7 +768,7 @@ export default function Activity() {
           {saveError && <div role="alert" className="rounded-2xl bg-signal-work/10 px-4 py-3 text-sm font-bold text-signal-work">Couldn’t save this activity. Your recovery copy is still safe—free some browser storage and try again.</div>}
           <button
             onClick={persist}
-            className="w-full rounded-full bg-signal-good py-4 text-[15px] font-extrabold text-white shadow-lift transition active:scale-[0.98]"
+            className="w-full rounded-full bg-signal-good py-4 text-[15px] font-extrabold text-white transition active:scale-[0.98]"
           >
             Save activity
           </button>
@@ -810,12 +810,12 @@ export default function Activity() {
           <div className="absolute inset-0 bg-graphite" />
           <div className="absolute inset-0 grain opacity-25" />
           <div className="absolute inset-0 grid place-items-center pb-40 opacity-25"><SIcon name={isGps ? "run" : sport.icon} size={110} /></div>
-          {isGps && <div className="absolute inset-x-0 top-[30%] text-center text-white"><span className="mx-auto block h-3 w-3 animate-pulse rounded-full bg-volt shadow-lift" /><p className="mt-4 font-golden text-xl">FINDING YOUR POSITION</p></div>}
+          {isGps && <div className="absolute inset-x-0 top-[30%] text-center text-white"><span className="mx-auto block h-3 w-3 animate-pulse rounded-full bg-volt" /><p className="mt-4 font-golden text-xl">FINDING YOUR POSITION</p></div>}
         </div>
       )}
 
       {isGps && mapUnavailable && (
-        <div className="absolute inset-x-5 top-20 z-20 rounded-3xl bg-graphite p-5 text-white shadow-lift">
+        <div className="absolute inset-x-5 top-20 z-20 rounded-3xl bg-graphite ring-1 ring-inset ring-hair p-5 text-white">
           <p className="font-golden text-xl leading-none">MAP IS OFFLINE</p>
           <p className="mt-2 text-sm font-semibold text-white/70">GPS recording still works. Reconnect to load the map tiles.</p>
           <button onClick={() => { setMapUnavailable(false); setMapAttempt((n) => n + 1); }} className="mt-4 rounded-full bg-volt px-5 py-2.5 text-xs font-black text-volt-ink">TRY MAP AGAIN</button>
@@ -842,7 +842,7 @@ export default function Activity() {
         <div className="absolute inset-x-4 bottom-[150px] z-10">
           <button
             onClick={() => setShowSplits(true)}
-            className="block w-full overflow-hidden rounded-2xl bg-sheet text-fg shadow-lift ring-1 ring-inset ring-hair"
+            className="block w-full overflow-hidden rounded-2xl bg-sheet text-fg ring-1 ring-inset ring-hair"
           >
             {(() => {
               const strip = gpsLost
@@ -913,7 +913,7 @@ export default function Activity() {
 
       {/* bottom sheet — recording hides the nav, so the sheet hugs the bottom */}
       <div
-        className={`absolute inset-x-0 bottom-0 z-10 rounded-t-3xl border-t border-white/10 bg-sheet text-fg shadow-lift transition-[padding] duration-300 ${
+        className={`absolute inset-x-0 bottom-0 z-10 rounded-t-3xl border-t border-white/10 bg-sheet text-fg transition-[padding] duration-300 ${
           phase === "live" ? "pb-10" : "pb-32"
         }`}
       >
@@ -930,7 +930,7 @@ export default function Activity() {
               <span className="min-w-0 flex-1 text-sm font-bold text-fg">{!isGps ? "Timer ready · distance unavailable" : gps === "ready" ? acc != null ? `GPS ready · ±${acc} m` : "GPS ready" : gps === "locating" ? "Finding your GPS signal…" : "Location needed to record distance"}</span>
               {isGps && gps !== "ready" && <button onClick={() => allowLocation(true)} className="shrink-0 text-xs font-black text-signal-good">ENABLE</button>}
             </div>
-            <button onClick={start} className="btn-press mt-4 w-full rounded-full bg-volt py-4 text-[15px] font-black uppercase tracking-[0.1em] text-volt-ink shadow-lift">START {sport.label.toUpperCase()}</button>
+            <button onClick={start} className="btn-press mt-4 w-full rounded-full bg-volt py-4 text-[15px] font-black uppercase tracking-[0.1em] text-volt-ink">START {sport.label.toUpperCase()}</button>
           </div>
         )}
 
@@ -965,7 +965,7 @@ export default function Activity() {
                       slowSinceRef.current = null;
                     } else setPaused(!paused);
                   }}
-                  className={`grid h-[72px] w-[72px] place-items-center rounded-full shadow-lift transition-colors duration-300 active:scale-95 ${
+                  className={`grid h-[72px] w-[72px] place-items-center rounded-full transition-colors duration-300 active:scale-95 ${
                     isPaused ? "bg-signal-good text-white" : "bg-ink text-white"
                   }`}
                 >
@@ -981,7 +981,7 @@ export default function Activity() {
                 <button
                   onClick={() => setSheet("confirm")}
                   tabIndex={isPaused ? 0 : -1}
-                  className="grid h-[72px] w-[72px] place-items-center rounded-full bg-ink text-white shadow-lift active:scale-95"
+                  className="grid h-[72px] w-[72px] place-items-center rounded-full bg-ink text-white active:scale-95"
                 >
                   <StopIcon />
                 </button>
@@ -1066,7 +1066,7 @@ export default function Activity() {
                     slowSinceRef.current = null;
                   } else setPaused(!paused);
                 }}
-                className={`grid h-[72px] w-[72px] place-items-center rounded-full shadow-lift transition-colors duration-300 active:scale-95 ${
+                className={`grid h-[72px] w-[72px] place-items-center rounded-full transition-colors duration-300 active:scale-95 ${
                   isPaused ? "bg-signal-good text-white" : "bg-ink text-white"
                 }`}
               >
@@ -1082,7 +1082,7 @@ export default function Activity() {
               <button
                 onClick={() => setSheet("confirm")}
                 tabIndex={isPaused ? 0 : -1}
-                className="grid h-[72px] w-[72px] place-items-center rounded-full bg-ink text-white shadow-lift active:scale-95"
+                className="grid h-[72px] w-[72px] place-items-center rounded-full bg-ink text-white active:scale-95"
               >
                 <StopIcon />
               </button>
@@ -1098,7 +1098,7 @@ export default function Activity() {
       )}
 
       {sheet === "mapType" && (
-        <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-up rounded-t-3xl bg-sheet p-5 pb-28 text-fg shadow-lift ring-1 ring-inset ring-hair">
+        <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-up rounded-t-3xl bg-sheet p-5 pb-28 text-fg ring-1 ring-inset ring-hair">
           <div className="mx-auto h-1 w-10 rounded-full bg-track" />
           <p className="mt-4 text-base font-extrabold">Map type</p>
           <div className="mt-4 space-y-2">
@@ -1109,7 +1109,7 @@ export default function Activity() {
               <button
                 key={o.t}
                 onClick={() => { setSatellite(o.v); setSheet(null); }}
-                className={`flex w-full items-center gap-3.5 rounded-2xl px-4 py-3.5 text-left shadow-soft transition active:scale-[0.99] ${
+                className={`flex w-full items-center gap-3.5 rounded-2xl px-4 py-3.5 text-left transition active:scale-[0.99] ${
                   satellite === o.v ? "bg-signal-good/15 text-fg" : "bg-panel text-fg"
                 }`}
               >
@@ -1122,7 +1122,7 @@ export default function Activity() {
       )}
 
       {sheet === "picker" && (
-        <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-up rounded-t-3xl bg-sheet p-5 pb-28 text-fg shadow-lift ring-1 ring-inset ring-hair">
+        <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-up rounded-t-3xl bg-sheet p-5 pb-28 text-fg ring-1 ring-inset ring-hair">
           <div className="mx-auto h-1 w-10 rounded-full bg-track" />
           <p className="mt-4 text-base font-extrabold">Choose a sport</p>
           <div className="mt-4 max-h-[45vh] space-y-1.5 overflow-y-auto">
@@ -1130,7 +1130,7 @@ export default function Activity() {
               <button
                 key={p.key}
                 onClick={() => pickSport(p)}
-                className={`flex w-full items-center gap-3.5 rounded-2xl px-4 py-3 text-left shadow-soft transition active:scale-[0.99] ${
+                className={`flex w-full items-center gap-3.5 rounded-2xl px-4 py-3 text-left transition active:scale-[0.99] ${
                   sport.key === p.key ? "bg-signal-good/15 text-fg" : "bg-panel text-fg"
                 }`}
               >
@@ -1144,7 +1144,7 @@ export default function Activity() {
       )}
 
       {sheet === "settings" && (
-        <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-up rounded-t-3xl bg-sheet p-5 pb-28 text-fg shadow-lift ring-1 ring-inset ring-hair">
+        <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-up rounded-t-3xl bg-sheet p-5 pb-28 text-fg ring-1 ring-inset ring-hair">
           <div className="mx-auto h-1 w-10 rounded-full bg-track" />
           <p className="mt-4 text-base font-extrabold">Record settings</p>
           <div className="mt-4 space-y-2">
@@ -1161,7 +1161,7 @@ export default function Activity() {
                 <span className="flex-1 text-sm font-bold">{o.t}</span>
                 <span className={`relative h-7 w-12 rounded-full transition ${settings[o.k] ? "bg-signal-good" : "bg-track"}`}>
                   <span
-                    className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-soft transition-all ${
+                    className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-all ${
                       settings[o.k] ? "left-6" : "left-1"
                     }`}
                   />
@@ -1176,7 +1176,7 @@ export default function Activity() {
         <>
           <div className="absolute inset-0 z-20 bg-ink/50 backdrop-blur-[2px]" />
           <div className="absolute inset-0 z-30 grid place-items-center px-6">
-          <div className="w-full animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair">
+          <div className="w-full animate-pop rounded-3xl bg-sheet p-6 text-center text-fg ring-1 ring-inset ring-hair">
             <p className="text-lg font-extrabold">Stop {sport.label.toLowerCase()}?</p>
             <p className="mt-1 text-sm text-fg-muted">{fmtTime(seconds)} recorded</p>
             <div className="mt-5 space-y-2.5">
@@ -1214,7 +1214,7 @@ export default function Activity() {
         <>
           <div className="absolute inset-0 z-20 bg-ink/50 backdrop-blur-[2px]" />
           <div className="absolute inset-0 z-30 grid place-items-center px-8">
-          <div className="w-full animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair">
+          <div className="w-full animate-pop rounded-3xl bg-sheet p-6 text-center text-fg ring-1 ring-inset ring-hair">
             <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-signal-work/12 text-signal-work">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 11.5-8 11.5S4 16 4 10a8 8 0 0 1 16 0z" /><circle cx="12" cy="10" r="3" /></svg>
             </span>
@@ -1243,7 +1243,7 @@ export default function Activity() {
         <>
           <div className="absolute inset-0 z-40 bg-ink/50 backdrop-blur-[2px]" />
           <div className="absolute inset-0 z-50 grid place-items-center px-8">
-            <div className="w-full animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair">
+            <div className="w-full animate-pop rounded-3xl bg-sheet p-6 text-center text-fg ring-1 ring-inset ring-hair">
               <p className="text-base font-extrabold">Resume your workout?</p>
               <p className="mt-1 text-sm font-bold text-fg-soft">{fmtTime(chk.sec)} recorded</p>
               <div className="mt-5 space-y-2.5">
@@ -1327,7 +1327,7 @@ function DiscardConfirm({ sport, onKeep, onDiscard }: { sport: Profile; onKeep: 
     <>
       <div className="fixed inset-0 z-40 bg-ink/50 backdrop-blur-[2px]" />
       <div className="fixed inset-0 z-50 grid place-items-center px-10">
-      <div className="w-full max-w-[350px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair">
+      <div className="w-full max-w-[350px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg ring-1 ring-inset ring-hair">
         <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-signal-work/12 text-signal-work">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6M14 11v6" /></svg>
         </span>

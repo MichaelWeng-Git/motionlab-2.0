@@ -186,7 +186,7 @@ export default function Friends() {
 
       {phase === "ready" && (
         <>
-          <section className="relative mt-4 overflow-hidden rounded-3xl bg-graphite p-5 text-white shadow-lift">
+          <section className="relative mt-4 overflow-hidden rounded-3xl bg-graphite ring-1 ring-inset ring-hair p-5 text-white">
             <div className="absolute -right-20 -top-24 h-60 w-60 rounded-full bg-signal-good/60 blur-3xl" />
             <p className="relative text-[11px] font-black tracking-[0.2em] text-signal-good">YOUR TRAINING CIRCLE</p>
             <div className="relative mt-3 flex items-end justify-between"><div><p className="font-golden text-6xl leading-none">{friends.length}</p><p className="mt-1 text-xs font-bold text-white/50">{friends.length === 1 ? "training friend" : "training friends"}</p></div><button onClick={shareInvite} className="btn-press rounded-full bg-white px-4 py-3 text-[11px] font-black text-on-action">{inviteCopied ? "LINK COPIED" : "INVITE A FRIEND"}</button></div>
@@ -315,7 +315,7 @@ export default function Friends() {
           onClick={() => setConfirmRemove(null)}
         >
           <div
-            className="w-full max-w-[300px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair"
+            className="w-full max-w-[300px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg ring-1 ring-inset ring-hair"
             onClick={(e) => e.stopPropagation()}
           >
             <p className="text-base font-extrabold text-fg">Remove {confirmRemove.name}?</p>

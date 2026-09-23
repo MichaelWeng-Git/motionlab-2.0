@@ -156,7 +156,7 @@ export default function ProfilePhoto() {
       {/* interactive cropper — drag to move, slider to zoom; the circle is fixed */}
       {raw && (
         <div className="fixed inset-0 z-[60] grid place-items-center bg-ink/50 px-6 backdrop-blur-[2px]">
-          <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair">
+          <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg ring-1 ring-inset ring-hair">
             <h2 className="font-golden text-xl leading-none">DRAG TO POSITION</h2>
 
             <div
