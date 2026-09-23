@@ -190,7 +190,7 @@ export default function Friends() {
             <div className="absolute -right-20 -top-24 h-60 w-60 rounded-full bg-signal-good/60 blur-3xl" />
             <p className="relative text-[11px] font-black tracking-[0.2em] text-signal-good">YOUR TRAINING CIRCLE</p>
             <div className="relative mt-3 flex items-end justify-between"><div><p className="font-golden text-6xl leading-none">{friends.length}</p><p className="mt-1 text-xs font-bold text-white/50">{friends.length === 1 ? "training friend" : "training friends"}</p></div><button onClick={shareInvite} className="btn-press rounded-full bg-white px-4 py-3 text-[11px] font-black text-ink">{inviteCopied ? "LINK COPIED" : "INVITE A FRIEND"}</button></div>
-            {incoming.length > 0 && <button onClick={() => setTab("requests")} className="relative mt-5 flex w-full items-center justify-between rounded-2xl bg-white/[0.08] px-4 py-3"><span className="text-xs font-black">Friend requests</span><span className="grid h-6 min-w-6 place-items-center rounded-full bg-signal-work px-1 text-[11px] font-black">{incoming.length}</span></button>}
+            {incoming.length > 0 && <button onClick={() => setTab("requests")} className="relative mt-5 flex w-full items-center justify-between rounded-2xl bg-panel px-4 py-3"><span className="text-xs font-black">Friend requests</span><span className="grid h-6 min-w-6 place-items-center rounded-full bg-signal-work px-1 text-[11px] font-black">{incoming.length}</span></button>}
           </section>
 
           {/* compact sport-app segmented navigation */}
@@ -315,7 +315,7 @@ export default function Friends() {
           onClick={() => setConfirmRemove(null)}
         >
           <div
-            className="w-full max-w-[300px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15"
+            className="w-full max-w-[300px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair"
             onClick={(e) => e.stopPropagation()}
           >
             <p className="text-base font-extrabold text-fg">Remove {confirmRemove.name}?</p>

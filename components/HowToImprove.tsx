@@ -104,7 +104,7 @@ export function HowToImprove({ tips, drill, sport }: { tips: TipOut[]; drill?: {
       </div>
       <div className="mt-4 space-y-2">
         {items.slice(0, 3).map((ex, i) => (
-          <div key={i} className="flex min-h-[104px] gap-3 rounded-2xl bg-white/[0.07] p-3 ring-1 ring-inset ring-white/5">
+          <div key={i} className="flex min-h-[104px] gap-3 rounded-2xl bg-panel p-3 ring-1 ring-inset ring-hair">
             <div className="h-20 w-20 shrink-0"><CardImg src={ex.img} /></div>
             <div className="min-w-0 flex-1 py-0.5">
               <div className="flex items-start justify-between gap-2">

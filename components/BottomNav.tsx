@@ -77,7 +77,7 @@ export function BottomNav() {
             >
               <button
                 onClick={() => go("/analyze")}
-                className={`flex w-[96px] flex-col items-center gap-1.5 rounded-2xl bg-graphite py-3.5 text-white shadow-lift ring-1 ring-inset ring-white/10 transition-all duration-500 ${
+                className={`flex w-[96px] flex-col items-center gap-1.5 rounded-2xl bg-graphite py-3.5 text-white shadow-lift ring-1 ring-inset ring-hair transition-all duration-500 ${
                   open ? "translate-x-0 scale-100" : "translate-x-8 scale-90"
                 }`}
                 style={{ transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)" }}

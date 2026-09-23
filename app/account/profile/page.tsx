@@ -87,7 +87,7 @@ export default function ProfileEdit() {
       {/* profile photo entry */}
       <p className="mt-4 text-xs font-bold uppercase tracking-widest text-fg-muted">Profile photo</p>
       <div className="mt-1.5 overflow-hidden rounded-2xl bg-panel text-fg shadow-panel">
-        <Link href="/account/photo" className="flex w-full items-center gap-3 px-4 py-3.5 transition active:bg-white/[0.05]">
+        <Link href="/account/photo" className="flex w-full items-center gap-3 px-4 py-3.5 transition active:bg-inset">
           <span className="grid w-6 place-items-center"><CameraIcon className="text-signal-good" /></span>
           <span className="flex-1 text-sm font-semibold">Change photo</span>
           {/* live preview — shows a staged (unsaved) photo/icon too */}
@@ -119,7 +119,7 @@ export default function ProfileEdit() {
             onClick={togglePrivate}
             aria-pressed={priv}
             aria-label="Private account"
-            className={`relative h-7 w-12 rounded-full transition-colors ${priv ? "bg-signal-good" : "bg-white/15"}`}
+            className={`relative h-7 w-12 rounded-full transition-colors ${priv ? "bg-signal-good" : "bg-track"}`}
           >
             <span
               className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow-soft transition-all ${

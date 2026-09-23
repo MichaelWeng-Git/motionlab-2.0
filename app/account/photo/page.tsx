@@ -156,7 +156,7 @@ export default function ProfilePhoto() {
       {/* interactive cropper — drag to move, slider to zoom; the circle is fixed */}
       {raw && (
         <div className="fixed inset-0 z-[60] grid place-items-center bg-ink/50 px-6 backdrop-blur-[2px]">
-          <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15">
+          <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair">
             <h2 className="font-golden text-xl leading-none">DRAG TO POSITION</h2>
 
             <div
@@ -213,7 +213,7 @@ export default function ProfilePhoto() {
             <div className="mt-4 flex gap-2.5">
               <button
                 onClick={() => { URL.revokeObjectURL(raw.src); setRaw(null); }}
-                className="flex-1 rounded-full bg-white/10 py-3 text-sm font-bold text-white transition active:scale-[0.98]"
+                className="flex-1 rounded-full bg-track py-3 text-sm font-bold text-white transition active:scale-[0.98]"
               >
                 Cancel
               </button>

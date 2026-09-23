@@ -82,14 +82,14 @@ export default function Account() {
   return (
     <div className="min-h-full bg-graphite px-5 pt-8 text-white">
       <div className="mb-5 flex items-center gap-3">
-        <Link href="/" className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white ring-1 ring-inset ring-white/10">
+        <Link href="/" className="grid h-10 w-10 place-items-center rounded-full bg-track text-white ring-1 ring-inset ring-hair">
           ←
         </Link>
         <h1 className="font-golden text-[26px] leading-none">Profile</h1>
       </div>
       {/* profile header — tap the avatar (camera badge = the affordance) to
           change the photo, WhatsApp-style */}
-      <div className="flex items-center gap-4 rounded-2xl bg-white/[0.06] p-4 ring-1 ring-inset ring-white/10">
+      <div className="flex items-center gap-4 rounded-2xl bg-inset p-4 ring-1 ring-inset ring-hair">
         <button onClick={() => setPhotoSheet(true)} className="relative shrink-0 transition active:scale-95" aria-label="Change profile photo">
           <XpAvatarRing xp={stats?.xp ?? 0}><span className="grid h-full w-full place-items-center bg-volt-mist"><Avatar p={profile} iconSize={44} /></span></XpAvatarRing>
           <span className="absolute -bottom-0.5 -right-0.5 grid h-6 w-6 place-items-center rounded-full bg-ink text-white ring-2 ring-[#ECEFEC]">
@@ -99,7 +99,7 @@ export default function Account() {
         <div className="min-w-0 flex-1">
           <p className="font-golden text-xl leading-none text-white">{profile.name ?? "You"}</p>
           <div className="mt-2"><LevelBadge xp={stats?.xp ?? 0} /></div>
-          <Link href="/xp" className="mt-2 flex items-center gap-2"><span className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10"><span className="block h-full rounded-full" style={{ width: `${levelForXp(stats?.xp ?? 0).progress * 100}%`, background: levelForXp(stats?.xp ?? 0).color }} /></span><span className="font-golden text-[11px] text-white/50">{stats?.xp ?? 0} XP ›</span></Link>
+          <Link href="/xp" className="mt-2 flex items-center gap-2"><span className="h-1.5 flex-1 overflow-hidden rounded-full bg-track"><span className="block h-full rounded-full" style={{ width: `${levelForXp(stats?.xp ?? 0).progress * 100}%`, background: levelForXp(stats?.xp ?? 0).color }} /></span><span className="font-golden text-[11px] text-white/50">{stats?.xp ?? 0} XP ›</span></Link>
         </div>
       </div>
 
@@ -110,7 +110,7 @@ export default function Account() {
           { v: stats?.total ? stats.bestScore : "—", l: "Best score" },
           { v: stats && stats.monthDelta > 0 ? `+${stats.monthDelta}` : "—", l: "This month" },
         ].map((s) => (
-          <div key={s.l} className="rounded-2xl bg-white/[0.06] py-4 text-center ring-1 ring-inset ring-white/10">
+          <div key={s.l} className="rounded-2xl bg-inset py-4 text-center ring-1 ring-inset ring-hair">
             <p className="font-golden text-2xl leading-none">{s.v}</p>
             <p className="mt-1.5 text-[11px] font-bold uppercase tracking-wide text-white/40">{s.l}</p>
           </div>
@@ -120,9 +120,9 @@ export default function Account() {
       {/* menu groups */}
       <div className="mt-6 space-y-4 pb-6">
         {menu.map((group, gi) => (
-          <div key={gi} className="overflow-hidden rounded-2xl bg-white/[0.06] ring-1 ring-inset ring-white/10">
+          <div key={gi} className="overflow-hidden rounded-2xl bg-inset ring-1 ring-inset ring-hair">
             {group.map((item, i) => {
-              const cls = `flex w-full items-center gap-3 px-4 py-3.5 text-left text-white transition active:bg-white/[0.05] ${
+              const cls = `flex w-full items-center gap-3 px-4 py-3.5 text-left text-white transition active:bg-inset ${
                 i > 0 ? "border-t border-white/10" : ""
               }`;
               const inner = (
@@ -143,7 +143,7 @@ export default function Account() {
         ))}
 
         {/* log out — double-confirm; local data stays untouched */}
-        <div className="overflow-hidden rounded-2xl bg-white/[0.06] ring-1 ring-inset ring-white/10">
+        <div className="overflow-hidden rounded-2xl bg-inset ring-1 ring-inset ring-hair">
           <button
             onClick={() => setConfirmOut(true)}
             className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition active:bg-black/[0.03]"
@@ -162,17 +162,17 @@ export default function Account() {
       {photoSheet && (
         <div className="fixed inset-0 z-[60] flex items-end justify-center bg-graphite/75 backdrop-blur-[2px]" onClick={() => setPhotoSheet(false)}>
           <div
-            className="w-full max-w-[430px] animate-fade-up rounded-t-3xl bg-sheet p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-fg ring-1 ring-inset ring-white/15"
+            className="w-full max-w-[430px] animate-fade-up rounded-t-3xl bg-sheet p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-fg ring-1 ring-inset ring-hair"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="mx-auto h-1 w-10 rounded-full bg-white/15" />
+            <div className="mx-auto h-1 w-10 rounded-full bg-track" />
             <p className="mt-4 text-base font-extrabold">Profile photo</p>
             <div className="mt-3 overflow-hidden rounded-2xl bg-panel text-fg shadow-panel">
-              <button onClick={() => camRef.current?.click()} className="flex w-full items-center gap-3 px-4 py-3.5 text-left text-sm font-semibold transition active:bg-white/[0.04]">
+              <button onClick={() => camRef.current?.click()} className="flex w-full items-center gap-3 px-4 py-3.5 text-left text-sm font-semibold transition active:bg-inset">
                 <CameraIcon size={18} className="text-signal-good" />
                 Take photo
               </button>
-              <button onClick={() => libRef.current?.click()} className="flex w-full items-center gap-3 border-t border-hair px-4 py-3.5 text-left text-sm font-semibold transition active:bg-white/[0.04]">
+              <button onClick={() => libRef.current?.click()} className="flex w-full items-center gap-3 border-t border-hair px-4 py-3.5 text-left text-sm font-semibold transition active:bg-inset">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-signal-good">
                   <rect x="3" y="5" width="18" height="14" rx="2.5" />
                   <circle cx="9" cy="10.5" r="1.6" />
@@ -181,7 +181,7 @@ export default function Account() {
                 Choose from library
               </button>
               {profile.photo && (
-                <button onClick={() => commitPhoto(undefined)} className="flex w-full items-center gap-3 border-t border-hair px-4 py-3.5 text-left text-sm font-semibold text-signal-work transition active:bg-white/[0.04]">
+                <button onClick={() => commitPhoto(undefined)} className="flex w-full items-center gap-3 border-t border-hair px-4 py-3.5 text-left text-sm font-semibold text-signal-work transition active:bg-inset">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6.5 7l1 13h9l1-13" />
                   </svg>
@@ -199,7 +199,7 @@ export default function Account() {
       {/* photo preview & confirm */}
       {pending && (
         <div className="fixed inset-0 z-[70] grid place-items-center bg-graphite/75 px-6 backdrop-blur-[2px]">
-          <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15">
+          <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair">
             <h2 className="text-lg font-extrabold">Preview</h2>
             <div className="mt-5 flex justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -221,7 +221,7 @@ export default function Account() {
       {confirmOut && (
         <div className="fixed inset-0 z-[60] grid place-items-center bg-graphite/75 px-6 backdrop-blur-[2px]" onClick={() => setConfirmOut(false)}>
           <div
-            className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15"
+            className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-lg font-extrabold">Log out?</h2>

@@ -81,7 +81,7 @@ export default function History() {
       <h1 className="font-golden text-[26px] leading-none">PROGRESS</h1>
 
       {/* all-time at a glance — ONE bordered block, three bold columns */}
-      <div className="mt-4 overflow-hidden rounded-3xl bg-white/[0.06] ring-1 ring-inset ring-white/10">
+      <div className="mt-4 overflow-hidden rounded-3xl bg-inset ring-1 ring-inset ring-hair">
         <div className="grid grid-cols-3 divide-x divide-white/10 py-4">
           {[
             { v: sessions.length, l: "Analyses" },
@@ -104,7 +104,7 @@ export default function History() {
           className="relative flex aspect-square flex-col justify-between overflow-hidden rounded-3xl bg-ink p-4 text-white shadow-lift transition active:scale-[0.98]"
         >
           <div className="relative flex items-center justify-between">
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-white/10 backdrop-blur"><PlayIcon size={14} className="text-white" /></span>
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-track backdrop-blur"><PlayIcon size={14} className="text-white" /></span>
             <span className="font-bold text-white/80">›</span>
           </div>
           <div className="relative">
@@ -142,7 +142,7 @@ export default function History() {
           <h2 className="font-golden text-xl leading-none text-white">12-WEEK RHYTHM</h2>
           <span className="text-[11px] font-black tracking-[0.14em] text-white/40">TRAINING DAYS</span>
         </div>
-        <div className="mt-2.5 overflow-hidden rounded-2xl bg-white/[0.07] p-5 text-white ring-1 ring-inset ring-white/15">
+        <div className="mt-2.5 overflow-hidden rounded-2xl bg-panel p-5 text-white ring-1 ring-inset ring-hair">
           <div className="flex gap-2">
             <div className="grid grid-rows-7 gap-1.5 pt-px text-[11px] font-black text-white/60">
               {["M", "", "W", "", "F", "", "S"].map((d, i) => <span key={i} className="flex h-3 items-center">{d}</span>)}
@@ -154,7 +154,7 @@ export default function History() {
                     <span
                       key={d.date}
                       title={`${new Date(d.date).toLocaleDateString()} · ${d.future ? "upcoming" : d.count ? `${d.count} workout${d.count === 1 ? "" : "s"}${d.minutes == null ? " · duration unknown" : ` · ${d.minutes} min`}` : "rest"}`}
-                      className={`h-3 rounded-[3px] ring-1 ring-inset ring-white/[0.06] ${d.future ? "bg-transparent" : d.level === 4 ? "bg-heat-4" : d.level === 3 ? "bg-heat-3" : d.level === 2 ? "bg-heat-2" : d.level === 1 ? (d.minutes == null ? "border border-heat-2 bg-transparent" : "bg-heat-1") : "bg-white/[0.12]"}`}
+                      className={`h-3 rounded-[3px] ring-1 ring-inset ring-hair ${d.future ? "bg-transparent" : d.level === 4 ? "bg-heat-4" : d.level === 3 ? "bg-heat-3" : d.level === 2 ? "bg-heat-2" : d.level === 1 ? (d.minutes == null ? "border border-heat-2 bg-transparent" : "bg-heat-1") : "bg-track"}`}
                     />
                   ))}
                 </div>
@@ -174,7 +174,7 @@ export default function History() {
         {pbs.length ? (
           <div className="-mx-5 mt-2.5 flex snap-x gap-3 overflow-x-auto px-5 pb-2 no-scrollbar">
             {pbs.map((pb) => (
-              <Link key={pb.id} href={pb.href ?? "#"} className="min-w-[180px] snap-start overflow-hidden rounded-2xl bg-white/[0.06] p-4 ring-1 ring-inset ring-white/10 active:scale-[0.98]">
+              <Link key={pb.id} href={pb.href ?? "#"} className="min-w-[180px] snap-start overflow-hidden rounded-2xl bg-inset p-4 ring-1 ring-inset ring-hair active:scale-[0.98]">
                 <div className="flex items-center justify-between"><span className={`rounded-full px-2 py-1 text-[11px] font-black tracking-[0.13em] ${pb.kind === "score" ? "bg-volt text-ink" : "bg-sky text-ink"}`}>{pb.kind === "score" ? "FORM SCORE" : "GPS DISTANCE"}</span><span className="text-sm font-black">›</span></div>
                 <p className="mt-5 font-golden text-4xl leading-none tabular-nums text-white">{pb.value}<span className="ml-1 text-xs">{pb.unit}</span></p>
                 <p className="mt-2 truncate text-sm font-extrabold text-white">{pb.sport}</p>
@@ -183,7 +183,7 @@ export default function History() {
             ))}
           </div>
         ) : (
-          <Link href="/analyze" className="mt-2.5 flex items-center justify-between rounded-2xl bg-white/[0.06] p-5 ring-1 ring-inset ring-white/10"><div><p className="font-extrabold text-white">Your first PB starts here</p><p className="mt-1 text-xs font-bold text-white/40">Analyze a movement or record a GPS workout.</p></div><span className="font-golden text-2xl">›</span></Link>
+          <Link href="/analyze" className="mt-2.5 flex items-center justify-between rounded-2xl bg-inset p-5 ring-1 ring-inset ring-hair"><div><p className="font-extrabold text-white">Your first PB starts here</p><p className="mt-1 text-xs font-bold text-white/40">Analyze a movement or record a GPS workout.</p></div><span className="font-golden text-2xl">›</span></Link>
         )}
       </section>
 

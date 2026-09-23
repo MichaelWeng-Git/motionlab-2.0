@@ -121,13 +121,13 @@ export default function Fuel() {
   return (
     <div className="stagger min-h-full bg-graphite px-5 pb-10 pt-5 text-white">
       <header className="flex items-center gap-2.5">
-        <button onClick={() => router.back()} className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-base text-white ring-1 ring-inset ring-white/10 active:scale-95" aria-label="Back">←</button>
+        <button onClick={() => router.back()} className="flex h-10 w-10 items-center justify-center rounded-full bg-track text-base text-white ring-1 ring-inset ring-hair active:scale-95" aria-label="Back">←</button>
         <div><p className="text-[10px] font-black tracking-[0.18em] text-signal-good">RECOVERY INPUT</p><h1 className="font-golden text-[26px] leading-none">FUEL</h1></div>
       </header>
       <input ref={camRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={onPick} />
       <input ref={libRef} type="file" accept="image/*" className="hidden" onChange={onPick} />
 
-      <section className="relative mt-5 overflow-hidden rounded-3xl bg-white/[0.06] p-5 text-white ring-1 ring-inset ring-white/10">
+      <section className="relative mt-5 overflow-hidden rounded-3xl bg-inset p-5 text-white ring-1 ring-inset ring-hair">
         <div className="pointer-events-none absolute -right-20 -top-24 h-60 w-60 rounded-full bg-signal-good/20 blur-3xl" />
         <div className="relative flex items-center justify-between">
           <div>
@@ -144,7 +144,7 @@ export default function Fuel() {
         {target && <div className="relative mt-5 border-t border-white/10 pt-3 text-[11px] font-bold text-white/45">Target uses 1.6 g per kg of your saved body weight</div>}
       </section>
 
-      <section className="mt-3 overflow-hidden rounded-2xl bg-white/[0.06] ring-1 ring-inset ring-white/10">
+      <section className="mt-3 overflow-hidden rounded-2xl bg-inset ring-1 ring-inset ring-hair">
         {photo ? (
           <div className="relative h-[205px] overflow-hidden bg-ink">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -162,9 +162,9 @@ export default function Fuel() {
           {phase === "result" && scan ? (
             <>
               <label className="text-[11px] font-black tracking-wider text-white/45">MEAL NAME · EDIT IF NEEDED</label>
-              <input value={scan.dish} onChange={(e) => setScan({ ...scan, dish: e.target.value })} className="mt-2 w-full rounded-xl bg-white/10 px-3 py-2.5 text-sm font-black text-white outline-none focus:ring-2 focus:ring-signal-good" />
+              <input value={scan.dish} onChange={(e) => setScan({ ...scan, dish: e.target.value })} className="mt-2 w-full rounded-xl bg-track px-3 py-2.5 text-sm font-black text-white outline-none focus:ring-2 focus:ring-signal-good" />
               <div className="mt-3 grid grid-cols-4 gap-2">
-                {(["protein", "carbs", "fat", "kcal"] as const).map((key) => <label key={key} className={`rounded-xl p-2 text-center ${key === "protein" ? "bg-signal-good text-white" : "bg-white/10 text-white"}`}><input inputMode="numeric" value={scan[key]} onChange={(e) => editMacro(key, e.target.value)} className="w-full bg-transparent text-center font-golden text-xl outline-none" /><span className="block text-[11px] font-black uppercase tracking-wider text-white/55">{key === "kcal" ? "kcal" : `${key} g`}</span></label>)}
+                {(["protein", "carbs", "fat", "kcal"] as const).map((key) => <label key={key} className={`rounded-xl p-2 text-center ${key === "protein" ? "bg-signal-good text-white" : "bg-track text-white"}`}><input inputMode="numeric" value={scan[key]} onChange={(e) => editMacro(key, e.target.value)} className="w-full bg-transparent text-center font-golden text-xl outline-none" /><span className="block text-[11px] font-black uppercase tracking-wider text-white/55">{key === "kcal" ? "kcal" : `${key} g`}</span></label>)}
               </div>
               <p className="mt-3 text-center text-[11px] font-bold text-white/45">Image estimate · correct before saving</p>
               <button onClick={save} className="btn-press-good mt-4 w-full rounded-full bg-signal-good py-3.5 text-sm font-black text-white">SAVE MEAL · +{scan.protein} G PROTEIN</button>
@@ -174,19 +174,19 @@ export default function Fuel() {
           ) : phase === "notfood" || phase === "error" ? (
             <div className="text-center"><p className="text-sm font-black text-white">{phase === "notfood" ? "No meal detected" : "Couldn’t analyse this photo"}</p><button onClick={resetScan} className="mt-4 w-full rounded-full bg-white py-3 font-golden text-[13px] text-graphite">TRY ANOTHER PHOTO</button></div>
           ) : (
-            <div className="grid grid-cols-2 gap-2.5"><button onClick={() => camRef.current?.click()} className="rounded-full bg-white py-3.5 font-golden text-[13px] text-graphite">CAMERA</button><button onClick={() => libRef.current?.click()} className="rounded-full bg-white/10 py-3.5 font-golden text-[13px] text-white ring-1 ring-inset ring-white/10 active:scale-[0.98]">LIBRARY</button></div>
+            <div className="grid grid-cols-2 gap-2.5"><button onClick={() => camRef.current?.click()} className="rounded-full bg-white py-3.5 font-golden text-[13px] text-graphite">CAMERA</button><button onClick={() => libRef.current?.click()} className="rounded-full bg-track py-3.5 font-golden text-[13px] text-white ring-1 ring-inset ring-hair active:scale-[0.98]">LIBRARY</button></div>
           )}
         </div>
       </section>
 
-      <section className="mt-3 rounded-2xl bg-white/[0.06] p-5 ring-1 ring-inset ring-white/10">
+      <section className="mt-3 rounded-2xl bg-inset p-5 ring-1 ring-inset ring-hair">
         <div className="flex items-end justify-between"><div><p className="text-[10px] font-black tracking-[0.18em] text-white/40">RECENT</p><h2 className="mt-1 font-golden text-xl text-white">MEAL HISTORY</h2></div><span className="font-golden text-lg text-white/40">{meals.length}</span></div>
-        <div className="mt-4 rounded-xl bg-white/[0.06] p-3 ring-1 ring-inset ring-white/10">
+        <div className="mt-4 rounded-xl bg-inset p-3 ring-1 ring-inset ring-hair">
           <div className="flex items-baseline justify-between">
             <span className="text-[11px] font-bold text-white/50">TODAY&apos;S PROTEIN</span>
             <span className="font-golden text-[17px] text-white">{protein}<span className="ml-1 font-sans text-[11px] font-bold text-white/40">{target ? `/ ${target} g` : "g"}</span></span>
           </div>
-          <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
+          <div className="mt-2 h-2 overflow-hidden rounded-full bg-track">
             <span className="block h-full rounded-full bg-signal-good transition-[width] duration-500" style={{ width: `${pct * 100}%` }} />
           </div>
           <p className="mt-2 text-[10px] font-bold text-white/35">{target ? `Training target · ${TRAINING_PROTEIN_G_PER_KG} g/kg body weight` : "Add body weight to calculate a training target"}</p>
@@ -194,8 +194,8 @@ export default function Fuel() {
         {history.length ? <div className="mt-4 space-y-2">{history.map((meal, index) => {
           const date = new Date(meal.date), previous = history[index - 1];
           const showDay = !previous || new Date(previous.date).toDateString() !== date.toDateString();
-          return <div key={meal.id}>{showDay && <p className="pb-1.5 pt-2 text-[11px] font-black tracking-wider text-white/35">{dayLabel(date)}</p>}<div className="flex items-center gap-3 rounded-xl bg-white/[0.06] px-3 py-3"><span className="grid h-9 w-9 place-items-center rounded-xl bg-white/10"><MealIcon /></span><div className="min-w-0 flex-1"><p className="truncate text-xs font-black text-white">{meal.dish}</p><p className="mt-0.5 text-[11px] font-bold text-white/40">{date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} · {meal.kcal} kcal estimate</p></div><span className="font-golden text-base text-white">{meal.protein}g</span><button onClick={() => erase(meal)} aria-label={`Delete ${meal.dish}`} className="grid h-8 w-8 place-items-center rounded-full text-white/40 active:bg-white/10"><TrashIcon /></button></div></div>;
-        })}</div> : <div className="mt-4 rounded-xl bg-white/[0.04] px-5 py-8 text-center ring-1 ring-inset ring-white/10"><MealIcon /><p className="mt-3 font-golden text-lg text-white">NO MEALS LOGGED</p></div>}
+          return <div key={meal.id}>{showDay && <p className="pb-1.5 pt-2 text-[11px] font-black tracking-wider text-white/35">{dayLabel(date)}</p>}<div className="flex items-center gap-3 rounded-xl bg-inset px-3 py-3"><span className="grid h-9 w-9 place-items-center rounded-xl bg-track"><MealIcon /></span><div className="min-w-0 flex-1"><p className="truncate text-xs font-black text-white">{meal.dish}</p><p className="mt-0.5 text-[11px] font-bold text-white/40">{date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} · {meal.kcal} kcal estimate</p></div><span className="font-golden text-base text-white">{meal.protein}g</span><button onClick={() => erase(meal)} aria-label={`Delete ${meal.dish}`} className="grid h-8 w-8 place-items-center rounded-full text-white/40 active:bg-track"><TrashIcon /></button></div></div>;
+        })}</div> : <div className="mt-4 rounded-xl bg-inset px-5 py-8 text-center ring-1 ring-inset ring-hair"><MealIcon /><p className="mt-3 font-golden text-lg text-white">NO MEALS LOGGED</p></div>}
       </section>
 
       {deleted && <div className="fixed bottom-24 left-1/2 z-[80] flex w-[calc(100%_-_32px)] max-w-[398px] -translate-x-1/2 items-center rounded-2xl bg-ink px-4 py-3 text-white shadow-lift"><span className="flex-1 truncate text-xs font-bold">Deleted {deleted.dish}</span><button onClick={undoDelete} className="ml-3 text-xs font-black text-signal-good">UNDO</button></div>}

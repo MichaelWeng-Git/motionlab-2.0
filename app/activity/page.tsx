@@ -754,7 +754,7 @@ export default function Activity() {
               <span className="text-[11px] font-bold uppercase tracking-widest text-fg-muted">Pace</span>
             </div>
             {splits.map((s) => (
-              <div key={`${s.unit}-${s.n}`} className="flex items-center justify-between px-4 py-2 odd:bg-white/[0.03]">
+              <div key={`${s.unit}-${s.n}`} className="flex items-center justify-between px-4 py-2 odd:bg-inset">
                 <span className="font-golden text-sm">{s.n}</span>
                 <span className="text-sm font-extrabold tabular-nums">
                   {Math.floor(s.seconds / 60)}:{String(s.seconds % 60).padStart(2, "0")}
@@ -842,7 +842,7 @@ export default function Activity() {
         <div className="absolute inset-x-4 bottom-[150px] z-10">
           <button
             onClick={() => setShowSplits(true)}
-            className="block w-full overflow-hidden rounded-2xl bg-sheet text-fg shadow-lift ring-1 ring-inset ring-white/15"
+            className="block w-full overflow-hidden rounded-2xl bg-sheet text-fg shadow-lift ring-1 ring-inset ring-hair"
           >
             {(() => {
               const strip = gpsLost
@@ -919,7 +919,7 @@ export default function Activity() {
       >
         {phase === "ready" && (
           <div className="px-5 pt-3">
-            <div className="mx-auto h-1 w-10 rounded-full bg-white/15" />
+            <div className="mx-auto h-1 w-10 rounded-full bg-track" />
             <button onClick={() => setSheet("picker")} className="mt-3 flex w-full items-center gap-3 rounded-2xl bg-panel px-4 py-3 text-left text-fg shadow-panel transition active:scale-[0.99]">
               <SIcon name={sport.icon} size={38} />
               <span className="min-w-0 flex-1"><span className="block text-[11px] font-black uppercase tracking-[0.16em] text-fg-muted">ACTIVITY</span><span className="mt-0.5 block text-lg font-extrabold text-fg">{sport.label}</span></span>
@@ -947,7 +947,7 @@ export default function Activity() {
               aria-label="Expand stats"
               className="block w-full touch-none py-2"
             >
-              <span className="mx-auto block h-1 w-10 rounded-full bg-white/15" />
+              <span className="mx-auto block h-1 w-10 rounded-full bg-track" />
             </button>
 
             {/* stable morphing controls — Strava-style: round buttons with a
@@ -1017,7 +1017,7 @@ export default function Activity() {
             aria-label="Collapse stats"
             className="touch-none py-3"
           >
-            <span className="mx-auto block h-1 w-10 rounded-full bg-white/15" />
+            <span className="mx-auto block h-1 w-10 rounded-full bg-track" />
           </button>
 
           <div className="flex flex-1 flex-col items-center justify-evenly px-6 pb-2">
@@ -1098,8 +1098,8 @@ export default function Activity() {
       )}
 
       {sheet === "mapType" && (
-        <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-up rounded-t-3xl bg-sheet p-5 pb-28 text-fg shadow-lift ring-1 ring-inset ring-white/15">
-          <div className="mx-auto h-1 w-10 rounded-full bg-white/15" />
+        <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-up rounded-t-3xl bg-sheet p-5 pb-28 text-fg shadow-lift ring-1 ring-inset ring-hair">
+          <div className="mx-auto h-1 w-10 rounded-full bg-track" />
           <p className="mt-4 text-base font-extrabold">Map type</p>
           <div className="mt-4 space-y-2">
             {([
@@ -1122,8 +1122,8 @@ export default function Activity() {
       )}
 
       {sheet === "picker" && (
-        <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-up rounded-t-3xl bg-sheet p-5 pb-28 text-fg shadow-lift ring-1 ring-inset ring-white/15">
-          <div className="mx-auto h-1 w-10 rounded-full bg-white/15" />
+        <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-up rounded-t-3xl bg-sheet p-5 pb-28 text-fg shadow-lift ring-1 ring-inset ring-hair">
+          <div className="mx-auto h-1 w-10 rounded-full bg-track" />
           <p className="mt-4 text-base font-extrabold">Choose a sport</p>
           <div className="mt-4 max-h-[45vh] space-y-1.5 overflow-y-auto">
             {PROFILES.map((p) => (
@@ -1144,8 +1144,8 @@ export default function Activity() {
       )}
 
       {sheet === "settings" && (
-        <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-up rounded-t-3xl bg-sheet p-5 pb-28 text-fg shadow-lift ring-1 ring-inset ring-white/15">
-          <div className="mx-auto h-1 w-10 rounded-full bg-white/15" />
+        <div className="absolute inset-x-0 bottom-0 z-30 animate-fade-up rounded-t-3xl bg-sheet p-5 pb-28 text-fg shadow-lift ring-1 ring-inset ring-hair">
+          <div className="mx-auto h-1 w-10 rounded-full bg-track" />
           <p className="mt-4 text-base font-extrabold">Record settings</p>
           <div className="mt-4 space-y-2">
             {([
@@ -1159,7 +1159,7 @@ export default function Activity() {
                 className="flex w-full items-center gap-3 rounded-2xl bg-panel px-4 py-3.5 text-left text-fg shadow-panel transition active:scale-[0.99]"
               >
                 <span className="flex-1 text-sm font-bold">{o.t}</span>
-                <span className={`relative h-7 w-12 rounded-full transition ${settings[o.k] ? "bg-signal-good" : "bg-white/15"}`}>
+                <span className={`relative h-7 w-12 rounded-full transition ${settings[o.k] ? "bg-signal-good" : "bg-track"}`}>
                   <span
                     className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-soft transition-all ${
                       settings[o.k] ? "left-6" : "left-1"
@@ -1176,7 +1176,7 @@ export default function Activity() {
         <>
           <div className="absolute inset-0 z-20 bg-ink/50 backdrop-blur-[2px]" />
           <div className="absolute inset-0 z-30 grid place-items-center px-6">
-          <div className="w-full animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15">
+          <div className="w-full animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair">
             <p className="text-lg font-extrabold">Stop {sport.label.toLowerCase()}?</p>
             <p className="mt-1 text-sm text-fg-muted">{fmtTime(seconds)} recorded</p>
             <div className="mt-5 space-y-2.5">
@@ -1214,7 +1214,7 @@ export default function Activity() {
         <>
           <div className="absolute inset-0 z-20 bg-ink/50 backdrop-blur-[2px]" />
           <div className="absolute inset-0 z-30 grid place-items-center px-8">
-          <div className="w-full animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15">
+          <div className="w-full animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair">
             <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-signal-work/12 text-signal-work">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 11.5-8 11.5S4 16 4 10a8 8 0 0 1 16 0z" /><circle cx="12" cy="10" r="3" /></svg>
             </span>
@@ -1243,7 +1243,7 @@ export default function Activity() {
         <>
           <div className="absolute inset-0 z-40 bg-ink/50 backdrop-blur-[2px]" />
           <div className="absolute inset-0 z-50 grid place-items-center px-8">
-            <div className="w-full animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15">
+            <div className="w-full animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair">
               <p className="text-base font-extrabold">Resume your workout?</p>
               <p className="mt-1 text-sm font-bold text-fg-soft">{fmtTime(chk.sec)} recorded</p>
               <div className="mt-5 space-y-2.5">
@@ -1327,7 +1327,7 @@ function DiscardConfirm({ sport, onKeep, onDiscard }: { sport: Profile; onKeep: 
     <>
       <div className="fixed inset-0 z-40 bg-ink/50 backdrop-blur-[2px]" />
       <div className="fixed inset-0 z-50 grid place-items-center px-10">
-      <div className="w-full max-w-[350px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15">
+      <div className="w-full max-w-[350px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair">
         <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-signal-work/12 text-signal-work">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6M14 11v6" /></svg>
         </span>

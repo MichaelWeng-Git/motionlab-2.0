@@ -164,10 +164,14 @@ a hex.
 
 The authenticated app uses one dark viewport, `graphite #14181B`, so route
 changes never flash a white document canvas. Cards on it use the shared
-shell-aware `panel` token (white at 7% with a 15% inset edge); opaque sheets use
-`sheet #24282B`, the exact composite of that panel over graphite. Light auth
-routes retain the paper values of the same tokens. **Card surface colour is not
-decoration** — use `panel`/`inset`/`sheet` instead of a locally chosen near-dark.
+shell-aware hierarchy: `panel` (white at 7%) for cards, `inset` (white at 6%)
+for content nested inside a card, and `track` (white at 10%) for rails and
+inactive controls. Opaque overlays use `sheet #24282B`, the exact composite of
+the panel over graphite. Light auth routes retain the paper values of the same
+tokens. **Card surface colour is not decoration** — use
+`panel`/`inset`/`track`/`sheet` instead of a locally chosen near-dark. A page may
+show at most three surface depths at once; a hidden modal sheet does not count
+until it replaces the page interaction layer.
 
 ---
 

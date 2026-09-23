@@ -62,7 +62,7 @@ export default function Streak() {
       <div className="flex items-center gap-3">
         <button
           onClick={() => (window.history.length > 1 ? router.back() : router.push("/"))}
-          className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white ring-1 ring-inset ring-white/10"
+          className="grid h-10 w-10 place-items-center rounded-full bg-track text-white ring-1 ring-inset ring-hair"
         >
           ←
         </button>
@@ -70,7 +70,7 @@ export default function Streak() {
       </div>
 
       {/* hero — consistency, framed like a training status rather than a toy counter */}
-      <div className="relative mt-5 overflow-hidden rounded-3xl bg-white/[0.07] p-5 text-white ring-1 ring-inset ring-white/15">
+      <div className="relative mt-5 overflow-hidden rounded-3xl bg-panel p-5 text-white ring-1 ring-inset ring-hair">
         <div className="absolute -right-16 -top-20 h-52 w-52 rounded-full bg-[#FF6A16]/15 blur-3xl" />
         <p className="relative font-golden text-[13px] leading-none text-[#FFB44D]">SHOW-UP STREAK</p>
         <div className="relative mt-3 flex items-center justify-between">
@@ -81,14 +81,14 @@ export default function Streak() {
       </div>
 
       {/* last 7 days */}
-      <div className="mt-4 rounded-2xl bg-white/[0.06] p-4 ring-1 ring-inset ring-white/10">
+      <div className="mt-4 rounded-2xl bg-inset p-4 ring-1 ring-inset ring-hair">
         <div className="flex items-end justify-between"><h2 className="font-golden text-xl leading-none text-white">LAST 7 DAYS</h2><span className="text-[11px] font-bold text-white/40">APP CHECK-IN</span></div>
-        <div className="relative mt-4 grid grid-cols-7 before:absolute before:left-[7%] before:right-[7%] before:top-5 before:h-px before:bg-white/10">
+        <div className="relative mt-4 grid grid-cols-7 before:absolute before:left-[7%] before:right-[7%] before:top-5 before:h-px before:bg-track">
           {days.map((d) => (
             <div key={d.key} className="flex flex-col items-center gap-1.5">
               <span
                 className={`relative z-10 grid h-10 w-10 place-items-center rounded-full ${
-                  d.active ? "bg-award-gold-wash" : "bg-white/[0.06]"
+                  d.active ? "bg-award-gold-wash" : "bg-inset"
                 } ${d.today ? "ring-2 ring-white/70" : ""}`}
               >
                 <Flame size={22} lit={d.active} level={flameLevel(streak)} />
@@ -104,7 +104,7 @@ export default function Streak() {
       {/* the tree — tap in to decorate. Big tree left, big words filling the right. */}
       <Link
         href="/tree"
-        className="press mt-4 flex items-center gap-5 rounded-3xl bg-white/[0.06] px-6 py-6 ring-1 ring-inset ring-white/10"
+        className="press mt-4 flex items-center gap-5 rounded-3xl bg-inset px-6 py-6 ring-1 ring-inset ring-hair"
       >
         <MiniTree size={72} />
         <span className="flex-1 text-right font-golden text-[26px] leading-[1.15] text-white">
@@ -115,12 +115,12 @@ export default function Streak() {
 
       {/* milestones — a timeline; the flame burns hotter at every node, and a
           faded ghost target always waits below the last one */}
-      <div className="mt-4 rounded-2xl bg-white/[0.06] p-5 ring-1 ring-inset ring-white/10">
+      <div className="mt-4 rounded-2xl bg-inset p-5 ring-1 ring-inset ring-hair">
         <p className="text-[11px] font-bold text-white/40">CONSISTENCY PATH</p>
         <h2 className="mt-1 font-golden text-2xl leading-none text-white">MILESTONES</h2>
         <div className="relative mt-4">
           {/* spine + progress fill */}
-          <span className="absolute bottom-6 left-[22px] top-1 w-[3px] rounded-full bg-white/10" />
+          <span className="absolute bottom-6 left-[22px] top-1 w-[3px] rounded-full bg-track" />
           {reachedCount > 0 && (
             <span
               className="absolute left-[22px] top-1 w-[3px] rounded-full bg-gradient-to-b from-[#FFB93D] to-[#FF5A1F]"
@@ -137,7 +137,7 @@ export default function Streak() {
                     className={`relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-full border ${
                       reached
                         ? "border-[#F5B23D]/50 bg-[#FFF1DC] shadow-soft"
-                        : "border-white/10 bg-white/[0.06]"
+                        : "border-white/10 bg-inset"
                     }`}
                   >
                     <MilestoneMark index={i} reached={reached} />
@@ -148,7 +148,7 @@ export default function Streak() {
                       Reached
                     </span>
                   ) : next ? (
-                    <span className="rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white">
+                    <span className="rounded-full bg-track px-2.5 py-1 text-[11px] font-bold text-white">
                       {m.n - best} to go
                     </span>
                   ) : null}
@@ -157,7 +157,7 @@ export default function Streak() {
             })}
             {/* the ghost — a faded glimpse of what comes next */}
             <div className="relative flex items-center gap-4 opacity-40">
-              <span className="relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-full border border-dashed border-white/20 bg-white/[0.06]">
+              <span className="relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-full border border-dashed border-white/20 bg-inset">
                 <MilestoneMark index={nodes.length} reached={false} />
               </span>
               <p className="flex-1 text-[15px] font-extrabold text-white">{ghost.n} days</p>

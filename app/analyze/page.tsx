@@ -491,7 +491,7 @@ export default function Analyze() {
               Dark + luminous, no mascots. */}
           <button
             onClick={() => fileRef.current?.click()}
-            className="group mt-6 block w-full overflow-hidden rounded-3xl bg-white/[0.06] text-left ring-1 ring-inset ring-white/10 transition active:scale-[0.99]"
+            className="group mt-6 block w-full overflow-hidden rounded-3xl bg-inset text-left ring-1 ring-inset ring-hair transition active:scale-[0.99]"
           >
             <svg viewBox="0 0 390 210" className="block w-full">
               <defs>
@@ -657,19 +657,19 @@ export default function Analyze() {
             <div className="absolute right-3 top-3 font-golden text-2xl tabular-nums text-white">{Math.round(progress)}%</div>
           </div>
           <div className="p-5">
-            <div className="h-1.5 overflow-hidden rounded-full bg-white/10"><span className="block h-full rounded-full bg-[#7FD9AE] transition-[width] duration-300" style={{ width: `${progress}%` }} /></div>
+            <div className="h-1.5 overflow-hidden rounded-full bg-track"><span className="block h-full rounded-full bg-[#7FD9AE] transition-[width] duration-300" style={{ width: `${progress}%` }} /></div>
             <div className="mt-4 flex items-center justify-between">
               {STAGES.map((s, i) => {
                 const skipped = i === 4 && !cloudEnabled && stage > 4;
                 const done = i < stage;
                 const active = i === stage;
                 return <div key={s.label} className="flex flex-1 items-center last:flex-none">
-                  <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-[11px] font-black ${skipped ? "bg-white/10 text-white/35" : done ? "bg-[#7FD9AE] text-ink" : active ? "border-2 border-[#7FD9AE] text-[#7FD9AE]" : "border border-white/15 text-white/30"}`}>{skipped ? "—" : done ? "✓" : i + 1}</span>
-                  {i < STAGES.length - 1 && <span className={`h-px flex-1 ${done ? "bg-signal-good/60" : "bg-white/10"}`} />}
+                  <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-[11px] font-black ${skipped ? "bg-track text-white/35" : done ? "bg-[#7FD9AE] text-ink" : active ? "border-2 border-[#7FD9AE] text-[#7FD9AE]" : "border border-white/15 text-white/30"}`}>{skipped ? "—" : done ? "✓" : i + 1}</span>
+                  {i < STAGES.length - 1 && <span className={`h-px flex-1 ${done ? "bg-signal-good/60" : "bg-track"}`} />}
                 </div>;
               })}
             </div>
-            <div className="mt-5 rounded-2xl bg-white/[0.07] px-4 py-3">
+            <div className="mt-5 rounded-2xl bg-panel px-4 py-3">
               <div className="flex items-center gap-2"><span className="h-2 w-2 animate-pulse rounded-full bg-[#7FD9AE]" /><p className="text-sm font-black text-white">{STAGES[stage]?.label}</p></div>
               <p className="mt-1 pl-4 text-[11px] font-bold text-white/50">{stage === 4 && !cloudEnabled ? "Local-only mode · no frames leave this device" : STAGES[stage]?.detail}</p>
             </div>
@@ -699,7 +699,7 @@ export default function Analyze() {
             </label>
             <div className="mt-5 grid grid-cols-4 gap-2">
               {[20, 30, 45, 60].map((minutes) => (
-                <button key={minutes} onClick={() => setSessionMinutes(minutes)} className={`rounded-full py-2 text-[12px] font-extrabold ${sessionMinutes === minutes ? "bg-white text-ink" : "bg-white/10 text-white/70"}`}>{minutes}</button>
+                <button key={minutes} onClick={() => setSessionMinutes(minutes)} className={`rounded-full py-2 text-[12px] font-extrabold ${sessionMinutes === minutes ? "bg-white text-ink" : "bg-track text-white/70"}`}>{minutes}</button>
               ))}
             </div>
           </section>
@@ -766,7 +766,7 @@ function UploadIcon() {
 
 function CaptureRule({ icon, label }: { icon: "frame" | "light" | "steady"; label: string }) {
   return (
-    <div className="rounded-xl bg-white/[0.06] px-2 py-3 text-center ring-1 ring-inset ring-white/10">
+    <div className="rounded-xl bg-inset px-2 py-3 text-center ring-1 ring-inset ring-hair">
       <svg className="mx-auto" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={SIGNAL.good} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         {icon === "frame" && <><path d="M8 3H4a1 1 0 0 0-1 1v4M16 3h4a1 1 0 0 1 1 1v4M8 21H4a1 1 0 0 1-1-1v-4M16 21h4a1 1 0 0 0 1-1v-4" /><circle cx="12" cy="8" r="2" /><path d="M12 10.5v4M8.5 20l3.5-5.5 3.5 5.5M12 12l-4 2M12 12l4 2" /></>}
         {icon === "light" && <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></>}

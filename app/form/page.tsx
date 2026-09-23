@@ -71,7 +71,7 @@ export default function FormPage() {
       <div className="flex items-center gap-2.5">
         <button
           onClick={() => router.push("/")}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-base leading-none text-white ring-1 ring-inset ring-white/10 transition active:scale-95"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-track text-base leading-none text-white ring-1 ring-inset ring-hair transition active:scale-95"
           aria-label="Back to Home"
         >
           ←
@@ -83,7 +83,7 @@ export default function FormPage() {
       </div>
 
       {!p || p.form == null ? (
-        <div className="mt-6 rounded-3xl bg-white/[0.06] p-6 text-center ring-1 ring-inset ring-white/10">
+        <div className="mt-6 rounded-3xl bg-inset p-6 text-center ring-1 ring-inset ring-hair">
           <p className="font-golden text-lg text-white">NO PROFILE YET</p>
           <p className="mt-2 text-[13px] font-semibold text-white/55">Analyse one movement to reveal your first capacity.</p>
           <button onClick={() => router.push("/analyze")} className="mt-5 w-full rounded-full bg-white py-3.5 font-golden text-[13px] text-graphite">START ANALYSIS</button>
@@ -91,7 +91,7 @@ export default function FormPage() {
       ) : (
         <>
           {/* hero: the hexagon IS the athlete */}
-          <div className="relative mt-5 overflow-hidden rounded-3xl bg-white/[0.06] px-5 pb-5 pt-4 text-white ring-1 ring-inset ring-white/10" style={{ background: SURFACE.graphite }}>
+          <div className="relative mt-5 overflow-hidden rounded-3xl bg-inset px-5 pb-5 pt-4 text-white ring-1 ring-inset ring-hair" style={{ background: SURFACE.graphite }}>
             <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/22 to-transparent" />
             <div className="flex items-baseline justify-between">
               <span className="font-golden text-[13px] text-white/70">YOUR SHAPE</span>
@@ -115,7 +115,7 @@ export default function FormPage() {
                 <p className="text-[10px] font-black uppercase tracking-[0.14em] text-signal-good">Strongest</p>
                 <p className="mt-1 font-golden text-[17px] leading-none text-white">{CAP_META[ranked[0].key].label}</p>
               </div>
-              <div className="rounded-xl bg-white/[0.06] p-3 ring-1 ring-inset ring-white/10">
+              <div className="rounded-xl bg-inset p-3 ring-1 ring-inset ring-hair">
                 <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/40">Build next</p>
                 <p className="mt-1 font-golden text-[17px] leading-none text-white">{CAP_META[ranked[ranked.length - 1].key].label}</p>
               </div>
@@ -128,7 +128,7 @@ export default function FormPage() {
               <h2 className="font-golden text-[15px] leading-none text-white">CAPACITIES</h2>
               <span className="text-[11px] font-bold text-white/35">Tap for evidence</span>
             </div>
-          <div className="overflow-hidden rounded-2xl bg-white/[0.06] px-4 ring-1 ring-inset ring-white/10">
+          <div className="overflow-hidden rounded-2xl bg-inset px-4 ring-1 ring-inset ring-hair">
             {ranked.map((c, i) => (
               <button
                 key={c.key}
@@ -139,7 +139,7 @@ export default function FormPage() {
                   <span className="font-golden text-[14px] text-white">{CAP_META[c.key].label}</span>
                   <span className="font-golden text-[19px] leading-none text-white">{c.value}</span>
                 </div>
-                <div className="mt-2 h-[6px] overflow-hidden rounded-full bg-white/10">
+                <div className="mt-2 h-[6px] overflow-hidden rounded-full bg-track">
                   <div className="h-full rounded-full bg-signal-good transition-all duration-700" style={{ width: `${c.value}%` }} />
                 </div>
                 {open === c.key && (

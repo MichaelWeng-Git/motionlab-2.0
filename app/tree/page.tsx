@@ -430,7 +430,7 @@ export default function Tree() {
             <h2 className="font-golden text-3xl leading-none text-white">PACK SHOP</h2>
             <p className="mt-1 text-xs font-bold text-white/70">{discovered} / 5 ornament types found</p>
           </div>
-          <button onClick={() => router.push("/coins")} aria-label="Open coin history" className="flex h-9 items-center gap-1.5 rounded-full border border-white/10 bg-white/10 pl-2 pr-3 shadow-soft backdrop-blur">
+          <button onClick={() => router.push("/coins")} aria-label="Open coin history" className="flex h-9 items-center gap-1.5 rounded-full border border-white/10 bg-track pl-2 pr-3 shadow-soft backdrop-blur">
             <CoinIcon size={17} />
             <span className="font-golden text-lg tabular-nums text-white">{coins}</span>
           </button>
@@ -478,7 +478,7 @@ export default function Tree() {
       {/* Pack contents and exact probabilities. */}
       {packInfo && (
         <div className="fixed inset-0 z-[75] flex items-end justify-center bg-graphite/80 px-3 backdrop-blur-[3px]" onClick={() => setPackInfo(null)}>
-          <section className="mb-3 w-full max-w-[406px] animate-pop rounded-3xl bg-sheet p-5 text-fg shadow-lift ring-1 ring-inset ring-white/15" onClick={(e) => e.stopPropagation()}>
+          <section className="mb-3 w-full max-w-[406px] animate-pop rounded-3xl bg-sheet p-5 text-fg shadow-lift ring-1 ring-inset ring-hair" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[11px] font-black tracking-[0.18em] text-fg-soft">DROP RATES · EACH DRAW</p>
@@ -537,7 +537,7 @@ export default function Tree() {
           )}
 
           {opening.stage === "bubble" && (
-            <div className="w-full max-w-[300px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15">
+            <div className="w-full max-w-[300px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair">
               <p className="text-[11px] font-black tracking-[0.18em] text-fg-soft">PACK OPENED</p>
               <div className="mt-2 flex items-center justify-center gap-2">
                 {opening.won.map((o, i) => (
@@ -564,7 +564,7 @@ export default function Tree() {
       {/* not enough coins */}
       {broke && (
         <div className="fixed inset-0 z-[70] grid place-items-center bg-graphite/80 px-10 backdrop-blur-[2px]" onClick={() => setBroke(false)}>
-          <div className="w-full max-w-[280px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-[280px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair" onClick={(e) => e.stopPropagation()}>
             <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-inset opacity-70">
               <CoinIcon size={26} />
             </span>

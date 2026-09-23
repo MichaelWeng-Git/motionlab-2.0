@@ -134,7 +134,7 @@ export function TopBar() {
             data-ask
             onClick={() => setAskOpen(!askOpen)}
             aria-label="Ask MotionLab AI"
-            className="flex h-9 items-center gap-1.5 rounded-full bg-white/10 px-3 text-white ring-1 ring-inset ring-white/10"
+            className="flex h-9 items-center gap-1.5 rounded-full bg-track px-3 text-white ring-1 ring-inset ring-hair"
           >
             <SparkleIcon />
             <span className="font-golden text-xs text-white">AI</span>
@@ -147,7 +147,7 @@ export function TopBar() {
             href="/streak"
             aria-label="My streak"
             className={`flex h-9 items-center gap-1 rounded-full pl-1.5 pr-2.5 shadow-soft transition active:scale-95 ${
-              streak > 0 ? "bg-award-gold-wash/15 text-award-gold-light" : "bg-white/10 text-white/55"
+              streak > 0 ? "bg-award-gold-wash/15 text-award-gold-light" : "bg-track text-white/55"
             } ${flamePop ? "streak-pop" : ""}`}
           >
             <Flame size={18} lit={streak > 0} />
@@ -155,7 +155,7 @@ export function TopBar() {
           </Link>
           <Link
             href="/account"
-            className="grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-white/10 ring-1 ring-inset ring-white/10 transition active:scale-95"
+            className="grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-track ring-1 ring-inset ring-hair transition active:scale-95"
             aria-label="My profile"
           >
             {profile && <Avatar p={profile} iconSize={24} />}
@@ -168,7 +168,7 @@ export function TopBar() {
         <div data-ask className="absolute left-1/2 top-full z-50 mt-2 w-[min(88%,340px)] -translate-x-1/2">
           <form
             onSubmit={submitAsk}
-            className="rise-in flex items-center gap-2 rounded-2xl bg-sheet p-1.5 pl-3 text-fg shadow-lift ring-1 ring-inset ring-white/15"
+            className="rise-in flex items-center gap-2 rounded-2xl bg-sheet p-1.5 pl-3 text-fg shadow-lift ring-1 ring-inset ring-hair"
           >
             <SparkleIcon />
             <input

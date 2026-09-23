@@ -109,7 +109,7 @@ export function GoalRows({ values, targets }: { values: number[]; targets: numbe
                 {values[i]}<span className="text-white/55">/{targets[i]}</span>
               </span>
             </div>
-            <div className="mt-1.5 h-[6px] w-full overflow-hidden rounded-full bg-white/[0.09]">
+            <div className="mt-1.5 h-[6px] w-full overflow-hidden rounded-full bg-track">
               <div
                 className="h-full rounded-full transition-all duration-700"
                 style={{

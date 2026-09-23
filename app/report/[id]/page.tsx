@@ -164,7 +164,7 @@ export default function Report() {
               { v: reps.length > 0 ? String(reps.length) : "—", l: reps.length === 1 ? "rep" : "reps" },
               { v: `${a.duration.toFixed(1)}s`, l: "Length" },
             ].map((s) => (
-              <div key={s.l} className="rounded-2xl bg-white/[0.07] px-2 py-3 text-center ring-1 ring-inset ring-white/5">
+              <div key={s.l} className="rounded-2xl bg-panel px-2 py-3 text-center ring-1 ring-inset ring-hair">
                 <p className="truncate font-golden text-base text-white">{s.v}</p>
                 <p className="mt-0.5 text-[11px] font-black uppercase tracking-wider text-white/40">{s.l}</p>
               </div>

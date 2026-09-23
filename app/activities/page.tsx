@@ -113,12 +113,12 @@ export default function Activities() {
                   <button
                     onClick={() => setMenuFor(menuFor === i ? null : i)}
                     aria-label="More options"
-                    className="grid h-8 w-8 place-items-center rounded-full text-fg-muted transition active:bg-white/[0.05]"
+                    className="grid h-8 w-8 place-items-center rounded-full text-fg-muted transition active:bg-inset"
                   >
                     <DotsIcon />
                   </button>
                   {menuFor === i && (
-                    <div className="menu-pop absolute right-3 top-12 z-40 w-40 overflow-hidden rounded-2xl bg-sheet text-fg shadow-lift ring-1 ring-inset ring-white/15">
+                    <div className="menu-pop absolute right-3 top-12 z-40 w-40 overflow-hidden rounded-2xl bg-sheet text-fg shadow-lift ring-1 ring-inset ring-hair">
                       <button
                         onClick={() => { setMenuFor(null); setConfirmFor(i); }}
                         className="flex w-full items-center gap-2.5 px-4 py-3 text-left text-sm font-semibold text-signal-work transition active:bg-signal-work/5"
@@ -173,7 +173,7 @@ export default function Activities() {
         <>
           <div className="fixed inset-0 z-[60] bg-graphite/75 backdrop-blur-[2px]" onClick={() => setConfirmFor(null)} />
           <div className="fixed inset-0 z-[61] grid place-items-center px-10">
-            <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15">
+            <div className="w-full max-w-[340px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair">
               <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-signal-work/12 text-signal-work">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6M14 11v6" /></svg>
               </span>

@@ -29,7 +29,7 @@ export default function ChargePage() {
 
       {!detail ? (
         <section className="mt-3 overflow-hidden rounded-2xl bg-graphite p-6 text-white shadow-lift">
-          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/10">
+          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-track">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="#7FD9AE"><path d="M13 2.5 5 13.5h5.5L11 21.5l8-11h-5.5L13 2.5z" /></svg>
           </span>
           <h2 className="mt-10 font-golden text-3xl leading-none">BUILD YOUR BASELINE</h2>

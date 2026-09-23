@@ -17,15 +17,15 @@ export default function Loading() {
       <div className="mt-4"><SkelBar h={72} r={24} /></div>
       {/* the day card: graphite block with a ring-sized hole on the left */}
       <div className="mt-4 flex items-center gap-5 rounded-2xl bg-graphite px-5 py-4">
-        <span className="h-[132px] w-[132px] shrink-0 rounded-full ring-[12px] ring-white/[0.06]" />
+        <span className="h-[132px] w-[132px] shrink-0 rounded-full ring-[12px] ring-hair" />
         <div className="flex-1 space-y-3">
           {[0, 1, 2].map((i) => (
             <div key={i}>
               <div className="flex justify-between">
-                <span className="h-3 w-14 rounded bg-white/10" />
-                <span className="h-3 w-10 rounded bg-white/10" />
+                <span className="h-3 w-14 rounded bg-track" />
+                <span className="h-3 w-10 rounded bg-track" />
               </div>
-              <span className="mt-1.5 block h-[6px] w-full rounded-full bg-white/[0.07]" />
+              <span className="mt-1.5 block h-[6px] w-full rounded-full bg-panel" />
             </div>
           ))}
         </div>

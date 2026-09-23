@@ -362,7 +362,7 @@ export default function Home() {
           never fights the card. Labels + numbers in the brand face. */}
       <section className="mt-4" ref={todayRef}>
         <Link href="/weeks" className="block">
-          <GoalCardShell emphasis className="ring-1 ring-inset ring-white/15 transition active:scale-[0.99]">
+          <GoalCardShell emphasis className="ring-1 ring-inset ring-hair transition active:scale-[0.99]">
             <div className="flex items-center gap-5">
               <div className="relative shrink-0">
                 <GoalRing pcts={[pct, pAna, pWo]} />
@@ -470,7 +470,7 @@ export default function Home() {
 
         {/* MUSCLES — the measured body, spinnable, standing tall on the right */}
         <div className="h-full" ref={musclesRef}>
-          <div className="flex h-full flex-col overflow-hidden rounded-2xl bg-white/[0.07] p-4 pb-3 ring-1 ring-inset ring-white/15">
+          <div className="flex h-full flex-col overflow-hidden rounded-2xl bg-panel p-4 pb-3 ring-1 ring-inset ring-hair">
             <Link href="/muscles" className="flex items-center justify-center gap-2">
               <span className="grid h-7 w-7 place-items-center rounded-xl bg-signal-good/15">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2E9E5B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -509,10 +509,10 @@ export default function Home() {
           LOAD = how much, CHARGE = how ready. */}
       {charge && (
         <section className="mt-4" ref={chargeRef}>
-          <Link href="/charge" className="gk-card block w-full !bg-graphite p-5 text-left ring-1 ring-inset ring-white/10 transition active:scale-[0.99]">
+          <Link href="/charge" className="gk-card block w-full !bg-graphite p-5 text-left ring-1 ring-inset ring-hair transition active:scale-[0.99]">
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-2.5">
-                <span className="grid h-8 w-8 place-items-center rounded-xl bg-white/10">
+                <span className="grid h-8 w-8 place-items-center rounded-xl bg-track">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill={CHARGE_META[charge.state].color}><path d="M13 2.5 5 13.5h5.5L11 21.5l8-11h-5.5L13 2.5z" /></svg>
                 </span>
                 <h2 className="font-golden text-lg leading-none text-white">CHARGE</h2>
@@ -572,7 +572,7 @@ export default function Home() {
 
             const Row = ({ row, rank, divider }: { row: (typeof lbRows)[number]; rank: number; divider: boolean }) => (
               <div
-                className={`flex items-center gap-3.5 px-5 py-3.5 ${row.me ? "bg-white/[0.06]" : ""} ${
+                className={`flex items-center gap-3.5 px-5 py-3.5 ${row.me ? "bg-inset" : ""} ${
                   divider ? "border-t border-hair" : ""
                 } ${!row.me && newRows.has(row.id) ? "row-squeeze" : ""}`}
                 style={!row.me && newRows.has(row.id) ? { animationDelay: `${rank * 0.07}s` } : undefined}
@@ -631,7 +631,7 @@ export default function Home() {
                 {lbOpen && lbRows.length > 4 && (
                   <button
                     onClick={() => setLbOpen(false)}
-                    className="w-full border-t border-hair py-2.5 text-center text-xs font-bold text-fg-muted transition active:bg-white/[0.04]"
+                    className="w-full border-t border-hair py-2.5 text-center text-xs font-bold text-fg-muted transition active:bg-inset"
                   >
                     Show less
                   </button>
@@ -654,7 +654,7 @@ export default function Home() {
       </section>
 
       <section className="mt-4">
-        <Link href="/streak" className="block rounded-2xl bg-white/[0.07] p-5 ring-1 ring-inset ring-white/15 transition active:scale-[0.99]">
+        <Link href="/streak" className="block rounded-2xl bg-panel p-5 ring-1 ring-inset ring-hair transition active:scale-[0.99]">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[10px] font-black tracking-[0.18em] text-award-gold-light">CONSISTENCY</p>
@@ -668,7 +668,7 @@ export default function Home() {
             const progress = Math.max(0, Math.min(1, (streakInfo.max - base) / Math.max(1, next - base)));
             return <div className="mt-4">
               <div className="flex items-end justify-between"><span className="font-golden text-[34px] leading-none text-white">{streakInfo.count}<span className="ml-1 font-sans text-xs font-bold text-white/45">day streak</span></span><span className="font-golden text-[15px] text-award-gold-light">{next} DAYS</span></div>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10"><span className="block h-full rounded-full bg-award-gold" style={{ width: `${progress * 100}%` }} /></div>
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-track"><span className="block h-full rounded-full bg-award-gold" style={{ width: `${progress * 100}%` }} /></div>
               <p className="mt-2 text-[11px] font-bold text-white/40">Personal best {streakInfo.max} {streakInfo.max === 1 ? "day" : "days"}</p>
             </div>;
           })()}
@@ -715,7 +715,7 @@ export default function Home() {
       {/* ring completed! — centered reward bubble, one ring at a time */}
       {ringQueue.length > 0 && (
         <div className="fixed inset-0 z-[60] grid place-items-center bg-graphite/75 px-10 backdrop-blur-[2px]">
-          <div className="w-full max-w-[300px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-white/15">
+          <div className="w-full max-w-[300px] animate-pop rounded-3xl bg-sheet p-6 text-center text-fg shadow-lift ring-1 ring-inset ring-hair">
             <span
               className="mx-auto grid h-14 w-14 place-items-center rounded-full"
               style={{ background: `${ringQueue[0].color}1f` }}
@@ -824,7 +824,7 @@ function RecoveryBar({ recovery, animate }: { recovery: Extract<RecoveryState, {
         </span>
         <span className="font-golden text-[13px] leading-none tabular-nums" style={{ color }}>{shown}%</span>
       </div>
-      <div className="mt-1 h-[7px] overflow-hidden rounded-full bg-white/10">
+      <div className="mt-1 h-[7px] overflow-hidden rounded-full bg-track">
         <div className="h-full rounded-full" style={{ width: `${shown}%`, background: color }} />
       </div>
     </div>

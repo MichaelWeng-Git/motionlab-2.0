@@ -12,7 +12,7 @@ export function BoltCell({ value, color }: { value: number; color: string }) {
       className="relative grid h-[124px] w-[100px] place-items-center overflow-hidden rounded-2xl"
       style={{ background: "radial-gradient(130% 100% at 50% 0%, #26473A 0%, #0E1811 65%)" }}
     >
-      <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10" />
+      <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-hair" />
       {/* ambient pool under the bolt, in the state color */}
       <div
         className="pointer-events-none absolute inset-x-0 bottom-0 h-12"

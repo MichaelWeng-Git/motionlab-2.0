@@ -108,7 +108,7 @@ export default function Help() {
       <div className="flex items-center gap-3 px-5 pb-3 pt-6">
         <button
           onClick={() => router.push("/account")}
-          className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white ring-1 ring-inset ring-white/15"
+          className="grid h-10 w-10 place-items-center rounded-full bg-track text-white ring-1 ring-inset ring-hair"
           aria-label="Back to profile"
         >
           ←
@@ -135,7 +135,7 @@ export default function Help() {
               className={`max-w-[84%] rounded-2xl px-4 py-3 text-sm font-semibold leading-relaxed ${
                 m.role === "user"
                   ? "rounded-br-md bg-signal-good text-white"
-                  : "rounded-bl-md bg-white/[0.08] text-white ring-1 ring-inset ring-white/15"
+                  : "rounded-bl-md bg-panel text-white ring-1 ring-inset ring-hair"
               }`}
             >
               {m.content}
@@ -144,7 +144,7 @@ export default function Help() {
         ))}
         {busy && (
           <div className="flex justify-start">
-            <div className="flex gap-1 rounded-2xl rounded-bl-md bg-white/[0.08] px-4 py-3 ring-1 ring-inset ring-white/15">
+            <div className="flex gap-1 rounded-2xl rounded-bl-md bg-panel px-4 py-3 ring-1 ring-inset ring-hair">
               {[0, 1, 2].map((d) => (
                 <span key={d} className="h-1.5 w-1.5 animate-bounce rounded-full bg-white/55" style={{ animationDelay: `${d * 0.15}s` }} />
               ))}
@@ -157,7 +157,7 @@ export default function Help() {
               <button
                 key={sug}
                 onClick={() => send(sug)}
-                className="rounded-full bg-white/[0.08] px-4 py-2.5 text-xs font-bold text-white ring-1 ring-inset ring-white/15 transition active:scale-95"
+                className="rounded-full bg-panel px-4 py-2.5 text-xs font-bold text-white ring-1 ring-inset ring-hair transition active:scale-95"
               >
                 {sug}
               </button>
@@ -170,19 +170,19 @@ export default function Help() {
       <div className="sticky bottom-0 bg-gradient-to-t from-graphite via-graphite to-transparent px-4 pb-3 pt-5">
         <form
           onSubmit={(e) => { e.preventDefault(); send(input); }}
-          className="flex items-center gap-2 rounded-2xl bg-white/[0.08] p-2 ring-1 ring-inset ring-white/15 backdrop-blur-xl"
+          className="flex items-center gap-2 rounded-2xl bg-panel p-2 ring-1 ring-inset ring-hair backdrop-blur-xl"
         >
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask MotionLab 2.0…"
-            className="min-w-0 flex-1 rounded-xl bg-white/[0.06] px-4 py-3 text-sm font-semibold text-white outline-none placeholder:text-white/40 focus:ring-1 focus:ring-inset focus:ring-white/25"
+            className="min-w-0 flex-1 rounded-xl bg-inset px-4 py-3 text-sm font-semibold text-white outline-none placeholder:text-white/40 focus:ring-1 focus:ring-inset focus:ring-white/25"
           />
           <button
             type="submit"
             disabled={!input.trim() || busy}
             className={`grid h-11 w-11 shrink-0 place-items-center rounded-full transition active:scale-95 ${
-              input.trim() && !busy ? "bg-white text-graphite" : "bg-white/10 text-white/30"
+              input.trim() && !busy ? "bg-white text-graphite" : "bg-track text-white/30"
             }`}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
