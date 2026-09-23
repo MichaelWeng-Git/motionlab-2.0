@@ -438,13 +438,6 @@ actual VO2max number, and needs no new model.
 
 - Account sync uses a compact full snapshot and last-write-wins semantics. A
   future multi-device conflict layer should add revisions/tombstones.
-- **`app/activity/page.tsx` fabricates GPS movement** when no real fix is
-  available (`Math.random()` heading, ~line 508). The result is saved as real
-  distance and pace. It is flagged `demo: true` but should stop accumulating
-  distance entirely. **Open bug.**
-- **`computeBiomech` fails silently.** It returns `null` when frames are too
-  sparse (`app/analyze/page.tsx` does `if (bm) ...`) and the user is never told
-  why muscle data is missing. **Open bug.**
 - MotionBERT is not used to validate 2D assignments (rejected as too expensive:
   it runs after refinement on a 243-frame window, so feedback means a second
   full pass).
