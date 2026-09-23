@@ -82,7 +82,7 @@ export default function Streak() {
 
       {/* last 7 days */}
       <div className="mt-4 rounded-2xl bg-inset p-4 ring-1 ring-inset ring-hair">
-        <div className="flex items-end justify-between"><h2 className="font-golden text-xl leading-none text-white">LAST 7 DAYS</h2><span className="text-[11px] font-bold text-white/40">APP CHECK-IN</span></div>
+        <div className="flex items-end justify-between"><h2 className="font-golden text-xl leading-none text-white">LAST 7 DAYS</h2><span className="text-[11px] font-bold text-fg-muted">APP CHECK-IN</span></div>
         <div className="relative mt-4 grid grid-cols-7 before:absolute before:left-[7%] before:right-[7%] before:top-5 before:h-px before:bg-track">
           {days.map((d) => (
             <div key={d.key} className="flex flex-col items-center gap-1.5">
@@ -116,7 +116,7 @@ export default function Streak() {
       {/* milestones — a timeline; the flame burns hotter at every node, and a
           faded ghost target always waits below the last one */}
       <div className="mt-4 rounded-2xl bg-inset p-5 ring-1 ring-inset ring-hair">
-        <p className="text-[11px] font-bold text-white/40">CONSISTENCY PATH</p>
+        <p className="text-[11px] font-bold text-fg-muted">CONSISTENCY PATH</p>
         <h2 className="mt-1 font-golden text-2xl leading-none text-white">MILESTONES</h2>
         <div className="relative mt-4">
           {/* spine + progress fill */}

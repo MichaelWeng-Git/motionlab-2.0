@@ -166,7 +166,7 @@ export default function Report() {
             ].map((s) => (
               <div key={s.l} className="rounded-2xl bg-panel px-2 py-3 text-center ring-1 ring-inset ring-hair">
                 <p className="truncate font-golden text-base text-white">{s.v}</p>
-                <p className="mt-0.5 text-[11px] font-black uppercase tracking-wider text-white/40">{s.l}</p>
+                <p className="mt-0.5 text-[11px] font-black uppercase tracking-wider text-fg-muted">{s.l}</p>
               </div>
             ))}
           </div>

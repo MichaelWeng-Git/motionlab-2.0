@@ -61,7 +61,7 @@ export function BottomNav() {
           {/* Home */}
           <Link href="/" className="flex flex-col items-center gap-1 py-1">
             <HomeIcon filled={pathname === "/"} />
-            <span className={`text-[11px] ${pathname === "/" ? "font-bold text-white" : "font-medium text-white/45"}`}>
+            <span className={`text-[11px] ${pathname === "/" ? "font-bold text-white" : "font-medium text-fg-muted"}`}>
               Home
             </span>
           </Link>
@@ -127,7 +127,7 @@ export function BottomNav() {
           <Link href="/history" className="flex flex-col items-center gap-1 py-1">
             <ChartIcon filled={pathname === "/history"} />
             <span
-                className={`text-[11px] ${pathname === "/history" ? "font-bold text-white" : "font-medium text-white/45"}`}
+                className={`text-[11px] ${pathname === "/history" ? "font-bold text-white" : "font-medium text-fg-muted"}`}
             >
               Progress
             </span>
@@ -148,7 +148,7 @@ function HomeIcon({ filled }: { filled: boolean }) {
     );
   }
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-white/45">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-fg-muted">
       <path d="M3 10.5 12 3l9 7.5" />
       <path d="M5 9.5V21h14V9.5" />
     </svg>
@@ -166,7 +166,7 @@ function ChartIcon({ filled }: { filled: boolean }) {
     );
   }
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-white/45">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-fg-muted">
       <path d="M7 19v-8M12 19V6M17 19v-6" />
     </svg>
   );

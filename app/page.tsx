@@ -660,16 +660,16 @@ export default function Home() {
               <p className="text-[10px] font-black tracking-[0.18em] text-award-gold-light">CONSISTENCY</p>
               <h2 className="mt-1 font-golden text-xl leading-none text-white">NEXT MILESTONE</h2>
             </div>
-            <span className="font-golden text-[13px] text-white/45">VIEW PATH ›</span>
+            <span className="font-golden text-[13px] text-fg-muted">VIEW PATH ›</span>
           </div>
           {(() => {
             const next = [1, 10, 20, 30].find((n) => n > streakInfo.max) ?? (Math.floor(streakInfo.max / 10) + 1) * 10;
             const base = next === 1 ? 0 : next - 10;
             const progress = Math.max(0, Math.min(1, (streakInfo.max - base) / Math.max(1, next - base)));
             return <div className="mt-4">
-              <div className="flex items-end justify-between"><span className="font-golden text-[34px] leading-none text-white">{streakInfo.count}<span className="ml-1 font-sans text-xs font-bold text-white/45">day streak</span></span><span className="font-golden text-[15px] text-award-gold-light">{next} DAYS</span></div>
+              <div className="flex items-end justify-between"><span className="font-golden text-[34px] leading-none text-white">{streakInfo.count}<span className="ml-1 font-sans text-xs font-bold text-fg-muted">day streak</span></span><span className="font-golden text-[15px] text-award-gold-light">{next} DAYS</span></div>
               <div className="mt-3 h-2 overflow-hidden rounded-full bg-track"><span className="block h-full rounded-full bg-award-gold" style={{ width: `${progress * 100}%` }} /></div>
-              <p className="mt-2 text-[11px] font-bold text-white/40">Personal best {streakInfo.max} {streakInfo.max === 1 ? "day" : "days"}</p>
+              <p className="mt-2 text-[11px] font-bold text-fg-muted">Personal best {streakInfo.max} {streakInfo.max === 1 ? "day" : "days"}</p>
             </div>;
           })()}
         </Link>
@@ -819,7 +819,7 @@ function RecoveryBar({ recovery, animate }: { recovery: Extract<RecoveryState, {
   return (
     <div className="mt-1.5">
       <div className="flex items-baseline justify-between">
-        <span className="text-[11px] font-bold uppercase tracking-wide text-white/45">
+        <span className="text-[11px] font-bold uppercase tracking-wide text-fg-muted">
           {recoveryStateText(recovery)}
         </span>
         <span className="font-golden text-[13px] leading-none tabular-nums" style={{ color }}>{shown}%</span>

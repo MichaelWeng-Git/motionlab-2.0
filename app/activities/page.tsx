@@ -139,7 +139,7 @@ export default function Activities() {
                   ) : isGps ? (
                     <div className="relative grid h-full place-items-center bg-ink">
                       <div className="absolute inset-0 bg-ink" />
-                      <span className="relative text-xs font-semibold text-white/40">No route recorded</span>
+                      <span className="relative text-xs font-semibold text-fg-muted">No route recorded</span>
                     </div>
                   ) : (
                     <div className="relative grid h-full place-items-center bg-ink">

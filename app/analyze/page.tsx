@@ -561,7 +561,7 @@ export default function Analyze() {
               <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-white text-ink transition group-hover:scale-105 group-active:scale-95"><UploadIcon /></span>
               <div className="min-w-0 flex-1">
                 <p className="font-golden text-xl leading-none text-white">CHOOSE VIDEO</p>
-                <p className="mt-1 text-[11px] font-bold text-white/45">Private · processed on device</p>
+                <p className="mt-1 text-[11px] font-bold text-fg-muted">Private · processed on device</p>
               </div>
               <span className="text-xl text-white/60">→</span>
             </div>
@@ -664,7 +664,7 @@ export default function Analyze() {
                 const done = i < stage;
                 const active = i === stage;
                 return <div key={s.label} className="flex flex-1 items-center last:flex-none">
-                  <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-[11px] font-black ${skipped ? "bg-track text-white/35" : done ? "bg-[#7FD9AE] text-ink" : active ? "border-2 border-[#7FD9AE] text-[#7FD9AE]" : "border border-white/15 text-white/30"}`}>{skipped ? "—" : done ? "✓" : i + 1}</span>
+                  <span className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-[11px] font-black ${skipped ? "bg-track text-fg-muted" : done ? "bg-[#7FD9AE] text-ink" : active ? "border-2 border-[#7FD9AE] text-[#7FD9AE]" : "border border-white/15 text-fg-muted"}`}>{skipped ? "—" : done ? "✓" : i + 1}</span>
                   {i < STAGES.length - 1 && <span className={`h-px flex-1 ${done ? "bg-signal-good/60" : "bg-track"}`} />}
                 </div>;
               })}
@@ -673,7 +673,7 @@ export default function Analyze() {
               <div className="flex items-center gap-2"><span className="h-2 w-2 animate-pulse rounded-full bg-[#7FD9AE]" /><p className="text-sm font-black text-white">{STAGES[stage]?.label}</p></div>
               <p className="mt-1 pl-4 text-[11px] font-bold text-white/50">{stage === 4 && !cloudEnabled ? "Local-only mode · no frames leave this device" : STAGES[stage]?.detail}</p>
             </div>
-            {fileMeta && <p className="mt-3 truncate text-center text-[11px] font-bold text-white/35">{fileMeta.name} · {formatBytes(fileMeta.bytes)}</p>}
+            {fileMeta && <p className="mt-3 truncate text-center text-[11px] font-bold text-fg-muted">{fileMeta.name} · {formatBytes(fileMeta.bytes)}</p>}
           </div>
         </section>
       </div>

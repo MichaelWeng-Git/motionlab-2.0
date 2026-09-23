@@ -35,6 +35,7 @@ describe("dark app bootstrap", () => {
     expect(sources).not.toMatch(/bg-white\/\[0\.(?:03|04|05|06|07|08|09)\]/);
     expect(sources).not.toMatch(/bg-white\/(?:8|10|15)\b/);
     expect(sources).not.toMatch(/ring-white\/(?:5|10|15)\b/);
+    expect(sources).not.toMatch(/text-white\/(?:30|35|40|45)\b/);
     expect(globalCss).toMatch(/--track:\s*rgba\(255,\s*255,\s*255,\s*0\.10\)/);
   });
 });

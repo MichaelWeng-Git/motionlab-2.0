@@ -61,7 +61,7 @@ export default function ActivityDetailPage() {
 }
 
 function Metric({ value, unit, label }: { value: string; unit?: string; label: string }) {
-  return <div className="text-center"><p className="font-golden text-[28px] leading-none">{value}{unit && <span className="ml-1 font-sans text-[11px] font-bold text-white/55">{unit}</span>}</p><p className="mt-2 text-[11px] font-black tracking-[0.12em] text-white/45">{label}</p></div>;
+  return <div className="text-center"><p className="font-golden text-[28px] leading-none">{value}{unit && <span className="ml-1 font-sans text-[11px] font-bold text-white/55">{unit}</span>}</p><p className="mt-2 text-[11px] font-black tracking-[0.12em] text-fg-muted">{label}</p></div>;
 }
 
 function SmallMetric({ value, label }: { value: string; label: string }) {

@@ -115,7 +115,7 @@ export default function LoadPage() {
               <p className="font-golden text-[15px] leading-none">{MONTH[month.monthIndex]}</p>
               <p className="font-golden text-[15px] leading-none" style={{ color: MINT }}>
                 {month.daysTrained}
-                <span className="ml-1 text-[11px] text-white/40">
+                <span className="ml-1 text-[11px] text-fg-muted">
                   {month.daysTrained === 1 ? "DAY" : "DAYS"}
                 </span>
               </p>

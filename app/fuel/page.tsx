@@ -135,13 +135,13 @@ export default function Fuel() {
             <h2 className="mt-2 font-golden text-3xl">PROTEIN</h2>
             <div className="mt-5 flex items-end gap-2">
               <span className="font-golden text-6xl leading-none">{protein}</span>
-              <span className="pb-1 font-golden text-xl text-white/45">{target ? `/ ${target} G` : "G"}</span>
+              <span className="pb-1 font-golden text-xl text-fg-muted">{target ? `/ ${target} G` : "G"}</span>
             </div>
             {target ? <p className="mt-2 text-xs font-bold text-white/60">{protein >= target ? "Target reached" : `${target - protein} g remaining`}</p> : <Link href="/account/training" className="mt-3 inline-flex rounded-full bg-white px-3 py-2 text-[11px] font-black text-ink">ADD WEIGHT FOR TARGET</Link>}
           </div>
           <ProteinRing pct={pct} known={target != null} />
         </div>
-        {target && <div className="relative mt-5 border-t border-white/10 pt-3 text-[11px] font-bold text-white/45">Target uses 1.6 g per kg of your saved body weight</div>}
+        {target && <div className="relative mt-5 border-t border-white/10 pt-3 text-[11px] font-bold text-fg-muted">Target uses 1.6 g per kg of your saved body weight</div>}
       </section>
 
       <section className="mt-3 overflow-hidden rounded-2xl bg-inset ring-1 ring-inset ring-hair">
@@ -155,18 +155,18 @@ export default function Fuel() {
             <button onClick={resetScan} className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full bg-black/55 text-white">×</button>
           </div>
         ) : (
-          <div className="flex items-center gap-4 border-b border-white/10 p-5"><span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-signal-good text-white"><CameraIcon /></span><div><p className="font-golden text-xl text-white">LOG A MEAL</p><p className="mt-1 text-[11px] font-bold text-white/45">Photo analysed once, then discarded</p></div></div>
+          <div className="flex items-center gap-4 border-b border-white/10 p-5"><span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-signal-good text-white"><CameraIcon /></span><div><p className="font-golden text-xl text-white">LOG A MEAL</p><p className="mt-1 text-[11px] font-bold text-fg-muted">Photo analysed once, then discarded</p></div></div>
         )}
 
         <div className="p-5">
           {phase === "result" && scan ? (
             <>
-              <label className="text-[11px] font-black tracking-wider text-white/45">MEAL NAME · EDIT IF NEEDED</label>
+              <label className="text-[11px] font-black tracking-wider text-fg-muted">MEAL NAME · EDIT IF NEEDED</label>
               <input value={scan.dish} onChange={(e) => setScan({ ...scan, dish: e.target.value })} className="mt-2 w-full rounded-xl bg-track px-3 py-2.5 text-sm font-black text-white outline-none focus:ring-2 focus:ring-signal-good" />
               <div className="mt-3 grid grid-cols-4 gap-2">
                 {(["protein", "carbs", "fat", "kcal"] as const).map((key) => <label key={key} className={`rounded-xl p-2 text-center ${key === "protein" ? "bg-signal-good text-white" : "bg-track text-white"}`}><input inputMode="numeric" value={scan[key]} onChange={(e) => editMacro(key, e.target.value)} className="w-full bg-transparent text-center font-golden text-xl outline-none" /><span className="block text-[11px] font-black uppercase tracking-wider text-white/55">{key === "kcal" ? "kcal" : `${key} g`}</span></label>)}
               </div>
-              <p className="mt-3 text-center text-[11px] font-bold text-white/45">Image estimate · correct before saving</p>
+              <p className="mt-3 text-center text-[11px] font-bold text-fg-muted">Image estimate · correct before saving</p>
               <button onClick={save} className="btn-press-good mt-4 w-full rounded-full bg-signal-good py-3.5 text-sm font-black text-white">SAVE MEAL · +{scan.protein} G PROTEIN</button>
             </>
           ) : phase === "scanning" ? (
@@ -180,21 +180,21 @@ export default function Fuel() {
       </section>
 
       <section className="mt-3 rounded-2xl bg-inset p-5 ring-1 ring-inset ring-hair">
-        <div className="flex items-end justify-between"><div><p className="text-[10px] font-black tracking-[0.18em] text-white/40">RECENT</p><h2 className="mt-1 font-golden text-xl text-white">MEAL HISTORY</h2></div><span className="font-golden text-lg text-white/40">{meals.length}</span></div>
+        <div className="flex items-end justify-between"><div><p className="text-[10px] font-black tracking-[0.18em] text-fg-muted">RECENT</p><h2 className="mt-1 font-golden text-xl text-white">MEAL HISTORY</h2></div><span className="font-golden text-lg text-fg-muted">{meals.length}</span></div>
         <div className="mt-4 rounded-xl bg-inset p-3 ring-1 ring-inset ring-hair">
           <div className="flex items-baseline justify-between">
             <span className="text-[11px] font-bold text-white/50">TODAY&apos;S PROTEIN</span>
-            <span className="font-golden text-[17px] text-white">{protein}<span className="ml-1 font-sans text-[11px] font-bold text-white/40">{target ? `/ ${target} g` : "g"}</span></span>
+            <span className="font-golden text-[17px] text-white">{protein}<span className="ml-1 font-sans text-[11px] font-bold text-fg-muted">{target ? `/ ${target} g` : "g"}</span></span>
           </div>
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-track">
             <span className="block h-full rounded-full bg-signal-good transition-[width] duration-500" style={{ width: `${pct * 100}%` }} />
           </div>
-          <p className="mt-2 text-[10px] font-bold text-white/35">{target ? `Training target · ${TRAINING_PROTEIN_G_PER_KG} g/kg body weight` : "Add body weight to calculate a training target"}</p>
+          <p className="mt-2 text-[10px] font-bold text-fg-muted">{target ? `Training target · ${TRAINING_PROTEIN_G_PER_KG} g/kg body weight` : "Add body weight to calculate a training target"}</p>
         </div>
         {history.length ? <div className="mt-4 space-y-2">{history.map((meal, index) => {
           const date = new Date(meal.date), previous = history[index - 1];
           const showDay = !previous || new Date(previous.date).toDateString() !== date.toDateString();
-          return <div key={meal.id}>{showDay && <p className="pb-1.5 pt-2 text-[11px] font-black tracking-wider text-white/35">{dayLabel(date)}</p>}<div className="flex items-center gap-3 rounded-xl bg-inset px-3 py-3"><span className="grid h-9 w-9 place-items-center rounded-xl bg-track"><MealIcon /></span><div className="min-w-0 flex-1"><p className="truncate text-xs font-black text-white">{meal.dish}</p><p className="mt-0.5 text-[11px] font-bold text-white/40">{date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} · {meal.kcal} kcal estimate</p></div><span className="font-golden text-base text-white">{meal.protein}g</span><button onClick={() => erase(meal)} aria-label={`Delete ${meal.dish}`} className="grid h-8 w-8 place-items-center rounded-full text-white/40 active:bg-track"><TrashIcon /></button></div></div>;
+          return <div key={meal.id}>{showDay && <p className="pb-1.5 pt-2 text-[11px] font-black tracking-wider text-fg-muted">{dayLabel(date)}</p>}<div className="flex items-center gap-3 rounded-xl bg-inset px-3 py-3"><span className="grid h-9 w-9 place-items-center rounded-xl bg-track"><MealIcon /></span><div className="min-w-0 flex-1"><p className="truncate text-xs font-black text-white">{meal.dish}</p><p className="mt-0.5 text-[11px] font-bold text-fg-muted">{date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} · {meal.kcal} kcal estimate</p></div><span className="font-golden text-base text-white">{meal.protein}g</span><button onClick={() => erase(meal)} aria-label={`Delete ${meal.dish}`} className="grid h-8 w-8 place-items-center rounded-full text-fg-muted active:bg-track"><TrashIcon /></button></div></div>;
         })}</div> : <div className="mt-4 rounded-xl bg-inset px-5 py-8 text-center ring-1 ring-inset ring-hair"><MealIcon /><p className="mt-3 font-golden text-lg text-white">NO MEALS LOGGED</p></div>}
       </section>
 

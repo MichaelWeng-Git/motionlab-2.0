@@ -112,7 +112,7 @@ export default function Account() {
         ].map((s) => (
           <div key={s.l} className="rounded-2xl bg-inset py-4 text-center ring-1 ring-inset ring-hair">
             <p className="font-golden text-2xl leading-none">{s.v}</p>
-            <p className="mt-1.5 text-[11px] font-bold uppercase tracking-wide text-white/40">{s.l}</p>
+            <p className="mt-1.5 text-[11px] font-bold uppercase tracking-wide text-fg-muted">{s.l}</p>
           </div>
         ))}
       </div>

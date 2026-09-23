@@ -90,7 +90,7 @@ export default function History() {
           ].map((x) => (
             <div key={x.l} className="text-center">
               <p className="font-golden text-2xl tabular-nums text-white">{x.v}</p>
-              <p className="mt-0.5 text-[11px] font-bold text-white/45">{x.l}</p>
+              <p className="mt-0.5 text-[11px] font-bold text-fg-muted">{x.l}</p>
             </div>
           ))}
         </div>
@@ -140,7 +140,7 @@ export default function History() {
       <section className="mt-5">
         <div className="flex items-baseline justify-between">
           <h2 className="font-golden text-xl leading-none text-white">12-WEEK RHYTHM</h2>
-          <span className="text-[11px] font-black tracking-[0.14em] text-white/40">TRAINING DAYS</span>
+          <span className="text-[11px] font-black tracking-[0.14em] text-fg-muted">TRAINING DAYS</span>
         </div>
         <div className="mt-2.5 overflow-hidden rounded-2xl bg-panel p-5 text-white ring-1 ring-inset ring-hair">
           <div className="flex gap-2">
@@ -162,15 +162,15 @@ export default function History() {
             </div>
           </div>
           <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
-            <span className="text-[11px] font-black tracking-[0.13em] text-white/45">OLDER</span>
+            <span className="text-[11px] font-black tracking-[0.13em] text-fg-muted">OLDER</span>
             <div className="flex items-center gap-1.5 text-[11px] font-bold text-white/50"><span>MINUTES</span>{["bg-heat-1", "bg-heat-2", "bg-heat-3", "bg-volt"].map((c) => <i key={c} className={`h-2.5 w-2.5 rounded-[3px] ${c}`} />)}</div>
-            <span className="text-[11px] font-black tracking-[0.13em] text-white/45">NOW</span>
+            <span className="text-[11px] font-black tracking-[0.13em] text-fg-muted">NOW</span>
           </div>
         </div>
       </section>
 
       <section className="mt-5">
-        <div className="flex items-baseline justify-between"><h2 className="font-golden text-xl leading-none text-white">PERSONAL BESTS</h2><span className="text-[11px] font-black tracking-[0.14em] text-white/40">MEASURED ONLY</span></div>
+        <div className="flex items-baseline justify-between"><h2 className="font-golden text-xl leading-none text-white">PERSONAL BESTS</h2><span className="text-[11px] font-black tracking-[0.14em] text-fg-muted">MEASURED ONLY</span></div>
         {pbs.length ? (
           <div className="-mx-5 mt-2.5 flex snap-x gap-3 overflow-x-auto px-5 pb-2 no-scrollbar">
             {pbs.map((pb) => (
@@ -178,12 +178,12 @@ export default function History() {
                 <div className="flex items-center justify-between"><span className={`rounded-full px-2 py-1 text-[11px] font-black tracking-[0.13em] ${pb.kind === "score" ? "bg-volt text-ink" : "bg-sky text-ink"}`}>{pb.kind === "score" ? "FORM SCORE" : "GPS DISTANCE"}</span><span className="text-sm font-black">›</span></div>
                 <p className="mt-5 font-golden text-4xl leading-none tabular-nums text-white">{pb.value}<span className="ml-1 text-xs">{pb.unit}</span></p>
                 <p className="mt-2 truncate text-sm font-extrabold text-white">{pb.sport}</p>
-                <p className="mt-0.5 text-[11px] font-bold text-white/40">{new Date(pb.date).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}</p>
+                <p className="mt-0.5 text-[11px] font-bold text-fg-muted">{new Date(pb.date).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}</p>
               </Link>
             ))}
           </div>
         ) : (
-          <Link href="/analyze" className="mt-2.5 flex items-center justify-between rounded-2xl bg-inset p-5 ring-1 ring-inset ring-hair"><div><p className="font-extrabold text-white">Your first PB starts here</p><p className="mt-1 text-xs font-bold text-white/40">Analyze a movement or record a GPS workout.</p></div><span className="font-golden text-2xl">›</span></Link>
+          <Link href="/analyze" className="mt-2.5 flex items-center justify-between rounded-2xl bg-inset p-5 ring-1 ring-inset ring-hair"><div><p className="font-extrabold text-white">Your first PB starts here</p><p className="mt-1 text-xs font-bold text-fg-muted">Analyze a movement or record a GPS workout.</p></div><span className="font-golden text-2xl">›</span></Link>
         )}
       </section>
 

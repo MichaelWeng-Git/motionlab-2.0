@@ -98,7 +98,7 @@ export default function MusclesPage() {
           <section className="mt-3 rounded-2xl bg-graphite p-5 text-white shadow-lift">
             <div className="flex items-baseline justify-between">
               <h2 className="font-golden text-lg">14-DAY HISTORY</h2>
-              <span className="text-[11px] font-black tracking-wider text-white/45">MEASURED SESSION LOAD</span>
+              <span className="text-[11px] font-black tracking-wider text-fg-muted">MEASURED SESSION LOAD</span>
             </div>
             <div className="mt-5 grid grid-cols-14 gap-1.5">
               {history.map((d) => {
@@ -106,7 +106,7 @@ export default function MusclesPage() {
                 const h = d.value == null ? 4 : Math.max(8, d.value * 72);
                 return <div key={d.date} className="text-center">
                   <div className="flex h-[76px] items-end"><span className="w-full rounded-full" style={{ height: h, background: d.value == null ? "rgba(255,255,255,.12)" : intensityColor(d.value * 100) }} /></div>
-                  <span className="mt-2 block font-golden text-[11px] text-white/40">{DAY[date.getDay()]}</span>
+                  <span className="mt-2 block font-golden text-[11px] text-fg-muted">{DAY[date.getDay()]}</span>
                 </div>;
               })}
             </div>

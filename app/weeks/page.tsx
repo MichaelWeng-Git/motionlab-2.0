@@ -259,7 +259,7 @@ export default function Weeks() {
             </div>
           ))}
         </div>
-        <div className="mt-3 flex justify-between text-[11px] font-bold text-white/40">
+        <div className="mt-3 flex justify-between text-[11px] font-bold text-fg-muted">
           <span>12 WEEKS AGO</span><span>NOW</span>
         </div>
       </section>
@@ -339,7 +339,7 @@ export default function Weeks() {
                   <p className="font-golden text-[34px] leading-none">
                     {Math.round(((dayPcts[0] + dayPcts[1] + dayPcts[2]) / 3) * 100)}
                   </p>
-                  <p className="-mt-0.5 font-golden text-[11px] leading-none text-white/30">/100</p>
+                  <p className="-mt-0.5 font-golden text-[11px] leading-none text-fg-muted">/100</p>
                 </div>
               </div>
             </div>

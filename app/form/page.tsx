@@ -95,14 +95,14 @@ export default function FormPage() {
             <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/22 to-transparent" />
             <div className="flex items-baseline justify-between">
               <span className="font-golden text-[13px] text-white/70">YOUR SHAPE</span>
-              <span className="font-golden text-[12px] text-white/40">{p.sessions} SESSIONS</span>
+              <span className="font-golden text-[12px] text-fg-muted">{p.sessions} SESSIONS</span>
             </div>
             <div className="relative mt-1 flex justify-center">
               <Hex values={values} />
               <div className="absolute inset-0 grid place-items-center">
                 <div className="text-center">
                   <p className="font-golden text-[40px] leading-none">{p.form}</p>
-                  <p className="-mt-0.5 font-golden text-[11px] text-white/30">FORM</p>
+                  <p className="-mt-0.5 font-golden text-[11px] text-fg-muted">FORM</p>
                 </div>
               </div>
             </div>
@@ -116,7 +116,7 @@ export default function FormPage() {
                 <p className="mt-1 font-golden text-[17px] leading-none text-white">{CAP_META[ranked[0].key].label}</p>
               </div>
               <div className="rounded-xl bg-inset p-3 ring-1 ring-inset ring-hair">
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-white/40">Build next</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-fg-muted">Build next</p>
                 <p className="mt-1 font-golden text-[17px] leading-none text-white">{CAP_META[ranked[ranked.length - 1].key].label}</p>
               </div>
             </div>
@@ -126,7 +126,7 @@ export default function FormPage() {
           <section className="mt-6">
             <div className="mb-3 flex items-baseline justify-between">
               <h2 className="font-golden text-[15px] leading-none text-white">CAPACITIES</h2>
-              <span className="text-[11px] font-bold text-white/35">Tap for evidence</span>
+              <span className="text-[11px] font-bold text-fg-muted">Tap for evidence</span>
             </div>
           <div className="overflow-hidden rounded-2xl bg-inset px-4 ring-1 ring-inset ring-hair">
             {ranked.map((c, i) => (
@@ -145,7 +145,7 @@ export default function FormPage() {
                 {open === c.key && (
                   <div className="mt-3 rounded-xl bg-black/20 p-3">
                     <p className="text-[12px] font-semibold leading-relaxed text-white/70">{CAP_META[c.key].blurb}</p>
-                    <p className="mt-2 text-[11px] font-bold text-white/40">Measured from: {CAP_META[c.key].source}</p>
+                    <p className="mt-2 text-[11px] font-bold text-fg-muted">Measured from: {CAP_META[c.key].source}</p>
                   </div>
                 )}
               </button>
