@@ -247,7 +247,7 @@ export default function Login() {
                 <button
                   type="submit"
                   disabled={busy}
-                  className="login-in-r btn-press w-full rounded-full bg-ink py-3.5 text-[15px] font-bold text-white transition disabled:opacity-60"
+                  className="login-in-r btn-press w-full rounded-full bg-action py-3.5 text-[15px] font-bold text-on-action transition disabled:opacity-60"
                   style={{ animationDelay: "1.4s" }}
                 >
                   {busy ? "Sending link…" : "Continue"}
@@ -288,7 +288,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={busy}
-                className="btn-press w-full rounded-full bg-ink py-3.5 text-[15px] font-bold text-white transition disabled:opacity-60"
+                className="btn-press w-full rounded-full bg-action py-3.5 text-[15px] font-bold text-on-action transition disabled:opacity-60"
               >
                 {busy ? "Checking…" : "Verify"}
               </button>

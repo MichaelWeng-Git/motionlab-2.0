@@ -149,7 +149,7 @@ export default function Report() {
         <div className="relative mt-5 border-t border-white/10 pt-4">
           {/* PR celebration — beats every previous session of this sport */}
           {isReal && best && a.score > best.score && (
-            <span className="inline-flex animate-pop items-center gap-1 rounded-full bg-volt px-3 py-1 text-xs font-extrabold text-volt-ink">
+            <span className="inline-flex animate-pop items-center gap-1 rounded-full bg-signal-good px-3 py-1 text-xs font-extrabold text-white">
               New personal best&nbsp;+{a.score - best.score}
             </span>
           )}

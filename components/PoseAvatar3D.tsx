@@ -367,7 +367,7 @@ export function PoseAvatar3D({
         {!syncRef && (
           <button
             onClick={() => setPlaying((p) => !p)}
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink text-white shadow-soft transition active:scale-95"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-action text-on-action shadow-soft transition active:scale-95"
             aria-label={playing ? "Pause" : "Play"}
           >
             {playing ? <PauseIcon /> : <PlayIcon />}

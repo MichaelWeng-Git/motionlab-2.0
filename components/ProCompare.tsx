@@ -58,7 +58,7 @@ export default function ProCompare({
   }, [playing, userAnchorS, pack]);
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-ink">
+    <div className="overflow-hidden rounded-2xl bg-well">
       <div className="relative">
         <video ref={vidRef} src={videoUrl} muted playsInline className="w-full" />
         <span className="absolute left-3 top-3 rounded-full bg-black/55 px-2.5 py-1 text-[11px] font-bold text-white">You</span>
@@ -80,7 +80,7 @@ export default function ProCompare({
       </div>
       <button
         onClick={playing ? pauseBoth : playBoth}
-        className="block w-full bg-ink py-3 text-center text-[13px] font-bold text-white"
+        className="block w-full bg-action py-3 text-center text-[13px] font-bold text-on-action"
       >
         {playing ? "❚❚ Pause" : "▶ Play both — aligned at the key moment"}
       </button>

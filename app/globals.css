@@ -19,7 +19,7 @@
    Cards used to hard-code their own colours, so switching a route's canvas to
    graphite changed the background and left every block on it light: a cream
    FORM card, a pale LOAD card and a white leaderboard sitting on a black page.
-   These variables are set ONCE per shell (AppShell's <main data-shell>) and
+   These variables are set ONCE per shell (AppShell's data-shell wrapper) and
    every surface token reads them, so a block fuses with whatever page it is on
    and flipping a route to dark carries its cards with it.
 
@@ -38,6 +38,7 @@
   --panel-edge: rgba(14, 31, 26, 0.04);
   --panel-shadow: 0 1px 2px rgba(14, 31, 26, 0.05), 0 10px 28px -10px rgba(14, 31, 26, 0.14);
   --inset: #EDF1EE;
+  --well: #17271F;
   --sheet: #EDF1EE;
   --track: rgba(14, 31, 26, 0.07);
   --hair: rgba(14, 31, 26, 0.06);
@@ -53,6 +54,8 @@
   --panel-edge: rgba(255, 255, 255, 0.15);
   --panel-shadow: none;
   --inset: rgba(255, 255, 255, 0.06);
+  /* media, map and video wells are recessed below the graphite page. */
+  --well: #101316;
   /* modals and sheets float over content, so they must be OPAQUE — a
      translucent panel would show the page through it. #24282B is exactly
      what a white/7% card composites to over graphite. */

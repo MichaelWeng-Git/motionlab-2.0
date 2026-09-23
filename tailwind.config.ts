@@ -37,6 +37,7 @@ const config: Config = {
         // page — they render light or dark according to the route's shell.
         panel: "var(--panel)",
         inset: "var(--inset)",
+        well: "var(--well)",     // recessed media / map / video canvas
         sheet: "var(--sheet)",   // opaque — modals and bottom sheets
         action: "var(--action)",       // primary filled button
         "on-action": "var(--on-action)",

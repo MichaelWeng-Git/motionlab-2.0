@@ -35,7 +35,8 @@ export function intensityColor(v: number): string {
 }
 
 // ——— SURFACES ———
-// The two non-white grounds the app paints cards on. Both were magic constants
+// Shared opaque grounds the app paints cards and recessed media on. These were
+// magic constants
 // repeated per file (`INK` in /form and /load, `GOAL_BG` in GoalRing, inline in
 // weeks/loading), and a fourth near-black `#10271F` had started spreading —
 // close enough to these to be indistinguishable alone, far enough to read as a
@@ -45,6 +46,9 @@ export const SURFACE = {
   // green-black: the ring's mint arcs are the only colour on that card, and a
   // green ground fights them.
   graphite: "#14181B",
+  // recessed media/map well on the authenticated graphite shell. This is the
+  // exact composite of 20% black over graphite, not another near-black card.
+  well: "#101316",
   // opaque raised sheet on graphite. It is the exact composite of the
   // standard white/7% panel over graphite, used where translucency would show
   // moving content through a modal.

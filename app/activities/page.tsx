@@ -67,7 +67,7 @@ export default function Activities() {
 
       {display.length === 0 ? (
         <div className="mt-10 flex flex-col items-center text-center">
-          <div className="grid h-40 w-full max-w-[260px] place-items-center overflow-hidden rounded-3xl bg-ink">
+          <div className="grid h-40 w-full max-w-[260px] place-items-center overflow-hidden rounded-3xl bg-well">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.28)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11z" />
               <circle cx="12" cy="10" r="2.6" />
@@ -137,13 +137,13 @@ export default function Activities() {
                   ) : isGps && a.path && a.path.length > 1 ? (
                     <LeafletMap center={a.path[0]} path={a.path} fit interactive={false} className="h-full w-full" />
                   ) : isGps ? (
-                    <div className="relative grid h-full place-items-center bg-ink">
-                      <div className="absolute inset-0 bg-ink" />
+                    <div className="relative grid h-full place-items-center bg-well">
+                      <div className="absolute inset-0 bg-well" />
                       <span className="relative text-xs font-semibold text-fg-muted">No route recorded</span>
                     </div>
                   ) : (
-                    <div className="relative grid h-full place-items-center bg-ink">
-                      <div className="absolute inset-0 bg-ink" />
+                    <div className="relative grid h-full place-items-center bg-well">
+                      <div className="absolute inset-0 bg-well" />
                       <SIcon name={iconFor(a.sport)} size={44} className="relative" />
                     </div>
                   )}

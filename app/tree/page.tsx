@@ -462,7 +462,7 @@ export default function Tree() {
                     onClick={() => buyPack(p)}
                     disabled={Boolean(opening) || placing.length > 0}
                     className={`btn-press mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-black transition disabled:opacity-50 ${
-                      coins >= p.cost ? "bg-ink text-white" : "bg-ink/10 text-ink-soft"
+                      coins >= p.cost ? "bg-action text-on-action" : "bg-ink/10 text-ink-soft"
                     }`}
                   >
                     <CoinIcon size={16} />

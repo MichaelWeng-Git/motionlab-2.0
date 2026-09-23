@@ -677,8 +677,8 @@ export default function Activity() {
           {isGps && path.length > 1 ? (
             <LeafletMap center={path[0]} path={path} fit interactive={false} className="h-44 w-full" />
           ) : (
-            <div className="relative grid h-28 place-items-center bg-ink">
-              <div className="absolute inset-0 bg-ink" />
+            <div className="relative grid h-28 place-items-center bg-well">
+              <div className="absolute inset-0 bg-well" />
               <SIcon name={sport.icon} size={44} className="relative" />
             </div>
           )}
@@ -806,11 +806,11 @@ export default function Activity() {
           }}
         />
       ) : (
-        <div className="relative h-full w-full bg-ink">
+        <div className="relative h-full w-full bg-well">
           <div className="absolute inset-0 bg-graphite" />
           <div className="absolute inset-0 grain opacity-25" />
           <div className="absolute inset-0 grid place-items-center pb-40 opacity-25"><SIcon name={isGps ? "run" : sport.icon} size={110} /></div>
-          {isGps && <div className="absolute inset-x-0 top-[30%] text-center text-white"><span className="mx-auto block h-3 w-3 animate-pulse rounded-full bg-volt" /><p className="mt-4 font-golden text-xl">FINDING YOUR POSITION</p></div>}
+          {isGps && <div className="absolute inset-x-0 top-[30%] text-center text-white"><span className="mx-auto block h-3 w-3 animate-pulse rounded-full bg-signal-good" /><p className="mt-4 font-golden text-xl">FINDING YOUR POSITION</p></div>}
         </div>
       )}
 
@@ -818,7 +818,7 @@ export default function Activity() {
         <div className="absolute inset-x-5 top-20 z-20 rounded-3xl bg-graphite ring-1 ring-inset ring-hair p-5 text-white">
           <p className="font-golden text-xl leading-none">MAP IS OFFLINE</p>
           <p className="mt-2 text-sm font-semibold text-white/70">GPS recording still works. Reconnect to load the map tiles.</p>
-          <button onClick={() => { setMapUnavailable(false); setMapAttempt((n) => n + 1); }} className="mt-4 rounded-full bg-volt px-5 py-2.5 text-xs font-black text-volt-ink">TRY MAP AGAIN</button>
+          <button onClick={() => { setMapUnavailable(false); setMapAttempt((n) => n + 1); }} className="mt-4 rounded-full bg-action px-5 py-2.5 text-xs font-black text-on-action">TRY MAP AGAIN</button>
         </div>
       )}
 
@@ -930,7 +930,7 @@ export default function Activity() {
               <span className="min-w-0 flex-1 text-sm font-bold text-fg">{!isGps ? "Timer ready · distance unavailable" : gps === "ready" ? acc != null ? `GPS ready · ±${acc} m` : "GPS ready" : gps === "locating" ? "Finding your GPS signal…" : "Location needed to record distance"}</span>
               {isGps && gps !== "ready" && <button onClick={() => allowLocation(true)} className="shrink-0 text-xs font-black text-signal-good">ENABLE</button>}
             </div>
-            <button onClick={start} className="btn-press mt-4 w-full rounded-full bg-volt py-4 text-[15px] font-black uppercase tracking-[0.1em] text-volt-ink">START {sport.label.toUpperCase()}</button>
+            <button onClick={start} className="btn-press mt-4 w-full rounded-full bg-action py-4 text-[15px] font-black uppercase tracking-[0.1em] text-on-action">START {sport.label.toUpperCase()}</button>
           </div>
         )}
 
@@ -966,7 +966,7 @@ export default function Activity() {
                     } else setPaused(!paused);
                   }}
                   className={`grid h-[72px] w-[72px] place-items-center rounded-full transition-colors duration-300 active:scale-95 ${
-                    isPaused ? "bg-signal-good text-white" : "bg-ink text-white"
+                    isPaused ? "bg-signal-good text-white" : "bg-action text-on-action"
                   }`}
                 >
                   {isPaused ? <PlayIcon /> : <PauseIcon />}
@@ -981,7 +981,7 @@ export default function Activity() {
                 <button
                   onClick={() => setSheet("confirm")}
                   tabIndex={isPaused ? 0 : -1}
-                  className="grid h-[72px] w-[72px] place-items-center rounded-full bg-ink text-white active:scale-95"
+                  className="grid h-[72px] w-[72px] place-items-center rounded-full bg-action text-on-action active:scale-95"
                 >
                   <StopIcon />
                 </button>
@@ -1067,7 +1067,7 @@ export default function Activity() {
                   } else setPaused(!paused);
                 }}
                 className={`grid h-[72px] w-[72px] place-items-center rounded-full transition-colors duration-300 active:scale-95 ${
-                  isPaused ? "bg-signal-good text-white" : "bg-ink text-white"
+                  isPaused ? "bg-signal-good text-white" : "bg-action text-on-action"
                 }`}
               >
                 {isPaused ? <PlayIcon /> : <PauseIcon />}
@@ -1082,7 +1082,7 @@ export default function Activity() {
               <button
                 onClick={() => setSheet("confirm")}
                 tabIndex={isPaused ? 0 : -1}
-                className="grid h-[72px] w-[72px] place-items-center rounded-full bg-ink text-white active:scale-95"
+                className="grid h-[72px] w-[72px] place-items-center rounded-full bg-action text-on-action active:scale-95"
               >
                 <StopIcon />
               </button>

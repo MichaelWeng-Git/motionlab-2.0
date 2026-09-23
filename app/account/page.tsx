@@ -92,7 +92,7 @@ export default function Account() {
       <div className="flex items-center gap-4 rounded-2xl bg-inset p-4 ring-1 ring-inset ring-hair">
         <button onClick={() => setPhotoSheet(true)} className="relative shrink-0 transition active:scale-95" aria-label="Change profile photo">
           <XpAvatarRing xp={stats?.xp ?? 0}><span className="grid h-full w-full place-items-center bg-volt-mist"><Avatar p={profile} iconSize={44} /></span></XpAvatarRing>
-          <span className="absolute -bottom-0.5 -right-0.5 grid h-6 w-6 place-items-center rounded-full bg-ink text-white ring-2 ring-[#ECEFEC]">
+          <span className="absolute -bottom-0.5 -right-0.5 grid h-6 w-6 place-items-center rounded-full bg-action text-on-action ring-2 ring-[#ECEFEC]">
             <CameraIcon size={13} />
           </span>
         </button>

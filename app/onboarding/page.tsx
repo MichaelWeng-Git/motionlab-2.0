@@ -88,7 +88,7 @@ export default function Onboarding() {
           {[0, 1, 2].map((i) => (
             <span
               key={i}
-              className={`h-1.5 flex-1 rounded-full transition-all ${i <= step ? "bg-ink" : "bg-black/10"}`}
+              className={`h-1.5 flex-1 rounded-full transition-all ${i <= step ? "bg-action" : "bg-black/10"}`}
             />
           ))}
         </div>
@@ -152,7 +152,7 @@ export default function Onboarding() {
                 key={g.k}
                 onClick={() => setGender(g.k)}
                 className={`rounded-2xl border py-3.5 text-sm font-bold transition ${
-                  gender === g.k ? "border-ink bg-ink text-white" : "border-black/10 bg-white text-ink shadow-soft"
+                  gender === g.k ? "border-ink bg-action text-on-action" : "border-black/10 bg-white text-ink shadow-soft"
                 }`}
               >
                 {g.t}
@@ -215,7 +215,7 @@ export default function Onboarding() {
                 key={l.key}
                 onClick={() => setLevel(l.key)}
                 className={`flex w-full items-center gap-3.5 rounded-2xl border p-4 text-left transition ${
-                  level === l.key ? "border-ink bg-ink text-white" : "border-black/10 bg-white shadow-soft"
+                  level === l.key ? "border-ink bg-action text-on-action" : "border-black/10 bg-white shadow-soft"
                 }`}
               >
                 <span className={level === l.key ? "text-volt-glow" : "text-volt-deep"}>{l.icon}</span>
@@ -231,7 +231,7 @@ export default function Onboarding() {
                 key={g.key}
                 onClick={() => setGoal(g.key)}
                 className={`flex items-center gap-2 rounded-2xl border px-4 py-3.5 text-sm font-bold transition ${
-                  goal === g.key ? "border-ink bg-ink text-white" : "border-black/10 bg-white shadow-soft"
+                  goal === g.key ? "border-ink bg-action text-on-action" : "border-black/10 bg-white shadow-soft"
                 }`}
               >
                 <span className={goal === g.key ? "text-volt-glow" : "text-volt-deep"}>{g.icon}</span>
@@ -255,7 +255,7 @@ export default function Onboarding() {
         onClick={next}
         disabled={!canNext}
         className={`mt-8 w-full rounded-full py-4 text-[15px] font-bold transition active:scale-[0.98] ${
-          canNext ? "btn-press bg-ink text-white" : "bg-black/10 text-ink-muted"
+          canNext ? "btn-press bg-action text-on-action" : "bg-black/10 text-ink-muted"
         }`}
       >
         {step === 2 ? "Finish & start" : "Continue"}

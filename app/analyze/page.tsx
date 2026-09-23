@@ -604,7 +604,7 @@ export default function Analyze() {
               <p className="mt-3 rounded-2xl bg-panel px-4 py-3 text-sm font-extrabold text-fg shadow-panel">
                 Tap the person to analyze
               </p>
-              <div className="relative mt-4 overflow-hidden rounded-3xl bg-ink">
+              <div className="relative mt-4 overflow-hidden rounded-3xl bg-well">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={picker.img} alt="pick your athlete" className="w-full" />
                 {picker.people.map((p, i) => (
@@ -624,7 +624,7 @@ export default function Analyze() {
                       style={{ height: `${Math.max(44, p.diag * 420)}px`, width: `${Math.max(44, p.diag * 420)}px` }}
                     >
                       <span className="absolute inset-0 animate-pulse rounded-full border-[3px] border-volt shadow-[0_0_0_2px_rgba(0,0,0,0.35)]" />
-                      <span className="absolute -top-3 left-1/2 grid h-7 w-7 -translate-x-1/2 place-items-center rounded-full bg-volt text-xs font-extrabold text-volt-ink">
+                      <span className="absolute -top-3 left-1/2 grid h-7 w-7 -translate-x-1/2 place-items-center rounded-full bg-action text-xs font-extrabold text-on-action">
                         {i + 1}
                       </span>
                     </span>

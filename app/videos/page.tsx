@@ -65,12 +65,12 @@ export default function Videos() {
             >
               {/* the WHOLE row opens the report — only the ⋯ menu is separate */}
               <Link href={`/report/${s.id}`} className="flex min-w-0 flex-1 items-center gap-3.5">
-                <span className="relative block h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-ink">
+                <span className="relative block h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-well">
                   {s.cover ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={s.cover} alt={s.action} className="h-full w-full object-cover" />
                   ) : (
-                    <span className="grid h-full place-items-center bg-ink">
+                    <span className="grid h-full place-items-center bg-well">
                       <SIcon name={iconFor(s.sport)} size={26} />
                     </span>
                   )}

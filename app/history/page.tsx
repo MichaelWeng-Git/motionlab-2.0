@@ -101,7 +101,7 @@ export default function History() {
         <div className="mt-2.5 grid grid-cols-2 gap-3">
         <Link
           href="/videos"
-          className="relative flex aspect-square flex-col justify-between overflow-hidden rounded-3xl bg-ink p-4 text-white transition active:scale-[0.98]"
+          className="relative flex aspect-square flex-col justify-between overflow-hidden rounded-3xl bg-panel p-4 text-fg ring-1 ring-inset ring-hair transition active:scale-[0.98]"
         >
           <div className="relative flex items-center justify-between">
             <span className="grid h-9 w-9 place-items-center rounded-full bg-track backdrop-blur"><PlayIcon size={14} className="text-white" /></span>
@@ -163,7 +163,7 @@ export default function History() {
           </div>
           <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
             <span className="text-[11px] font-black tracking-[0.13em] text-fg-muted">OLDER</span>
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-white/50"><span>MINUTES</span>{["bg-heat-1", "bg-heat-2", "bg-heat-3", "bg-volt"].map((c) => <i key={c} className={`h-2.5 w-2.5 rounded-[3px] ${c}`} />)}</div>
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-white/50"><span>MINUTES</span>{["bg-heat-1", "bg-heat-2", "bg-heat-3", "bg-heat-4"].map((c) => <i key={c} className={`h-2.5 w-2.5 rounded-[3px] ${c}`} />)}</div>
             <span className="text-[11px] font-black tracking-[0.13em] text-fg-muted">NOW</span>
           </div>
         </div>
@@ -175,7 +175,7 @@ export default function History() {
           <div className="-mx-5 mt-2.5 flex snap-x gap-3 overflow-x-auto px-5 pb-2 no-scrollbar">
             {pbs.map((pb) => (
               <Link key={pb.id} href={pb.href ?? "#"} className="min-w-[180px] snap-start overflow-hidden rounded-2xl bg-inset p-4 ring-1 ring-inset ring-hair active:scale-[0.98]">
-                <div className="flex items-center justify-between"><span className={`rounded-full px-2 py-1 text-[11px] font-black tracking-[0.13em] ${pb.kind === "score" ? "bg-volt text-ink" : "bg-sky text-ink"}`}>{pb.kind === "score" ? "FORM SCORE" : "GPS DISTANCE"}</span><span className="text-sm font-black">›</span></div>
+                <div className="flex items-center justify-between"><span className={`rounded-full px-2 py-1 text-[11px] font-black tracking-[0.13em] ${pb.kind === "score" ? "bg-signal-good text-white" : "bg-sky text-ink"}`}>{pb.kind === "score" ? "FORM SCORE" : "GPS DISTANCE"}</span><span className="text-sm font-black">›</span></div>
                 <p className="mt-5 font-golden text-4xl leading-none tabular-nums text-white">{pb.value}<span className="ml-1 text-xs">{pb.unit}</span></p>
                 <p className="mt-2 truncate text-sm font-extrabold text-white">{pb.sport}</p>
                 <p className="mt-0.5 text-[11px] font-bold text-fg-muted">{new Date(pb.date).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}</p>

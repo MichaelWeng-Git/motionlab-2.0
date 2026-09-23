@@ -10,7 +10,7 @@ export function SkeletonStage({
   compact?: boolean;
 }) {
   return (
-    <div className={`relative overflow-hidden rounded-2xl bg-ink ${compact ? "aspect-[3/4]" : "aspect-[9/12]"}`}>
+    <div className={`relative overflow-hidden rounded-2xl bg-well ${compact ? "aspect-[3/4]" : "aspect-[9/12]"}`}>
       {/* faux court / gradient backdrop */}
       <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_0%,#1c2740_0%,#17271F_60%)]" />
       <div className="absolute inset-0 grain opacity-40" />

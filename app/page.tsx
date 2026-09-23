@@ -693,8 +693,8 @@ export default function Home() {
             className="absolute left-1/2 w-[290px] -translate-x-1/2 animate-bob"
             style={{ top: Math.min(introRect.top + introRect.height + 18, (typeof window !== "undefined" ? window.innerHeight : 800) - 170) }}
           >
-            <div className="relative rounded-2xl bg-ink p-4 text-white">
-              <span className="absolute -top-[7px] left-1/2 h-3.5 w-3.5 -translate-x-1/2 rotate-45 rounded-[3px] bg-ink" />
+            <div className="relative rounded-2xl bg-sheet p-4 text-fg ring-1 ring-inset ring-hair">
+              <span className="absolute -top-[7px] left-1/2 h-3.5 w-3.5 -translate-x-1/2 rotate-45 rounded-[3px] bg-sheet" />
               <p className="font-golden text-xl leading-none text-white">{INTRO[introStep].t}</p>
               <p className="mt-2 text-[13px] font-bold leading-snug text-white/90">{INTRO[introStep].d}</p>
               <div className="mt-3 flex items-center justify-between">

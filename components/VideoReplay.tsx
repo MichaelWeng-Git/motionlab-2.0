@@ -259,7 +259,7 @@ export function VideoReplay({
   return (
     <div>
       {/* stage */}
-      <div className="relative overflow-hidden rounded-3xl bg-ink">
+      <div className="relative overflow-hidden rounded-3xl bg-well">
         <video ref={videoRef} className="w-full" playsInline muted onClick={togglePlay} />
         <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 h-full w-full" />
         {/* tap the frame to pause / tap again to resume — no overlay button,
@@ -295,7 +295,7 @@ export function VideoReplay({
               key={s.v}
               onClick={() => setSpeed(s.v)}
               className={`rounded-full px-2.5 py-1.5 text-[11px] font-bold tabular-nums transition ${
-                speed === s.v ? "bg-ink text-white" : "bg-white text-on-action shadow-soft"
+                speed === s.v ? "bg-action text-on-action" : "bg-panel text-fg"
               }`}
             >
               {s.label}
