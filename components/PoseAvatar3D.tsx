@@ -375,7 +375,7 @@ export function PoseAvatar3D({
         )}
         <button
           onClick={() => { azRef.current = 0; elRef.current = 0; dirtyRef.current = true; }}
-          className="rounded-full bg-white/85 px-3 py-2 text-xs font-bold text-ink shadow-soft backdrop-blur transition active:scale-95"
+          className="rounded-full bg-white/85 px-3 py-2 text-xs font-bold text-on-action shadow-soft backdrop-blur transition active:scale-95"
         >
           Recenter
         </button>

@@ -63,7 +63,7 @@ export default function MusclesPage() {
           <p className="text-[11px] font-black tracking-[0.18em] text-[#7FD9AE]">MEASURED FROM MOVEMENT</p>
           <h2 className="mt-12 font-golden text-3xl leading-none">NO MUSCLE DATA YET</h2>
           <p className="mt-3 text-sm font-semibold leading-relaxed text-white/75">Analyse a clear full-body video to measure which muscle groups carried the session.</p>
-          <button onClick={() => router.push("/analyze")} className="btn-press mt-6 w-full rounded-full bg-white py-3 text-sm font-black text-ink">Analyse movement</button>
+          <button onClick={() => router.push("/analyze")} className="btn-press mt-6 w-full rounded-full bg-white py-3 text-sm font-black text-on-action">Analyse movement</button>
           <p className="mt-3 text-center text-[11px] font-bold text-white/50">{recoveryStateText(recovery)}</p>
         </section>
       ) : (

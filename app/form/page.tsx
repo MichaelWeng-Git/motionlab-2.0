@@ -86,7 +86,7 @@ export default function FormPage() {
         <div className="mt-6 rounded-3xl bg-inset p-6 text-center ring-1 ring-inset ring-hair">
           <p className="font-golden text-lg text-white">NO PROFILE YET</p>
           <p className="mt-2 text-[13px] font-semibold text-white/55">Analyse one movement to reveal your first capacity.</p>
-          <button onClick={() => router.push("/analyze")} className="mt-5 w-full rounded-full bg-white py-3.5 font-golden text-[13px] text-graphite">START ANALYSIS</button>
+          <button onClick={() => router.push("/analyze")} className="mt-5 w-full rounded-full bg-white py-3.5 font-golden text-[13px] text-on-action">START ANALYSIS</button>
         </div>
       ) : (
         <>

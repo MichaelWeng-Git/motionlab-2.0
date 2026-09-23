@@ -114,7 +114,7 @@ export function BottomNav() {
             <button
               onClick={openLauncher}
               aria-expanded={open}
-              className={`grid h-9 w-12 place-items-center rounded-full bg-white text-graphite shadow-soft transition-all duration-300 active:scale-95 ${
+              className={`grid h-9 w-12 place-items-center rounded-full bg-white text-on-action shadow-soft transition-all duration-300 active:scale-95 ${
                 open ? "rotate-45" : ""
               }`}
             >

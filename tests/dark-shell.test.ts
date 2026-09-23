@@ -27,7 +27,12 @@ describe("dark app bootstrap", () => {
   });
 
   it("uses named surface tokens instead of hand-written dark alphas", () => {
-    const sources = [...uiSources("app"), ...uiSources("components")]
+    const files = [...uiSources("app"), ...uiSources("components")];
+    const sources = files
+      .map((file) => readFileSync(file, "utf8"))
+      .join("\n");
+    const authenticatedSources = files
+      .filter((file) => !file.startsWith("app/login/") && !file.startsWith("app/onboarding/"))
       .map((file) => readFileSync(file, "utf8"))
       .join("\n");
     const globalCss = readFileSync("app/globals.css", "utf8");
@@ -36,6 +41,8 @@ describe("dark app bootstrap", () => {
     expect(sources).not.toMatch(/bg-white\/(?:8|10|15)\b/);
     expect(sources).not.toMatch(/ring-white\/(?:5|10|15)\b/);
     expect(sources).not.toMatch(/text-white\/(?:30|35|40|45)\b/);
+    expect(authenticatedSources).not.toMatch(/bg-white(?!\/)[^\n]*(?:text-ink(?:-muted)?|text-graphite)/);
+    expect(authenticatedSources).not.toMatch(/(?:text-ink(?:-muted)?|text-graphite)[^\n]*bg-white(?!\/)/);
     expect(globalCss).toMatch(/--track:\s*rgba\(255,\s*255,\s*255,\s*0\.10\)/);
   });
 });

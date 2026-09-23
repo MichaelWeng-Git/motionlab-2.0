@@ -124,10 +124,10 @@ export default function History() {
           <Globe className="absolute inset-0 m-auto h-[82%] w-[82%]" />
           <div className="relative flex items-center justify-between">
             <span className="grid h-9 w-9 place-items-center rounded-full bg-white/90 shadow-soft"><MapPinIcon className="text-volt-deep" /></span>
-            <span className="rounded-full bg-white/90 px-1.5 font-bold text-ink shadow-soft">›</span>
+            <span className="rounded-full bg-white/90 px-1.5 font-bold text-on-action shadow-soft">›</span>
           </div>
           <div className="relative rounded-2xl bg-white/90 p-2.5 shadow-soft backdrop-blur">
-            <p className="text-sm font-extrabold text-ink">Your activities</p>
+            <p className="text-sm font-extrabold text-on-action">Your activities</p>
             <p className="mt-0.5 text-[11px] font-semibold text-ink-muted">
               {acts} {acts === 1 ? "workout" : "workouts"}
             </p>

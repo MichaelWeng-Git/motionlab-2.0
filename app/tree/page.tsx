@@ -313,7 +313,7 @@ export default function Tree() {
         {!focused && hung.length > 0 && (
           <button
             onClick={() => setEditing(true)}
-            className="absolute right-5 top-5 z-10 flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-[11px] font-bold text-ink shadow-soft transition active:scale-95"
+            className="absolute right-5 top-5 z-10 flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-[11px] font-bold text-on-action shadow-soft transition active:scale-95"
           >
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M16.5 3.9a2.1 2.1 0 0 1 3 3L7 19.4l-4 1 1-4L16.5 3.9z" />
@@ -403,7 +403,7 @@ export default function Tree() {
         {editing && (
           <button
             onClick={saveLayout}
-            className="mt-3 w-full rounded-full bg-white py-3 text-sm font-extrabold text-ink transition active:scale-[0.98]"
+            className="mt-3 w-full rounded-full bg-white py-3 text-sm font-extrabold text-on-action transition active:scale-[0.98]"
           >
             Save
           </button>
@@ -521,7 +521,7 @@ export default function Tree() {
                 >
                   {opening.pack.deluxe && <span className="pack-foil pointer-events-none absolute inset-0 opacity-50" />}
                   <MiniPackTree size={2.2} />
-                  <span className="absolute right-2 top-3 grid h-9 min-w-9 place-items-center rounded-full bg-white px-1 font-golden text-lg text-ink shadow-soft">×{opening.pack.rolls}</span>
+                  <span className="absolute right-2 top-3 grid h-9 min-w-9 place-items-center rounded-full bg-white px-1 font-golden text-lg text-on-action shadow-soft">×{opening.pack.rolls}</span>
                   <span className="absolute bottom-2 text-[11px] font-extrabold uppercase tracking-wide text-white/80">
                     {opening.pack.name}
                   </span>

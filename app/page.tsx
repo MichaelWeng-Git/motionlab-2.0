@@ -703,7 +703,7 @@ export default function Home() {
                     <span key={i} className={`h-1.5 w-1.5 rounded-full ${i === introStep ? "bg-white" : "bg-white/30"}`} />
                   ))}
                 </span>
-                <span className="rounded-full bg-white px-4 py-1.5 text-xs font-extrabold text-ink">
+                <span className="rounded-full bg-white px-4 py-1.5 text-xs font-extrabold text-on-action">
                   {introStep >= INTRO.length - 1 ? "Got it" : "Next"}
                 </span>
               </div>

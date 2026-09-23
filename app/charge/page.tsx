@@ -34,7 +34,7 @@ export default function ChargePage() {
           </span>
           <h2 className="mt-10 font-golden text-3xl leading-none">BUILD YOUR BASELINE</h2>
           <p className="mt-3 max-w-[280px] text-sm font-semibold leading-relaxed text-white/75">Record or analyse a workout. Charge appears once there is real training history to compare.</p>
-          <button onClick={() => router.push("/analyze")} className="btn-press mt-6 w-full rounded-full bg-white py-3 text-sm font-black text-ink">Analyse a workout</button>
+          <button onClick={() => router.push("/analyze")} className="btn-press mt-6 w-full rounded-full bg-white py-3 text-sm font-black text-on-action">Analyse a workout</button>
         </section>
       ) : (
         <>

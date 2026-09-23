@@ -827,7 +827,7 @@ export default function Activity() {
         {phase === "ready" ? (
           <button
             onClick={() => router.push("/")}
-            className="grid h-11 w-11 place-items-center rounded-full bg-white text-ink shadow-soft"
+            className="grid h-11 w-11 place-items-center rounded-full bg-white text-on-action shadow-soft"
           >
             ✕
           </button>
@@ -885,7 +885,7 @@ export default function Activity() {
       <div className="absolute right-4 top-3 z-10 flex flex-col gap-2.5">
         <button
           onClick={() => setSheet("settings")}
-          className="grid h-11 w-11 place-items-center rounded-full bg-white text-ink shadow-soft transition active:scale-95"
+          className="grid h-11 w-11 place-items-center rounded-full bg-white text-on-action shadow-soft transition active:scale-95"
         >
           <GearIcon />
         </button>
@@ -893,7 +893,7 @@ export default function Activity() {
           <>
             <button
               onClick={() => setSheet("mapType")}
-              className="grid h-11 w-11 place-items-center rounded-full bg-white text-ink shadow-soft transition active:scale-95"
+              className="grid h-11 w-11 place-items-center rounded-full bg-white text-on-action shadow-soft transition active:scale-95"
             >
               <LayersIcon />
             </button>
@@ -903,7 +903,7 @@ export default function Activity() {
                 attemptLocate(undefined, phase !== "live");
                 setCenter((c) => [...(path[path.length - 1] ?? c)] as LatLng);
               }}
-              className="grid h-11 w-11 place-items-center rounded-full bg-white text-ink shadow-soft transition active:scale-95"
+              className="grid h-11 w-11 place-items-center rounded-full bg-white text-on-action shadow-soft transition active:scale-95"
             >
               <LocateIcon />
             </button>

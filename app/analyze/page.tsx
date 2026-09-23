@@ -558,7 +558,7 @@ export default function Analyze() {
               })()}
             </svg>
             <div className="flex items-center gap-4 border-t border-white/10 px-5 py-5">
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-white text-ink transition group-hover:scale-105 group-active:scale-95"><UploadIcon /></span>
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-white text-on-action transition group-hover:scale-105 group-active:scale-95"><UploadIcon /></span>
               <div className="min-w-0 flex-1">
                 <p className="font-golden text-xl leading-none text-white">CHOOSE VIDEO</p>
                 <p className="mt-1 text-[11px] font-bold text-fg-muted">Private · processed on device</p>
@@ -699,7 +699,7 @@ export default function Analyze() {
             </label>
             <div className="mt-5 grid grid-cols-4 gap-2">
               {[20, 30, 45, 60].map((minutes) => (
-                <button key={minutes} onClick={() => setSessionMinutes(minutes)} className={`rounded-full py-2 text-[12px] font-extrabold ${sessionMinutes === minutes ? "bg-white text-ink" : "bg-track text-white/70"}`}>{minutes}</button>
+                <button key={minutes} onClick={() => setSessionMinutes(minutes)} className={`rounded-full py-2 text-[12px] font-extrabold ${sessionMinutes === minutes ? "bg-white text-on-action" : "bg-track text-white/70"}`}>{minutes}</button>
               ))}
             </div>
           </section>

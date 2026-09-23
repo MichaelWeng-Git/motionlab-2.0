@@ -137,7 +137,7 @@ export default function Fuel() {
               <span className="font-golden text-6xl leading-none">{protein}</span>
               <span className="pb-1 font-golden text-xl text-fg-muted">{target ? `/ ${target} G` : "G"}</span>
             </div>
-            {target ? <p className="mt-2 text-xs font-bold text-white/60">{protein >= target ? "Target reached" : `${target - protein} g remaining`}</p> : <Link href="/account/training" className="mt-3 inline-flex rounded-full bg-white px-3 py-2 text-[11px] font-black text-ink">ADD WEIGHT FOR TARGET</Link>}
+            {target ? <p className="mt-2 text-xs font-bold text-white/60">{protein >= target ? "Target reached" : `${target - protein} g remaining`}</p> : <Link href="/account/training" className="mt-3 inline-flex rounded-full bg-white px-3 py-2 text-[11px] font-black text-on-action">ADD WEIGHT FOR TARGET</Link>}
           </div>
           <ProteinRing pct={pct} known={target != null} />
         </div>
@@ -172,9 +172,9 @@ export default function Fuel() {
           ) : phase === "scanning" ? (
             <div className="flex items-center justify-center gap-3 py-2"><span className="h-5 w-5 animate-spin rounded-full border-2 border-white/15 border-t-signal-good" /><p className="text-sm font-black text-white">Estimating the visible portion…</p></div>
           ) : phase === "notfood" || phase === "error" ? (
-            <div className="text-center"><p className="text-sm font-black text-white">{phase === "notfood" ? "No meal detected" : "Couldn’t analyse this photo"}</p><button onClick={resetScan} className="mt-4 w-full rounded-full bg-white py-3 font-golden text-[13px] text-graphite">TRY ANOTHER PHOTO</button></div>
+            <div className="text-center"><p className="text-sm font-black text-white">{phase === "notfood" ? "No meal detected" : "Couldn’t analyse this photo"}</p><button onClick={resetScan} className="mt-4 w-full rounded-full bg-white py-3 font-golden text-[13px] text-on-action">TRY ANOTHER PHOTO</button></div>
           ) : (
-            <div className="grid grid-cols-2 gap-2.5"><button onClick={() => camRef.current?.click()} className="rounded-full bg-white py-3.5 font-golden text-[13px] text-graphite">CAMERA</button><button onClick={() => libRef.current?.click()} className="rounded-full bg-track py-3.5 font-golden text-[13px] text-white ring-1 ring-inset ring-hair active:scale-[0.98]">LIBRARY</button></div>
+            <div className="grid grid-cols-2 gap-2.5"><button onClick={() => camRef.current?.click()} className="rounded-full bg-white py-3.5 font-golden text-[13px] text-on-action">CAMERA</button><button onClick={() => libRef.current?.click()} className="rounded-full bg-track py-3.5 font-golden text-[13px] text-white ring-1 ring-inset ring-hair active:scale-[0.98]">LIBRARY</button></div>
           )}
         </div>
       </section>

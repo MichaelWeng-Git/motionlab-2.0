@@ -295,7 +295,7 @@ export function VideoReplay({
               key={s.v}
               onClick={() => setSpeed(s.v)}
               className={`rounded-full px-2.5 py-1.5 text-[11px] font-bold tabular-nums transition ${
-                speed === s.v ? "bg-ink text-white" : "bg-white text-ink-muted shadow-soft"
+                speed === s.v ? "bg-ink text-white" : "bg-white text-on-action shadow-soft"
               }`}
             >
               {s.label}
