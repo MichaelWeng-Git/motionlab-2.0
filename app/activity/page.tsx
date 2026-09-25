@@ -35,8 +35,30 @@ const PROFILES: Profile[] = [
 
 const EMPTY_CENTER: LatLng = [0, 0]; // never presented as the athlete's location
 
+// Accuracy ceiling for a fix that may ADD DISTANCE. A phone indoors or between
+// tall buildings reports ±50-150 m; adding those would invent metres the athlete
+// never ran. Above this a fix still moves the map and still proves the signal is
+// alive — it just cannot be measured with.
+const ACC_TRUST_M = 30;
+
+/**
+ * What the BROWSER says about location permission, or null when it will not say.
+ * The Permissions API answers without prompting, so a permission the athlete
+ * revoked in their settings is seen instead of trusted from our own localStorage.
+ * Safari only shipped geolocation here recently, hence the null fallback.
+ */
+async function browserLocPermission(): Promise<"granted" | "denied" | "prompt" | null> {
+  try {
+    if (!navigator.permissions?.query) return null;
+    const st = await navigator.permissions.query({ name: "geolocation" as PermissionName });
+    return st.state;
+  } catch {
+    return null;
+  }
+}
+
 type Phase = "ready" | "live" | "save";
-type Sheet = null | "picker" | "settings" | "confirm" | "discardConfirm" | "noLocation" | "iosLocation" | "mapType" | "resume";
+type Sheet = null | "picker" | "settings" | "confirm" | "discardConfirm" | "noLocation" | "whyLocation" | "mapType" | "resume";
 type Split = { n: number; unit: "km" | "mi"; seconds: number };
 type RecordSettings = { autoPause: boolean; audioCues: boolean; screenOn: boolean };
 const RECORD_SETTINGS_KEY = "ml_record_settings";
@@ -124,7 +146,13 @@ export default function Activity() {
   // Permission is requested on the user's FIRST Start (native browser prompt).
   // Denied → GPS sports can't be recorded (court/pool sports still work).
   const [center, setCenter] = useState<LatLng>(EMPTY_CENTER);
-  const [gps, setGps] = useState<"unknown" | "locating" | "ready" | "off">("unknown");
+  // "weak" is its own state on purpose: fixes ARE arriving, they are just too
+  // fuzzy to count as distance. Calling that "ready" left the athlete watching a
+  // green label and a frozen distance with nothing saying why.
+  const [gps, setGps] = useState<"unknown" | "locating" | "ready" | "weak" | "off">("unknown");
+  // why the last locate failed — denial, no fix, or a timeout each need different
+  // words and a different next step
+  const [locFail, setLocFail] = useState<"denied" | "unavailable" | "timeout" | "unsupported" | null>(null);
   // Google Maps died (billing/network/adblock) → swap to Leaflet, never a gray box
   const [gmapDead, setGmapDead] = useState(false);
   const [mapUnavailable, setMapUnavailable] = useState(false);
@@ -289,14 +317,25 @@ export default function Activity() {
   const pendingStartRef = useRef(false);
 
   useEffect(() => {
-    const perm = localStorage.getItem("ml_loc_perm");
-    if (perm === "granted") attemptLocate();
-    else if (perm === "denied") setGps("off");
-    else if (sport.mode === "gps") {
-      // first visit — ask right away
-      const t = setTimeout(() => setSheet("iosLocation"), 600);
-      return () => clearTimeout(t);
-    }
+    let dead = false;
+    (async () => {
+      // The browser is the authority on whether we may have location. Our own
+      // ml_loc_perm is only a memory of the last ask, and it goes stale the
+      // moment the athlete changes the setting in their browser or OS.
+      const actual = await browserLocPermission();
+      if (dead) return;
+      if (actual === "granted") { localStorage.setItem("ml_loc_perm", "granted"); attemptLocate(); return; }
+      if (actual === "denied") { localStorage.setItem("ml_loc_perm", "denied"); setGps("off"); setLocFail("denied"); return; }
+
+      const perm = localStorage.getItem("ml_loc_perm");
+      if (perm === "granted") attemptLocate();
+      else if (perm === "denied") { setGps("off"); setLocFail("denied"); }
+      else if (sport.mode === "gps") {
+        // first visit — explain before the browser asks
+        setTimeout(() => { if (!dead) setSheet("whyLocation"); }, 600);
+      }
+    })();
+    return () => { dead = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sport.mode]);
 
@@ -304,17 +343,46 @@ export default function Activity() {
   // If the browser cannot provide a fix, keep distance unavailable.
   function attemptLocate(onReady?: () => void, showBlockingError = true) {
     setGps("locating");
-    if (!("geolocation" in navigator)) { setGps("off"); setSheet("noLocation"); return; }
+    if (!("geolocation" in navigator)) {
+      setGps("off"); setLocFail("unsupported"); setSheet("noLocation"); return;
+    }
+    const accept = (p: GeolocationPosition) => {
+      setCenter([p.coords.latitude, p.coords.longitude]);
+      setAcc(Math.round(p.coords.accuracy));
+      setLocFail(null);
+      // A coarse first fix is good enough to centre the map and is honest about
+      // itself; only an accurate one is allowed to become distance, which the
+      // watch loop decides per fix.
+      setGps(p.coords.accuracy > ACC_TRUST_M ? "weak" : "ready");
+      onReady?.();
+    };
+    const fail = (err: GeolocationPositionError) => {
+      // A denial is the user's decision and worth remembering. A timeout or a
+      // missing fix is NOT: writing "denied" for those used to lock the athlete
+      // out of distance until they found the Try again button.
+      const why =
+        err.code === err.PERMISSION_DENIED ? "denied"
+        : err.code === err.TIMEOUT ? "timeout"
+        : "unavailable";
+      if (why === "denied") localStorage.setItem("ml_loc_perm", "denied");
+      setLocFail(why);
+      if (showBlockingError) { setGps("off"); setSheet("noLocation"); }
+      else setGpsLost(true);
+    };
     navigator.geolocation.getCurrentPosition(
-      (p) => {
-        setCenter([p.coords.latitude, p.coords.longitude]);
-        setAcc(Math.round(p.coords.accuracy));
-        setGps("ready");
-        onReady?.();
-      },
-      () => {
-        if (showBlockingError) { setGps("off"); setSheet("noLocation"); }
-        else setGpsLost(true);
+      accept,
+      (err) => {
+        // A cold GPS chip regularly needs longer than 12 s. Rather than calling
+        // that "location is off", ask again willing to take a coarse or slightly
+        // stale fix — enough to show the map while the chip keeps sharpening.
+        if (err.code === err.TIMEOUT || err.code === err.POSITION_UNAVAILABLE) {
+          navigator.geolocation.getCurrentPosition(
+            accept, fail,
+            { enableHighAccuracy: false, maximumAge: 60_000, timeout: 20_000 }
+          );
+          return;
+        }
+        fail(err);
       },
       { enableHighAccuracy: true, maximumAge: 0, timeout: 12000 }
     );
@@ -335,6 +403,7 @@ export default function Activity() {
     localStorage.setItem("ml_loc_perm", "denied");
     pendingStartRef.current = false;
     setGps("off");
+    setLocFail("denied");
     setSheet("noLocation");
   }
 
@@ -351,7 +420,14 @@ export default function Activity() {
         setAcc(Math.round(accuracy));
         lastFixAtRef.current = Date.now();
         setGpsLost(false);
-        if (accuracy > 30) return; // too fuzzy to trust (indoors, first fixes)
+        if (accuracy > ACC_TRUST_M) {
+          // A fix arrived, so the signal is not "lost" — but it is too fuzzy to
+          // add to distance. Say so, rather than showing a healthy GPS and a
+          // distance that quietly stops moving.
+          setGps("weak");
+          return;
+        }
+        setGps("ready");
         if (warmupRef.current < 2) {
           // GPS warm-up: the first fixes wander — never count them as distance
           warmupRef.current += 1;
@@ -522,7 +598,9 @@ export default function Activity() {
   })();
   const f = fields(sport, seconds, meters, rolling, units);
   const hasCalorieEstimate = isGps && realGpsRef.current && weightRef.current != null;
-  const hasRealMapPosition = gps === "ready" || path.length > 0;
+  // A coarse fix is still the athlete's real position — good enough to show them
+  // on the map. It is only distance that needs ACC_TRUST_M accuracy.
+  const hasRealMapPosition = gps === "ready" || gps === "weak" || path.length > 0;
   const savedRef = useRef(false);
 
   function pickSport(p: Profile) {
@@ -590,9 +668,11 @@ export default function Activity() {
     // GPS sports need location
     if (isGps) {
       const perm = localStorage.getItem("ml_loc_perm");
-      if (perm === "denied") { setSheet("noLocation"); return; }
-      if (perm !== "granted") { pendingStartRef.current = true; setSheet("iosLocation"); return; }
-      if (gps !== "ready") { attemptLocate(() => runCountdown()); return; }
+      if (perm === "denied") { setLocFail("denied"); setSheet("noLocation"); return; }
+      if (perm !== "granted") { pendingStartRef.current = true; setSheet("whyLocation"); return; }
+      // "weak" counts as located: the map has a position and the watch loop will
+      // start counting distance as soon as a fix is accurate enough.
+      if (gps !== "ready" && gps !== "weak") { attemptLocate(() => runCountdown()); return; }
     }
     runCountdown();
   }
@@ -853,6 +933,10 @@ export default function Activity() {
                 : isGps
                 ? gps === "ready"
                   ? { t: "GPS acquired", c: "bg-signal-good/12 text-signal-good" }
+                  // fixes are arriving but too fuzzy to add up — the distance on
+                  // screen is frozen, so the strip has to say that, not "acquired"
+                  : gps === "weak"
+                  ? { t: acc != null ? `Weak GPS · ±${acc} m · distance paused` : "Weak GPS · distance paused", c: "bg-signal-okay/15 text-signal-okay" }
                   : { t: "Waiting for GPS", c: "bg-signal-okay/15 text-signal-okay" }
                 : { t: "Recording", c: "bg-signal-good/12 text-signal-good" };
               return (
@@ -932,8 +1016,14 @@ export default function Activity() {
               <span className="font-golden text-2xl text-fg">›</span>
             </button>
             <div className="mt-3 flex items-center gap-3 px-1">
-              <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${!isGps || gps === "ready" ? "bg-signal-good" : gps === "locating" ? "bg-signal-okay" : "bg-signal-work"}`} />
-              <span className="min-w-0 flex-1 text-sm font-bold text-fg">{!isGps ? "Timer ready · distance unavailable" : gps === "ready" ? acc != null ? `GPS ready · ±${acc} m` : "GPS ready" : gps === "locating" ? "Finding your GPS signal…" : "Location needed to record distance"}</span>
+              <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${!isGps || gps === "ready" ? "bg-signal-good" : gps === "locating" || gps === "weak" ? "bg-signal-okay" : "bg-signal-work"}`} />
+              <span className="min-w-0 flex-1 text-sm font-bold text-fg">{
+                !isGps ? "Timer ready · distance unavailable"
+                : gps === "ready" ? (acc != null ? `GPS ready · ±${acc} m` : "GPS ready")
+                : gps === "weak" ? (acc != null ? `Weak signal · ±${acc} m · move outside` : "Weak signal · move outside")
+                : gps === "locating" ? "Finding your GPS signal…"
+                : "Location needed to record distance"
+              }</span>
               {isGps && gps !== "ready" && <button onClick={() => allowLocation(true)} className="shrink-0 text-xs font-black text-signal-good">ENABLE</button>}
             </div>
             <button onClick={start} className="btn-press mt-4 w-full rounded-full bg-action py-4 text-[15px] font-black uppercase tracking-[0.1em] text-on-action">START {sport.label.toUpperCase()}</button>
@@ -1211,10 +1301,25 @@ export default function Activity() {
             <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-signal-work/12 text-signal-work">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 11.5-8 11.5S4 16 4 10a8 8 0 0 1 16 0z" /><circle cx="12" cy="10" r="3" /></svg>
             </span>
-            <p className="mt-3 text-base font-extrabold">Location is off</p>
+            {/* "Location is off" used to be shown for all three failures. A timeout
+                with permission granted is not location being off, and telling an
+                athlete standing outdoors to change a setting they never changed
+                sends them somewhere the problem is not. */}
+            <p className="mt-3 text-base font-extrabold">{
+              locFail === "unsupported" ? "This browser has no location"
+              : locFail === "timeout" ? "Couldn’t get a fix in time"
+              : locFail === "unavailable" ? "No GPS signal here"
+              : "Location is off"
+            }</p>
+            <p className="mt-1.5 text-[13px] font-semibold leading-snug text-fg-soft">{
+              locFail === "unsupported" ? "You can still record time. Distance needs a browser with GPS."
+              : locFail === "timeout" ? "The GPS chip is still searching. Outdoors with a clear view of the sky is usually seconds."
+              : locFail === "unavailable" ? "Your device can’t see satellites — usually indoors or underground. Distance stays unrecorded until it can."
+              : "Distance and your route need location. The timer works without it."
+            }</p>
             <div className="mt-5 space-y-2.5">
               <button
-                onClick={() => { localStorage.removeItem("ml_loc_perm"); setSheet("iosLocation"); }}
+                onClick={() => { localStorage.removeItem("ml_loc_perm"); setSheet(locFail === "denied" ? "whyLocation" : null); if (locFail !== "denied") attemptLocate(); }}
                 className="w-full rounded-full bg-action py-3.5 text-[15px] font-bold text-on-action transition active:scale-[0.98]"
               >
                 Try again
@@ -1276,38 +1381,50 @@ export default function Activity() {
       )}
 
       {/* iOS-system-style location permission dialog (replaced by the real one in the packaged app) */}
-      {sheet === "iosLocation" && (
+      {/* Why we need location — OUR card, not an imitation of the OS alert.
+          It used to be a pixel copy of Apple's permission dialog, down to the
+          iOS blue and "Allow While Using App". On the web the real browser
+          prompt appears straight afterwards anyway, so the athlete answered two
+          dialogs and the one that actually granted anything was the second. A
+          page must never dress itself as the system. This explains the reason,
+          then hands over to the real prompt. */}
+      {sheet === "whyLocation" && (
         <>
-          <div className="absolute inset-0 z-40 bg-black/40" />
-          <div className="absolute inset-0 z-50 grid place-items-center">
-          <div className="w-[280px] animate-pop overflow-hidden rounded-lg bg-[#F5F5F5]/95 text-center shadow-2xl backdrop-blur-xl">
-            <div className="px-5 pb-4 pt-5">
-              <p className="text-[16px] font-semibold leading-snug text-black">
-                Allow &ldquo;MotionLab 2.0&rdquo; to use your location?
+          <div className="absolute inset-0 z-40 bg-ink/50 backdrop-blur-[2px]" />
+          <div className="absolute inset-0 z-50 grid place-items-center px-8">
+            <div className="w-full animate-pop rounded-3xl bg-sheet p-6 text-fg ring-1 ring-inset ring-hair">
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-signal-good/12 text-signal-good">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 11.5-8 11.5S4 16 4 10a8 8 0 0 1 16 0z" /><circle cx="12" cy="10" r="3" /></svg>
+              </span>
+              <h2 className="mt-3 font-golden text-xl">LOCATION</h2>
+              <p className="mt-2 text-[13px] font-semibold leading-snug text-fg-soft">
+                Your route, distance and pace are measured from your phone&apos;s GPS.
+                Without it this becomes a stopwatch — the timer still works, distance
+                cannot be recorded.
               </p>
-              <p className="mt-1.5 text-[12px] leading-snug text-black/60">
-                Your precise location is used to record your route while you work out.
+              <ul className="mt-4 space-y-2 text-[13px] font-semibold text-fg-soft">
+                <li className="flex gap-2.5"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-signal-good" />Used only while a recording is running.</li>
+                <li className="flex gap-2.5"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-signal-good" />The route is saved on this device with the workout.</li>
+                <li className="flex gap-2.5"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-signal-good" />Never sold, never shared, never used for ads.</li>
+              </ul>
+              <div className="mt-5 space-y-2.5">
+                <button
+                  onClick={() => allowLocation(true)}
+                  className="w-full rounded-full bg-action py-3.5 font-golden text-[13px] text-on-action transition active:scale-[0.98]"
+                >
+                  CONTINUE
+                </button>
+                <button
+                  onClick={denyLocation}
+                  className="w-full rounded-full bg-inset py-3.5 text-[15px] font-bold text-fg transition active:scale-[0.98]"
+                >
+                  Not now
+                </button>
+              </div>
+              <p className="mt-3 text-center text-[11px] font-semibold text-fg-muted">
+                Your browser will ask next — that prompt is the one that decides.
               </p>
             </div>
-            <button
-              onClick={() => allowLocation(false)}
-              className="w-full border-t border-black/15 py-2.5 text-[16px] text-[#0A84FF] transition active:bg-black/5"
-            >
-              Allow Once
-            </button>
-            <button
-              onClick={() => allowLocation(true)}
-              className="w-full border-t border-black/15 py-2.5 text-[16px] text-[#0A84FF] transition active:bg-black/5"
-            >
-              Allow While Using App
-            </button>
-            <button
-              onClick={denyLocation}
-              className="w-full border-t border-black/15 py-2.5 text-[16px] text-[#0A84FF] transition active:bg-black/5"
-            >
-              Don&apos;t Allow
-            </button>
-          </div>
           </div>
         </>
       )}
