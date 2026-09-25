@@ -67,7 +67,8 @@ npm run dev      # localhost:3100
 npm run build
 npm run lint     # NOTE: ESLint is not configured yet — this prompts for setup
 npx tsc --noEmit # types
-npm test         # vitest — data safety, the Workout model, recovery, palette
+npm test         # vitest — data safety, the Workout model, recovery, palette,
+                 #          the API guard, the model base, the dark shell
 ```
 
 `npx tsc --noEmit` is clean as of `179ebd8`. (It previously carried standing
@@ -199,6 +200,32 @@ Thin by design — the heavy work is on-device.
 
 There is **no `/api/muscles`** — it was deleted deliberately. See Decisions.
 
+### The four paid routes are gated — `lib/api-guard.ts`
+
+`coach`, `assistant` and `fuel` bill OpenAI; `pose3d` bills fal.ai at ~$0.24 a
+call. All four were once open to the internet with no auth and no ceiling.
+`guard(req, route, limits)` is now the first thing each one does, in this order:
+
+1. **size** — `readJsonLimited` streams with a hard byte cap, so an oversized
+   body is refused before `JSON.parse` ever sees it (413)
+2. **identity** — no anonymous call to a paid upstream (401)
+3. **rate** — per caller, per route, per minute *and* per hour (429 + `Retry-After`)
+
+The guard consumes the body, so a route must read `gate.body` — **a second
+`req.json()` throws.** That is why `lib/fuel-api.ts` exposes `readFuelBody(raw)`
+rather than a reader that streams the request itself.
+
+Identity accepts either sign-in this app has: the NextAuth cookie Google users
+send automatically, or the Supabase bearer token email-OTP users do not. Client
+code must therefore call these four routes through **`apiPost` in
+`lib/api-client.ts`**, which attaches the token. A bare `fetch` works for Google
+users and 401s for everyone else — a bug that only breaks half the users.
+
+The limiter is in-memory and **per server instance**: on serverless each warm
+lambda keeps its own window. It stops a runaway client loop and casual abuse of a
+discovered URL, not a distributed attack. Moving the counter to Supabase or Redis
+changes no call site.
+
 ### Supabase
 
 Three tables:
@@ -224,6 +251,7 @@ NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
 SUPABASE_SERVICE_ROLE_KEY    server-only
 NEXT_PUBLIC_GOOGLE_MAPS_KEY
+NEXT_PUBLIC_MODEL_BASE       where the model weights are served from
 ```
 
 ---
@@ -251,6 +279,30 @@ stage 5  GPT writes the report                       /api/coach
 `yolov8s`, `pose_landmarker_{lite,full,heavy}`, `vitpose_{int8,fp16,l_fp32,h_fp16}`,
 `rtmpose_x`, `sapiens_{03b,06b}_fp16`, `motionbert_3d_243`. The refiner picks a
 tier by device capability (WebGPU → heavy, otherwise int8).
+
+**Never hard-code `/models/…`.** The directory is 4.9 GB and git-ignored, so it
+exists on the owner's machine and nowhere else. `modelUrl()` in
+`lib/model-url.ts` is the only place that resolves a weight path:
+`NEXT_PUBLIC_MODEL_BASE` unset means `/models` (dev unchanged), set means object
+storage. The host needs CORS (the browser fetches these cross-origin) and
+versioned paths that are never overwritten — a weight file's bytes *are* the
+model, so overwriting one in place leaves cached and fresh clients running
+different models against the same calibration.
+
+`node scripts/verify-models.mjs <base>` checks a deployed base without
+downloading it: presence, `Content-Length` against `scripts/models.manifest.json`,
+and whether CORS is set, reported per device tier. `--write` regenerates the
+manifest from the local files.
+
+First-run download, measured: **506 MB** with no WebGPU, **2229 MB** on the
+default WebGPU path, **2900 MB** in `ml_quality = "best"`. Swapping a tier to
+shrink that would move every number the app displays, so it is a product
+decision, not a cleanup. `pose_landmarker_{full,lite}.task` are loaded by
+nothing.
+
+A missing backbone is reported, not swallowed: `createEnsemble` failing raises
+`ModelsUnavailableError` and `/analyze` says the models could not be loaded
+rather than "try another video", which can never help.
 
 ### Cleanup — `lib/pose-associate.ts` then `lib/pose-post.ts`
 
@@ -444,7 +496,10 @@ actual VO2max number, and needs no new model.
 - The heavy refinement models run per crop, not per joint, so per-joint
   compute gating is not currently possible.
 - ESLint is unconfigured; `npm run lint` prompts for interactive setup.
-- `lib/ensemble.ts` has standing `tsc` errors.
+- **A first analysis downloads 2.2 GB** on a WebGPU device (the default path).
+  Browser HTTP cache makes it once per browser, but it is the first-run
+  experience and the CDN bill. Shrinking it means running a smaller refiner,
+  which changes measured output — needs real regression evidence first.
 
 ---
 
@@ -463,6 +518,9 @@ actual VO2max number, and needs no new model.
 | `lib/palette.ts` | The single colour source |
 | `buildWorkouts()` pairing rule | Reading `ml_sessions`/`ml_activities` directly from LOAD, Recovery or CHARGE re-creates the double count it exists to remove |
 | `public/models/*` | Multi-GB weights; the refiner's tier fallback depends on the exact filenames |
+| `lib/model-url.ts` | The one resolver for 13 weight paths; a hard-coded `/models/…` deploys as a 404 with no build error |
+| `guard()` before the body | The guard consumes the request; a route that also calls `req.json()` throws |
+| `apiPost` for the four paid routes | A bare `fetch` 401s for every email-OTP user |
 
 ---
 
@@ -523,17 +581,21 @@ space).
 
 ### Next logical tasks, in order
 
-1. **Stop fabricating GPS distance** (`app/activity/page.tsx`, ~line 508) — show
-   "waiting for GPS" instead of accumulating a random walk.
+Cleared since this list was written: GPS no longer fabricates distance, and the
+analyze flow now asks for session length (so `DEFAULT_SESSION_MIN` is a rare
+fallback, not the norm).
+
+1. **Deploy blockers still open**: there is no `app/error.tsx` and no
+   `app/not-found.tsx`, so an unhandled error in production is a blank screen;
+   `/report/demo` (the only route allowed to read `lib/mock.ts`) is reachable in
+   a production build; `/analyze` accepts a video of any size or length.
 2. **Surface biomech failures** — record why `computeBiomech` returned null and
    tell the user, instead of silently falling through
-   (`app/analyze/page.tsx` does `if (bm) ...`).
-3. **Ask for session length in the analyze flow**, so `DEFAULT_SESSION_MIN`
-   rarely has to apply.
-4. **Wire `drawPoseDebug()` into the report's video replay** behind a toggle, so
+   (`app/analyze/page.tsx:351` does `if (bm) ...`).
+3. **Wire `drawPoseDebug()` into the report's video replay** behind a toggle, so
    corrections can be inspected on real footage rather than synthetic tests.
-5. **Server-side sync** (checklist #23) — the prerequisite for real users.
-6. Remaining checklist items: CHARGE detail page, muscle detail page, report
+4. **Server-side sync** (checklist #23) — the prerequisite for real users.
+5. Remaining checklist items: CHARGE detail page, muscle detail page, report
    hierarchy, FUEL page, XP levels, coin economy, medals, packs, streak
    milestones, friends, leaderboard, progress calendar, settings, empty states,
    skeletons, PWA.
