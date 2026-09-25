@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getMeals, logMeal, proteinTarget, removeMeal, restoreMeal, todayMeals, TRAINING_PROTEIN_G_PER_KG, type Meal } from "@/lib/fuel";
 import { SIGNAL } from "@/lib/palette";
+import { apiFailureOf, apiFailureText, apiPost } from "@/lib/api-client";
 
 type Scan = {
   isFood: boolean; dish: string; protein: number; carbs: number; fat: number; kcal: number;
@@ -31,6 +32,9 @@ export default function Fuel() {
   const [meals, setMeals] = useState<Meal[]>([]);
   const [target, setTarget] = useState<number | null>(null);
   const [deleted, setDeleted] = useState<Meal | null>(null);
+  // why the scan failed, when the server said something specific (rate limit,
+  // signed out, too large) — otherwise the generic line below
+  const [errText, setErrText] = useState<string | null>(null);
 
   const refresh = () => setMeals(getMeals());
   useEffect(() => {
@@ -45,6 +49,7 @@ export default function Fuel() {
     setPhase("idle");
     setPhoto(null);
     setScan(null);
+    setErrText(null);
   }
 
   function onPick(e: React.ChangeEvent<HTMLInputElement>) {
@@ -64,16 +69,18 @@ export default function Fuel() {
       const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
       setPhoto(dataUrl);
       setScan(null);
+      setErrText(null);
       setPhase("scanning");
       const controller = new AbortController();
       requestRef.current = controller;
       try {
-        const response = await fetch("/api/fuel", {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ image: dataUrl }), signal: controller.signal,
-        });
-        const data = await response.json();
-        if (!response.ok || !data.ok) throw new Error("scan failed");
+        const response = await apiPost("/api/fuel", { image: dataUrl }, { signal: controller.signal });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          setErrText(apiFailureText(apiFailureOf(response.status, data)));
+          throw new Error("scan refused");
+        }
+        if (!data.ok) throw new Error("scan failed");
         if (!data.isFood) { setPhase("notfood"); return; }
         setScan(normalizeScan(data));
         setPhase("result");
@@ -172,7 +179,7 @@ export default function Fuel() {
           ) : phase === "scanning" ? (
             <div className="flex items-center justify-center gap-3 py-2"><span className="h-5 w-5 animate-spin rounded-full border-2 border-white/15 border-t-signal-good" /><p className="text-sm font-black text-white">Estimating the visible portion…</p></div>
           ) : phase === "notfood" || phase === "error" ? (
-            <div className="text-center"><p className="text-sm font-black text-white">{phase === "notfood" ? "No meal detected" : "Couldn’t analyse this photo"}</p><button onClick={resetScan} className="mt-4 w-full rounded-full bg-white py-3 font-golden text-[13px] text-on-action">TRY ANOTHER PHOTO</button></div>
+            <div className="text-center"><p className="text-sm font-black text-white">{phase === "notfood" ? "No meal detected" : errText ?? "Couldn’t analyse this photo"}</p><button onClick={resetScan} className="mt-4 w-full rounded-full bg-white py-3 font-golden text-[13px] text-on-action">TRY ANOTHER PHOTO</button></div>
           ) : (
             <div className="grid grid-cols-2 gap-2.5"><button onClick={() => camRef.current?.click()} className="rounded-full bg-white py-3.5 font-golden text-[13px] text-on-action">CAMERA</button><button onClick={() => libRef.current?.click()} className="rounded-full bg-track py-3.5 font-golden text-[13px] text-white ring-1 ring-inset ring-hair active:scale-[0.98]">LIBRARY</button></div>
           )}

@@ -34,55 +34,22 @@ export type FuelModelOutput = z.output<typeof FuelModelOutputSchema>;
 
 export type FuelRequestResult =
   | { ok: true; image: string }
-  | { ok: false; error: "payload-too-large"; status: 413 }
+  // oversize is answered by lib/api-guard with a 413 before we ever parse
   | { ok: false; error: "invalid-request"; status: 400 };
 
-export async function readFuelRequest(req: Request): Promise<FuelRequestResult> {
-  const contentLength = req.headers.get("content-length");
-  if (contentLength) {
-    const declaredBytes = Number(contentLength);
-    if (Number.isFinite(declaredBytes) && declaredBytes > MAX_FUEL_REQUEST_BYTES) {
-      return { ok: false, error: "payload-too-large", status: 413 };
-    }
-  }
-
-  if (!req.body) return { ok: false, error: "invalid-request", status: 400 };
-
-  const reader = req.body.getReader();
-  const chunks: Uint8Array[] = [];
-  let total = 0;
-
-  try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      total += value.byteLength;
-      if (total > MAX_FUEL_REQUEST_BYTES) {
-        await reader.cancel().catch(() => undefined);
-        return { ok: false, error: "payload-too-large", status: 413 };
-      }
-      chunks.push(value);
-    }
-  } catch {
-    return { ok: false, error: "invalid-request", status: 400 };
-  }
-
-  const bytes = new Uint8Array(total);
-  let offset = 0;
-  for (const chunk of chunks) {
-    bytes.set(chunk, offset);
-    offset += chunk.byteLength;
-  }
-
-  try {
-    const raw = JSON.parse(new TextDecoder().decode(bytes));
-    const parsed = FuelRequestSchema.safeParse(raw);
-    return parsed.success
-      ? { ok: true, image: parsed.data.image }
-      : { ok: false, error: "invalid-request", status: 400 };
-  } catch {
-    return { ok: false, error: "invalid-request", status: 400 };
-  }
+/**
+ * Validate an already-parsed body.
+ *
+ * lib/api-guard streams and size-caps every paid route's body, and a Request
+ * body can only be read once — so the route hands the parsed value here rather
+ * than re-reading the stream. MAX_FUEL_REQUEST_BYTES is the guard's ceiling for
+ * this route as well as the schema's, so an oversized photo is still a 413.
+ */
+export function readFuelBody(raw: unknown): FuelRequestResult {
+  const parsed = FuelRequestSchema.safeParse(raw);
+  return parsed.success
+    ? { ok: true, image: parsed.data.image }
+    : { ok: false, error: "invalid-request", status: 400 };
 }
 
 export function parseFuelModelOutput(raw: unknown): FuelModelOutput | null {

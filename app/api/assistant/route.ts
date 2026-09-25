@@ -1,6 +1,8 @@
 // The in-app help assistant "MotionLab 2.0". Knows the whole app, talks like a
 // friendly human. The key stays server-side; the underlying provider is never named.
 
+import { guard } from "@/lib/api-guard";
+
 export const maxDuration = 30;
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -110,7 +112,13 @@ export async function POST(req: Request) {
   const key = process.env.OPENAI_API_KEY;
   if (!key) return Response.json({ ok: false, error: "no-key" }, { status: 500 });
 
-  const { messages, context } = (await req.json()) as { messages: Msg[]; context?: unknown };
+  // paid upstream — identity, ceiling and size before anything else
+  const gate = await guard<{ messages: Msg[]; context?: unknown }>(
+    req, "assistant", { perMinute: 15, perHour: 120, maxBytes: 256 * 1024 }
+  );
+  if ("error" in gate) return gate.error;
+
+  const { messages, context } = gate.body;
   if (!Array.isArray(messages) || !messages.length) {
     return Response.json({ ok: false, error: "empty" }, { status: 400 });
   }

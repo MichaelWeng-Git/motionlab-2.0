@@ -13,6 +13,7 @@
 // Only small JPEG anchor frames leave the device; the video itself never does.
 
 import type { Frame } from "./analysis";
+import { apiPost } from "@/lib/api-client";
 
 type J3 = { x: number; y: number; z: number };
 type V3 = [number, number, number];
@@ -107,12 +108,7 @@ export async function sam3dFuse(video: HTMLVideoElement, frames: Frame[]): Promi
   try {
     const ac = new AbortController();
     const to = setTimeout(() => ac.abort(), 75_000);
-    const resp = await fetch("/api/pose3d", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ frames: uris }),
-      signal: ac.signal,
-    });
+    const resp = await apiPost("/api/pose3d", { frames: uris }, { signal: ac.signal });
     clearTimeout(to);
     if (!resp.ok) return false;
     payload = await resp.json();

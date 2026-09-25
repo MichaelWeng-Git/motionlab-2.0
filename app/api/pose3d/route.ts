@@ -4,6 +4,8 @@
 //
 // Cost guard: hard cap on frames per request. Each frame ≈ $0.02 at fal.
 
+import { guard } from "@/lib/api-guard";
+
 export const maxDuration = 300;
 
 const MAX_FRAMES = 12; // ≈ $0.24 ceiling per analysis
@@ -20,7 +22,13 @@ export async function POST(req: Request) {
   const key = process.env.FAL_KEY;
   if (!key) return Response.json({ ok: false, error: "no-key" }, { status: 500 });
 
-  const { frames } = (await req.json()) as { frames: string[] };
+  // paid upstream — identity, ceiling and size before anything else
+  const gate = await guard<{ frames: string[] }>(
+    req, "pose3d", { perMinute: 4, perHour: 20, maxBytes: 16 * 1024 * 1024 }
+  );
+  if ("error" in gate) return gate.error;
+
+  const { frames } = gate.body;
   if (!Array.isArray(frames) || !frames.length) {
     return Response.json({ ok: false, error: "no-frames" }, { status: 400 });
   }

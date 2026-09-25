@@ -1,7 +1,8 @@
 // Server-side fuel scanner: one meal photo in, macro estimate out.
 // Same key/channel as the coach; the photo is analyzed and dropped, never stored.
 
-import { parseFuelModelOutput, readFuelRequest } from "@/lib/fuel-api";
+import { guard } from "@/lib/api-guard";
+import { MAX_FUEL_REQUEST_BYTES, parseFuelModelOutput, readFuelBody } from "@/lib/fuel-api";
 
 export const maxDuration = 30;
 
@@ -9,7 +10,13 @@ export async function POST(req: Request) {
   const key = process.env.OPENAI_API_KEY;
   if (!key) return Response.json({ ok: false, error: "no-key" }, { status: 500 });
 
-  const request = await readFuelRequest(req);
+  // paid VISION upstream — this one doubled as a free image-analysis proxy
+  const gate = await guard<unknown>(
+    req, "fuel", { perMinute: 6, perHour: 40, maxBytes: MAX_FUEL_REQUEST_BYTES }
+  );
+  if ("error" in gate) return gate.error;
+
+  const request = readFuelBody(gate.body);
   if (!request.ok) return Response.json({ ok: false, error: request.error }, { status: request.status });
 
   const system = `You are the fuel scanner inside MotionLab, an app for amateur athletes.

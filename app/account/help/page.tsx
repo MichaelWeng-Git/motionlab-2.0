@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { proteinTargetForWeight } from "@/lib/fuel";
 import { computeMuscleState, getRecoveryState, recoveryStateText } from "@/lib/muscles";
+import { apiFailureOf, apiFailureText, apiPost } from "@/lib/api-client";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -85,16 +86,13 @@ export default function Help() {
     setInput("");
     setBusy(true);
     try {
-      const r = await fetch("/api/assistant", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next, context: buildContext() }),
-      });
-      const j = await r.json();
-      setMsgs((m) => [
-        ...m,
-        { role: "assistant", content: j.ok ? j.reply : "Sorry, I couldn't reach my brain just now — try again in a sec." },
-      ]);
+      const r = await apiPost("/api/assistant", { messages: next, context: buildContext() });
+      const j = await r.json().catch(() => ({}));
+      // a refusal from the guard has a reason worth repeating (rate limit, signed out)
+      const reply = r.ok
+        ? (j.ok ? j.reply : "Sorry, I couldn't reach my brain just now — try again in a sec.")
+        : apiFailureText(apiFailureOf(r.status, j));
+      setMsgs((m) => [...m, { role: "assistant", content: reply }]);
     } catch {
       setMsgs((m) => [...m, { role: "assistant", content: "Hmm, something glitched. Give it another try?" }]);
     } finally {

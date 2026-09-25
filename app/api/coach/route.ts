@@ -5,6 +5,7 @@
 export const maxDuration = 30;
 
 import catalog from "@/lib/exercise-catalog.json";
+import { guard } from "@/lib/api-guard";
 type CatEntry = { id: string; name: string; sport: string; target: string; dose: string };
 const CATALOG = catalog as CatEntry[];
 
@@ -16,7 +17,14 @@ export async function POST(req: Request) {
     return Response.json({ ok: false, error: "no-key" }, { status: 500 });
   }
 
-  const { qualities, duration, frames, profile, keyframes, moments } = (await req.json()) as {
+  // paid upstream — identity, ceiling and size before anything else
+  const gate = await guard<{
+    qualities?: unknown; duration?: number; frames?: number; profile?: unknown;
+    keyframes?: unknown; moments?: unknown;
+  }>(req, "coach", { perMinute: 6, perHour: 40, maxBytes: 12 * 1024 * 1024 });
+  if ("error" in gate) return gate.error;
+
+  const { qualities, duration, frames, profile, keyframes, moments } = gate.body as {
     moments?: number[]; // engine-detected key moments as 0-1 clip fractions
     qualities: Quality[];
     duration: number;

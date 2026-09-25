@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { computeAnalysis, saveAnalysis, setReplay } from "@/lib/analysis";
 import { loadReplayDb } from "@/lib/replay-db";
 import { recordSession } from "@/lib/stats";
+import { apiPost } from "@/lib/api-client";
 
 export default function Recover() {
   const [log, setLog] = useState<string[]>([]);
@@ -79,17 +80,13 @@ export default function Recover() {
         say("Asking the AI coach (same as a normal analysis)…");
         try {
           const prof = JSON.parse(localStorage.getItem("ml_profile") ?? "{}");
-          const resp = await fetch("/api/coach", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              qualities: analysis.qualities,
-              moments: analysis.keyMoments.map((k) => +(k.t / duration).toFixed(3)),
-              duration,
-              frames: rep.frames.length,
-              profile: { level: prof.level, goal: prof.goal },
-              keyframes: kf,
-            }),
+          const resp = await apiPost("/api/coach", {
+            qualities: analysis.qualities,
+            moments: analysis.keyMoments.map((k) => +(k.t / duration).toFixed(3)),
+            duration,
+            frames: rep.frames.length,
+            profile: { level: prof.level, goal: prof.goal },
+            keyframes: kf,
           });
           if (resp.ok) {
             const j = await resp.json();

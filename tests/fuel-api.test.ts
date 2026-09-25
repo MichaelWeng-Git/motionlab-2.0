@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MAX_FUEL_REQUEST_BYTES, parseFuelModelOutput, readFuelRequest } from "@/lib/fuel-api";
+import { MAX_FUEL_REQUEST_BYTES, parseFuelModelOutput, readFuelBody } from "@/lib/fuel-api";
 
 describe("fuel API trust boundary", () => {
   it("normalizes finite macro estimates into safe whole-number bounds", () => {
@@ -32,37 +32,26 @@ describe("fuel API trust boundary", () => {
     expect(parseFuelModelOutput(value)).toBeNull();
   });
 
-  it("accepts only a strict, bounded image request", async () => {
-    const request = new Request("http://localhost/api/fuel", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ image: "data:image/jpeg;base64,AAAA" }),
-    });
-    await expect(readFuelRequest(request)).resolves.toEqual({
+  it("accepts only a strict, bounded image request", () => {
+    expect(readFuelBody({ image: "data:image/jpeg;base64,AAAA" })).toEqual({
       ok: true,
       image: "data:image/jpeg;base64,AAAA",
     });
   });
 
-  it("rejects oversized bodies before reading them", async () => {
-    const request = new Request("http://localhost/api/fuel", {
-      method: "POST",
-      headers: { "Content-Length": String(MAX_FUEL_REQUEST_BYTES + 1) },
-      body: "{}",
-    });
-    await expect(readFuelRequest(request)).resolves.toEqual({
+  // The guard rejects an oversized body before parsing (tests/api-guard); this is
+  // the second wall, for an image that fits the body but not this route's ceiling.
+  it("rejects an image past the fuel ceiling", () => {
+    const huge = `data:image/jpeg;base64,${"A".repeat(MAX_FUEL_REQUEST_BYTES + 4)}`;
+    expect(readFuelBody({ image: huge })).toEqual({
       ok: false,
-      error: "payload-too-large",
-      status: 413,
+      error: "invalid-request",
+      status: 400,
     });
   });
 
-  it("rejects malformed and extra request fields", async () => {
-    const request = new Request("http://localhost/api/fuel", {
-      method: "POST",
-      body: JSON.stringify({ image: "https://example.com/meal.jpg", userId: "someone-else" }),
-    });
-    await expect(readFuelRequest(request)).resolves.toEqual({
+  it("rejects malformed and extra request fields", () => {
+    expect(readFuelBody({ image: "https://example.com/meal.jpg", userId: "someone-else" })).toEqual({
       ok: false,
       error: "invalid-request",
       status: 400,

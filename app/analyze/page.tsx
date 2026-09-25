@@ -13,6 +13,7 @@ import { drawSkeleton } from "@/lib/draw";
 import { SIGNAL, SURFACE } from "@/lib/palette";
 import { DEFAULT_SESSION_MIN, sessionSecondsOf } from "@/lib/workouts";
 import { getPreferences } from "@/lib/preferences";
+import { apiPost } from "@/lib/api-client";
 
 // Real skeleton tracking: MediaPipe Pose runs in the browser, frame by frame,
 // drawing the skeleton over the user's actual video. No servers, no API keys.
@@ -367,10 +368,9 @@ export default function Analyze() {
           const ac = new AbortController();
           requestAbortRef.current = ac;
           const to = setTimeout(() => ac.abort(), 25000);
-          const resp = await fetch("/api/coach", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
+          const resp = await apiPost(
+            "/api/coach",
+            {
               qualities: analysis.qualities,
               // engine-DETECTED key moments (clip fractions) — anchors for tip.when
               moments: analysis.keyMoments.map((k) => +(k.t / video.duration).toFixed(3)),
@@ -378,9 +378,9 @@ export default function Analyze() {
               frames: framesWithBody.length,
               profile: { level: prof.level, goal: prof.goal },
               keyframes: kf,
-            }),
-            signal: ac.signal,
-          });
+            },
+            { signal: ac.signal }
+          );
           clearTimeout(to);
           requestAbortRef.current = null;
           if (!active()) return;
