@@ -14,6 +14,7 @@ import { SIGNAL, SURFACE } from "@/lib/palette";
 import { DEFAULT_SESSION_MIN, sessionSecondsOf } from "@/lib/workouts";
 import { getPreferences } from "@/lib/preferences";
 import { apiPost } from "@/lib/api-client";
+import { ModelsUnavailableError, modelUrl } from "@/lib/model-url";
 
 // Real skeleton tracking: MediaPipe Pose runs in the browser, frame by frame,
 // drawing the skeleton over the user's actual video. No servers, no API keys.
@@ -168,7 +169,17 @@ export default function Analyze() {
       try {
         // — stage 0: load models (MediaPipe heavy + MoveNet Thunder ensemble) + video —
         const seed = seedRef.current ?? undefined;
-        const engine = await createEnsemble(seed);
+        // The backbone is the one model with no fallback. If its weights are not
+        // reachable — offline, or NEXT_PUBLIC_MODEL_BASE unset on a deploy where
+        // public/models/ does not exist — say so. "Try another video" is advice
+        // that can never work here.
+        let engine;
+        try {
+          engine = await createEnsemble(seed);
+        } catch (e) {
+          console.error("[models] backbone unavailable:", modelUrl("pose_landmarker_heavy.task"), e);
+          throw new ModelsUnavailableError(e);
+        }
         // kick off the 3D lifter load NOW so its 162MB model downloads while we scan frames
         const lifterPromise = createLifter().catch(() => null);
         // ViTPose refiner (transformer 2D pose) — sharpens every frame's keypoints during the scan
@@ -455,7 +466,11 @@ export default function Analyze() {
       } catch (e) {
         if (!active()) return;
         console.error(e);
-        setErrorMsg("Something went wrong while analyzing. Try again or pick another video.");
+        setErrorMsg(
+          e instanceof ModelsUnavailableError
+            ? e.message
+            : "Something went wrong while analyzing. Try again or pick another video."
+        );
         setStep("error");
       }
     })();

@@ -9,6 +9,7 @@
 
 import type { Frame } from "./analysis";
 import { createOrtSession } from "./ort-loader";
+import { modelUrl } from "./model-url";
 
 // COCO-17 index → MediaPipe-33 index
 const COCO_TO_MP: [number, number][] = [
@@ -105,19 +106,19 @@ export async function createRefiner(): Promise<Refiner | null> {
     if (probeWebGPU) {
       try {
         bundle = wantBest
-          ? await createOrtSession("/models/vitpose_h_fp16.onnx")
-          : await createOrtSession("/models/vitpose_l_fp32.onnx");
+          ? await createOrtSession(modelUrl("vitpose_h_fp16.onnx"))
+          : await createOrtSession(modelUrl("vitpose_l_fp32.onnx"));
         tier = wantBest ? "huge" : "large";
       } catch {
         try {
-          bundle = await createOrtSession("/models/vitpose_l_fp32.onnx");
+          bundle = await createOrtSession(modelUrl("vitpose_l_fp32.onnx"));
           tier = "large";
         } catch {
-          bundle = await createOrtSession("/models/vitpose_fp16.onnx");
+          bundle = await createOrtSession(modelUrl("vitpose_fp16.onnx"));
         }
       }
     } else {
-      bundle = await createOrtSession("/models/vitpose_int8.onnx");
+      bundle = await createOrtSession(modelUrl("vitpose_int8.onnx"));
     }
     const { ort, hasWebGPU, session } = bundle;
     const inName = session.inputNames[0];
@@ -127,16 +128,16 @@ export async function createRefiner(): Promise<Refiner | null> {
 
     // second expert (best-effort — refiner still works if it can't load)
     let rt: Awaited<ReturnType<typeof createOrtSession>> | null = null;
-    try { rt = await createOrtSession("/models/rtmpose_x.onnx"); } catch { rt = null; }
+    try { rt = await createOrtSession(modelUrl("rtmpose_x.onnx")); } catch { rt = null; }
 
     // Meta Sapiens anchor corrector (WebGPU only; best-effort).
     // 0.6B (AP 81.2 — the strongest pose model that fits on-device) first, 0.3B fallback.
     let sap: Awaited<ReturnType<typeof createOrtSession>> | null = null;
     if (probeWebGPU) {
       // fast mode anchors with 0.3B (~1.6s/anchor), best mode with 0.6B (~3s)
-      try { sap = await createOrtSession(wantBest ? "/models/sapiens_06b_fp16.onnx" : "/models/sapiens_03b_fp16.onnx"); }
+      try { sap = await createOrtSession(wantBest ? modelUrl("sapiens_06b_fp16.onnx") : modelUrl("sapiens_03b_fp16.onnx")); }
       catch {
-        try { sap = await createOrtSession("/models/sapiens_03b_fp16.onnx"); } catch { sap = null; }
+        try { sap = await createOrtSession(modelUrl("sapiens_03b_fp16.onnx")); } catch { sap = null; }
       }
     }
     const spCanvas = document.createElement("canvas");

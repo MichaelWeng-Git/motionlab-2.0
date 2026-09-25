@@ -7,6 +7,7 @@
 // scenario (two runners passing) that broke center-distance locking.
 
 import { createOrtSession } from "./ort-loader";
+import { modelUrl } from "./model-url";
 
 export type TrackBox = {
   id: number;
@@ -37,7 +38,7 @@ const iou = (a: { cx: number; cy: number; w: number; h: number }, b: { cx: numbe
 };
 
 export async function createPersonTracker() {
-  const bundle = await createOrtSession("/models/yolov8s.onnx", { forceWasm: true });
+  const bundle = await createOrtSession(modelUrl("yolov8s.onnx"), { forceWasm: true });
   const { ort, session } = bundle;
   const canvas = document.createElement("canvas");
   canvas.width = IN; canvas.height = IN;

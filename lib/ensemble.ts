@@ -7,6 +7,8 @@
 // cancels model-specific jitter. If MoveNet can't load (offline), we fall
 // back to MediaPipe alone — the pipeline never breaks.
 
+import { modelUrl } from "./model-url";
+
 type LM = { x: number; y: number; z?: number; visibility?: number };
 
 // MoveNet (COCO-17) index → MediaPipe-33 index, for the joints both models share
@@ -113,7 +115,7 @@ export async function createEnsemble(seed?: PersonSeed) {
   const { FilesetResolver, PoseLandmarker } = await import("@mediapipe/tasks-vision");
   const fileset = await FilesetResolver.forVisionTasks("/mediapipe/wasm");
   const mp = await PoseLandmarker.createFromOptions(fileset, {
-    baseOptions: { modelAssetPath: "/models/pose_landmarker_heavy.task", delegate: "GPU" },
+    baseOptions: { modelAssetPath: modelUrl("pose_landmarker_heavy.task"), delegate: "GPU" },
     runningMode: "VIDEO",
     numPoses: 3, // courts have opponents/bystanders — detect several, then LOCK ONTO ONE
   });
@@ -121,7 +123,7 @@ export async function createEnsemble(seed?: PersonSeed) {
   // Far-away athletes (tennis court scale) are only a handful of pixels to the
   // full-frame pass; re-running on a tight crop is the standard top-down fix.
   const mpCrop = await PoseLandmarker.createFromOptions(fileset, {
-    baseOptions: { modelAssetPath: "/models/pose_landmarker_heavy.task", delegate: "GPU" },
+    baseOptions: { modelAssetPath: modelUrl("pose_landmarker_heavy.task"), delegate: "GPU" },
     runningMode: "IMAGE",
     numPoses: 2, // a crossing crop can contain two bodies — we pick by crop center
   });

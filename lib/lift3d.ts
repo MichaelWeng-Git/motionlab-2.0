@@ -12,6 +12,7 @@
 
 import type { Frame } from "./analysis";
 import { createOrtSession } from "./ort-loader";
+import { modelUrl } from "./model-url";
 
 const T = 243; // MotionBERT temporal window — the model's default; captures full gait cycles
 const STRIDE = 120; // overlapping windows (only used for clips longer than T), averaged
@@ -102,7 +103,7 @@ type J3 = { x: number; y: number; z: number };
 
 export async function createLifter(): Promise<Lifter | null> {
   try {
-    const { ort, session } = await createOrtSession("/models/motionbert_3d_243.onnx");
+    const { ort, session } = await createOrtSession(modelUrl("motionbert_3d_243.onnx"));
     const inName = session.inputNames[0];
     const outName = session.outputNames[0];
 
