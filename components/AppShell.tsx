@@ -13,11 +13,16 @@ import { isLocalDevAuthBypass } from "@/lib/dev-auth";
 // The assistant is a normal signed-in destination: excluding it here used to
 // remove both pieces of chrome and reveal the old white document canvas.
 const AUTH_PATHS = ["/login", "/onboarding"];
+// Readable WITHOUT an account. A privacy policy you must sign in to read is no
+// use to the person deciding whether to sign in — /login links here, so the gate
+// must let it through. It keeps the dark shell; it just has no chrome.
+const PUBLIC_PATHS = ["/privacy"];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const isAuthPage = AUTH_PATHS.includes(pathname);
+  const isPublicPage = PUBLIC_PATHS.includes(pathname);
   // MotionLab is one dark product shell. Individual light cards can still be
   // deliberate surfaces, but navigation must never swap the whole viewport to
   // paper and flash white between routes.
@@ -63,7 +68,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       if (pathname === "/login") router.replace("/");
       return;
     }
-    if (isAuthPage) return;
+    if (isAuthPage || isPublicPage) return;
     // A magic link may land on ANY route (the Supabase Site URL is often just
     // "/"). Its tokens live in the URL — bounce to /login WITH them intact so
     // the login page can complete the sign-in. Redirecting normally here would
@@ -89,11 +94,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         } else router.replace("/login");
       })
       .catch(() => router.replace("/login"));
-  }, [pathname, isAuthPage, router]);
+  }, [pathname, isAuthPage, isPublicPage, router]);
 
   if (isAuthPage) {
     // immersive: no top bar, no bottom nav — main is the scroll area, fills the shell
     return <main className="flex min-h-0 flex-1 flex-col overflow-y-auto">{children}</main>;
+  }
+
+  if (isPublicPage) {
+    // No chrome (there is no account to navigate), but the data-shell wrapper
+    // still has to be here: without it every --panel/--fg token on the page
+    // falls back to the light :root values on a dark canvas.
+    return (
+      <div className="contents" data-shell="dark">
+        <main className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-graphite">{children}</main>
+      </div>
+    );
   }
 
   return (

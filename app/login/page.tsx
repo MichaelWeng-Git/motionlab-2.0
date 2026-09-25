@@ -6,6 +6,7 @@
 //    created on the spot; known email = straight back into the account.
 //  - Google → same idea via OAuth (profile auto-created on first sign-in).
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
@@ -311,6 +312,16 @@ export default function Login() {
               </div>
             </form>
           )}
+
+          {/* Readable before signing in, not after. Someone is about to hand this
+              app a video of themselves — the page that says what happens to it
+              has to be reachable from here. */}
+          <p className="mt-6 text-center text-[11px] font-semibold text-ink-muted">
+            Your video is analysed on your device.{" "}
+            <Link href="/privacy" className="font-bold underline underline-offset-2">
+              What we do with your data
+            </Link>
+          </p>
         </div>
       </div>
     </div>
