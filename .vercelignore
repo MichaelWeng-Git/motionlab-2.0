@@ -1,0 +1,24 @@
+# The Vercel CLI uploads this directory. Without this file it would try to send
+# public/models/ — 4.9 GB, single files over a gigabyte — which is both far past
+# what a deployment may contain and completely unnecessary: the weights are
+# served from object storage and reached via NEXT_PUBLIC_MODEL_BASE.
+# See docs/DEPLOY.md.
+public/models/
+
+# 14 GB of local test footage, never shipped
+public/test/
+
+# build output and caches — Vercel builds from source
+node_modules/
+.next/
+.next-dev/
+.pnpm-store/
+tsconfig.tsbuildinfo
+
+# local secrets, never uploaded — env vars are set in the Vercel dashboard
+.env.local
+.env*.local
+
+# raw art, not shipped code
+design-assets/
+exercise-images-inbox/
