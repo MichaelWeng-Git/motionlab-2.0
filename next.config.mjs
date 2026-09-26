@@ -1,3 +1,25 @@
+// An environment variable set to the EMPTY STRING is not the same as an unset
+// one, and the difference kills the build.
+//
+// next-auth's parseUrl does `new URL(url ?? defaultUrl)`. `??` only falls back
+// on null/undefined, so "" goes straight into `new URL("")`, which throws
+// TypeError: Invalid URL — and every page importing next-auth/react fails to
+// prerender. The error names the page, never the variable, so it reads as a
+// bug in the app.
+//
+// Vercel creates exactly this state: importing a project detects the names in
+// .env.example and adds them with empty values. A first deploy then fails with
+// a stack trace pointing at /login.
+//
+// Deleting them here, in the config that is evaluated before the build, turns
+// an empty value back into "not set" — which every consumer already handles
+// (next-auth falls back to localhost, sbBrowser() returns null, modelUrl()
+// falls back to /models). A real value is still required for these to WORK;
+// this only stops an empty one from being fatal.
+for (const key of Object.keys(process.env)) {
+  if (process.env[key] === "") delete process.env[key];
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
