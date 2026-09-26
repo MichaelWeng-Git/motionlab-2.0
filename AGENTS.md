@@ -6,6 +6,10 @@ source of truth for anything not covered here.
 **Design values live in [docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md)** —
 radius, type, elevation, colour, measured from this codebase.
 
+**Shipping it lives in [docs/DEPLOY.md](docs/DEPLOY.md)** — the weights go up
+separately from the app, and `NEXT_PUBLIC_MODEL_BASE` is inlined at build time,
+so the order matters.
+
 **The plan of work lives in [docs/CHECKLIST.md](docs/CHECKLIST.md)** — merged
 P0/P1 backlog and the owner's 24-point list, one item per commit, each with the
 review prompt to run after it ships.
@@ -585,10 +589,10 @@ Cleared since this list was written: GPS no longer fabricates distance, and the
 analyze flow now asks for session length (so `DEFAULT_SESSION_MIN` is a rare
 fallback, not the norm).
 
-1. **Deploy blockers still open**: there is no `app/error.tsx` and no
-   `app/not-found.tsx`, so an unhandled error in production is a blank screen;
-   `/report/demo` (the only route allowed to read `lib/mock.ts`) is reachable in
-   a production build; `/analyze` accepts a video of any size or length.
+1. **Deploy blockers still open**: `/report/demo` (the only route allowed to
+   read `lib/mock.ts`) is reachable in a production build, and `/analyze`
+   accepts a video of any size or length. Error boundaries are done —
+   `app/error.tsx`, `app/not-found.tsx` and `app/global-error.tsx` exist.
 2. **Surface biomech failures** — record why `computeBiomech` returned null and
    tell the user, instead of silently falling through
    (`app/analyze/page.tsx:351` does `if (bm) ...`).
