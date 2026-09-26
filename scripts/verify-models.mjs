@@ -12,6 +12,9 @@
 //   · presence      — a 404 on one file kills its whole device tier
 //   · byte size     — a truncated multi-GB upload answers 200 with short content,
 //                     and onnxruntime fails much later with an opaque error
+//   · cache headers — these files are immutable, so they should be cached for a
+//                     long time. Without it every analysis re-downloads gigabytes
+//                     and the transfer bill scales with usage instead of users.
 //   · CORS          — the browser fetches these cross-origin. No
 //                     Access-Control-Allow-Origin and every model "is missing",
 //                     which looks identical to a failed upload from the app side.
@@ -70,12 +73,16 @@ const rows = await Promise.all(needed.map(async (f) => {
     const r = await fetch(url, { method: "HEAD", headers: { Origin: "https://app.invalid" } });
     const len = Number(r.headers.get("content-length") ?? NaN);
     const cors = r.headers.get("access-control-allow-origin");
+    const cache = r.headers.get("cache-control") ?? "";
+    const maxAge = Number(/max-age=(\d+)/.exec(cache)?.[1] ?? 0);
     if (!r.ok) return { f, bad: `HTTP ${r.status}` };
     if (Number.isFinite(len) && len !== f.bytes) return { f, bad: `${mb(len)} served, expected ${mb(f.bytes)} — truncated upload` };
     // Only a warning: a base on the app's own origin needs no CORS header. From a
     // separate host it does, and without it the file is unreachable to a browser.
     if (!cors) return { f, len, warn: "no Access-Control-Allow-Origin (fine only if same-origin as the app)" };
-    return { f, len, cors };
+    // a day is the floor worth accepting; these files never change
+    if (maxAge < 86400) return { f, len, warn: `cache-control "${cache || "absent"}" — re-downloads instead of caching` };
+    return { f, len, cors, maxAge };
   } catch (e) {
     return { f, bad: e.message };
   }
@@ -111,6 +118,6 @@ console.log(
     ? `\n${bad.length} of ${needed.length} files missing or truncated.`
     : warned.length
       ? `\nAll ${needed.length} files present at the right size, but ${warned.length} send no CORS header — check that only if this host differs from the app's origin.`
-      : `\nAll ${needed.length} files serve correctly.`
+      : `\nAll ${needed.length} files serve correctly, cached for ${Math.round(Math.min(...rows.map((r) => r.maxAge)) / 86400)} days.`
 );
 process.exit(bad.length ? 1 : 0);

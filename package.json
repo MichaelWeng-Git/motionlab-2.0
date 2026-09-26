@@ -35,6 +35,7 @@
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
     "@types/three": "^0.185.4",
+    "@vercel/blob": "^2.8.0",
     "autoprefixer": "10.4.19",
     "postcss": "8.4.39",
     "sharp": "^0.35.4",
