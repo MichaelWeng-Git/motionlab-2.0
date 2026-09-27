@@ -16,6 +16,7 @@ const SPEEDS = [
 
 export function VideoReplay({
   videoUrl,
+  onVideoError,
   frames,
   focus,
   speed: speedProp,
@@ -26,6 +27,10 @@ export function VideoReplay({
   debugControls = false,
 }: {
   videoUrl: string;
+  /** The blob URL died (revoked, or the page was reloaded). The owner can
+   *  rebuild it from IndexedDB; without this the player shows the skeleton
+   *  over an empty well and nothing says why. */
+  onVideoError?: () => void;
   frames: Frame[];
   focus?: { landmark: number; label: string } | null;
   speed?: number;                      // controlled speed (report page shares it with the 3D view)
@@ -69,6 +74,8 @@ export function VideoReplay({
   useEffect(() => {
     const video = videoRef.current!;
     const canvas = canvasRef.current!;
+    const onSrcError = () => onVideoError?.();
+    video.addEventListener("error", onSrcError);
     video.src = videoUrl;
     video.muted = true;
     video.playsInline = true;
@@ -231,6 +238,7 @@ export function VideoReplay({
       cancelAnimationFrame(raf);
       video.removeEventListener("loadedmetadata", onMeta);
       video.removeEventListener("ended", onEnd);
+      video.removeEventListener("error", onSrcError);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoUrl]);

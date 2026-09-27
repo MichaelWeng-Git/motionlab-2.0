@@ -50,6 +50,12 @@ export default function Analyze() {
   const pendingRef = useRef<{ final: AnalysisResult; cover?: string } | null>(null);
 
   const pickedFileRef = useRef<File | null>(null);
+  // The object URL stops being ours the moment setReplay() takes it: the report
+  // page renders from that exact string. Revoking it on unmount — which is what
+  // navigating to the report DOES — left the report with a dead blob URL, so the
+  // video never painted while the skeleton, drawn from frames onto a canvas,
+  // carried on as if nothing were wrong.
+  const handedOffUrlRef = useRef<string | null>(null);
   const seedRef = useRef<PersonSeed | null>(null);
   const [picker, setPicker] = useState<{ img: string; people: PersonSeed[] } | null>(null);
   const [pickerT, setPickerT] = useState(0); // the timestamp the picker frame came from
@@ -77,7 +83,8 @@ export default function Analyze() {
       setStep("error");
       return;
     }
-    if (videoUrl) URL.revokeObjectURL(videoUrl);
+    if (videoUrl && videoUrl !== handedOffUrlRef.current) URL.revokeObjectURL(videoUrl);
+    handedOffUrlRef.current = null;
     clearAnalysis(); // new video = clean slate, no stale report
     clearReplayDb();
     pickedFileRef.current = file;
@@ -101,7 +108,7 @@ export default function Analyze() {
     setStage(0);
     setProgress(0);
     setStep("pick");
-    if (videoUrl) URL.revokeObjectURL(videoUrl);
+    if (videoUrl && videoUrl !== handedOffUrlRef.current) URL.revokeObjectURL(videoUrl);
     setVideoUrl(null);
     setFileMeta(null);
     pendingRef.current = null;
@@ -109,7 +116,8 @@ export default function Analyze() {
 
   useEffect(() => () => {
     requestAbortRef.current?.abort();
-    if (videoUrl) URL.revokeObjectURL(videoUrl);
+    // never revoke a URL we have handed to the replay — see handedOffUrlRef
+    if (videoUrl && videoUrl !== handedOffUrlRef.current) URL.revokeObjectURL(videoUrl);
   }, [videoUrl]);
 
   // — "who are we watching?" probe: if several people are in frame, the user
@@ -440,7 +448,8 @@ export default function Analyze() {
 
         if (!active()) return;
         saveAnalysis(final);
-        setReplay({ videoUrl, frames: framesWithBody, snapshots: [] }); // powers the report's replay player
+        handedOffUrlRef.current = videoUrl;
+        setReplay({ videoUrl, frames: framesWithBody, snapshots: [] }); // powers the report's replay player — the URL is THEIRS now
         // persist locally so the replay survives refreshes (device-only, never uploaded)
         // ALWAYS back up the replay — fall back to re-reading the object URL
         // so a missing picked-file ref can never mean "no backup" again

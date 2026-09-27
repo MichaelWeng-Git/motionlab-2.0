@@ -27,6 +27,7 @@ export default function Report() {
   const [curId, setCurId] = useState<string | null>(null);
   const [cover, setCover] = useState<string | undefined>(undefined); // video cover → share poster
   const [replaySpeed, setReplaySpeed] = useState(1); // shared: video player + 3D view stay in sync
+  const replayRetriedRef = useRef(false);
   const [debugPoseAvailable, setDebugPoseAvailable] = useState(false);
 
   const [, bump] = useState(0);
@@ -226,6 +227,18 @@ export default function Report() {
             focus={focus}
             speed={replaySpeed}
             onSpeedChange={setReplaySpeed}
+            onVideoError={() => {
+              // The in-memory blob URL is gone — a reload, or an owner that
+              // revoked it. IndexedDB still holds the clip, so rebuild from
+              // there rather than leaving a skeleton floating over an empty well.
+              // Once only: if the rebuilt URL also fails there is nothing left
+              // to try, and retrying would spin on every error event.
+              if (replayRetriedRef.current) return;
+              replayRetriedRef.current = true;
+              loadReplayDb().then((r) => {
+                if (r) { setReplay({ videoUrl: URL.createObjectURL(r.video), frames: r.frames, snapshots: [] }); bump((n) => n + 1); }
+              }).catch(() => {});
+            }}
             marker={
               coachMark?.when != null && coachMark.cue
                 ? {
