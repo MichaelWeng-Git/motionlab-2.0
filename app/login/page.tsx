@@ -25,6 +25,10 @@ export default function Login() {
   // appears once we KNOW there isn't one, so returning from Google (or an
   // email magic link) never flashes the login form before moving on
   const [checking, setChecking] = useState(true);
+  // Is Google sign-in actually wired up on the server? Offering a button that
+  // answers 500 "Server Error" tells the athlete nothing and looks like the app
+  // is broken. /api/auth/providers is NextAuth's own answer to that question.
+  const [googleUp, setGoogleUp] = useState<boolean | null>(null);
 
   async function afterLogin(kind: "google" | "email") {
     localStorage.setItem("ml_auth", kind);
@@ -78,6 +82,15 @@ export default function Login() {
   // Returning from Google (NextAuth session) or from an email magic link
   // (Supabase session in the URL): pick either up and continue straight into
   // the app. The form stays hidden until BOTH checks come back empty.
+  useEffect(() => {
+    let dead = false;
+    fetch("/api/auth/providers")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => { if (!dead) setGoogleUp(Boolean(j && j.google)); })
+      .catch(() => { if (!dead) setGoogleUp(false); });
+    return () => { dead = true; };
+  }, []);
+
   useEffect(() => {
     let done = false;
     let watchdog: ReturnType<typeof setTimeout> | null = null;
@@ -266,14 +279,21 @@ export default function Login() {
                 <span className="h-px flex-1 bg-hair" />
               </div>
 
+              {googleUp === false ? (
+                <p className="login-in-l mt-5 rounded-2xl bg-track px-4 py-3 text-center text-[12px] font-semibold leading-snug text-fg-muted" style={{ animationDelay: "1.9s" }}>
+                  Google sign-in isn&apos;t available right now. Use your email above.
+                </p>
+              ) : (
               <button
+                disabled={googleUp === null}
                 onClick={() => signIn("google", { callbackUrl: "/login" })}
-                className="login-in-l mt-5 flex w-full items-center justify-center gap-2.5 rounded-full bg-white py-3.5 text-sm font-bold text-ink shadow-[0_3px_14px_-4px_rgba(14,31,26,0.22)] transition active:scale-[0.98]"
+                className="login-in-l mt-5 flex w-full items-center justify-center gap-2.5 rounded-full bg-white py-3.5 text-sm font-bold text-ink shadow-[0_3px_14px_-4px_rgba(14,31,26,0.22)] transition active:scale-[0.98] disabled:opacity-50"
                 style={{ animationDelay: "1.9s" }}
               >
                 <GoogleMark />
                 Continue with Google
               </button>
+              )}
             </>
           ) : (
             <form onSubmit={verifyCode} className="space-y-3">
