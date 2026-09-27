@@ -634,7 +634,59 @@ button:not(:disabled),
    but every gap before/between authenticated routes must stay graphite. */
 .ml-backdrop {
   background-color: #14181B;
+
+  /* A transform makes this element the containing block for every `position:
+     fixed` descendant — 35 of them, 24 being full-screen overlays. Without it
+     a modal's `fixed inset-0` covers the whole desktop while the app it
+     belongs to sits in a 430px column, which is precisely what made the site
+     read as a stretched web page rather than a phone. Now the app's own
+     overlays stay inside the phone, where they belong. */
+  transform: translateZ(0);
 }
+
+.ml-statusbar {
+  display: none;
+  height: 38px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  background-color: #14181B;
+}
+
+.ml-island {
+  height: 26px;
+  width: 104px;
+  border-radius: 999px;
+  background: #07090A;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+/* ——— the phone, on anything bigger than a phone ———
+   Below this the app IS the device and must fill it: no bezel, no rounding,
+   no wasted height. The frame only appears where there is room around it. */
+@media (min-width: 620px) and (min-height: 680px) {
+  .ml-backdrop {
+    height: min(calc(100dvh - 48px), 924px);
+    align-self: center;
+    border-radius: 46px;
+    /* bezel, then a hairline highlight, then the drop shadow that lifts it
+       off the page. Three rings rather than a border so nothing is added to
+       the box and the 430px content width is untouched. */
+    box-shadow:
+      0 0 0 11px #07090A,
+      0 0 0 12px rgba(255, 255, 255, 0.09),
+      0 30px 70px -24px rgba(0, 0, 0, 0.85);
+  }
+
+  /* the island is decorative chrome, so the app is inset below it rather than
+     rendering underneath — content half-hidden behind a fake notch would be a
+     worse bug than the one this fixes */
+  .ml-statusbar {
+    display: flex;
+  }
+}
+
+
 
 /* Card system: clean white slabs, big radius, ink-tinted stacked shadow +
    1px inset ring (machined edge) — NO borders */

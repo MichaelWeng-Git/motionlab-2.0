@@ -38,6 +38,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           className="ml-backdrop relative isolate flex h-dvh w-full max-w-[430px] flex-col overflow-hidden"
           style={{ backgroundColor: SURFACE.graphite }}
         >
+          {/* Decorative only — no fake clock, no fake battery. A rendered time
+              would also be a clock read during render, which this codebase has
+              already been bitten by (hydration, see app/weeks). */}
+          <div className="ml-statusbar" aria-hidden="true">
+            <span className="ml-island" />
+          </div>
           <AppShell>{children}</AppShell>
         </div>
       </body>
