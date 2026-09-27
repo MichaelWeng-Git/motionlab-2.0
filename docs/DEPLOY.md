@@ -30,16 +30,26 @@ expected. Steps 1 and 2, then redeploy.
 ## 1. Upload the model weights
 
 ```bash
-BLOB_READ_WRITE_TOKEN=… node scripts/upload-models.mjs
+HF_TOKEN=hf_… HF_REPO=<user>/motionlab-models node scripts/upload-models-hf.mjs
 ```
 
-The token is in the Vercel dashboard under Storage → your Blob store →
-`.env.local`. Ten files, 4.9 GB, largest first; multipart above 100 MB. An
-interrupted run resumes — it checks what is already there by size. `--dry-run`
-prints the plan without sending anything.
+A **public Hugging Face model repo**. Create it at huggingface.co/new (type
+Model, visibility Public) and a write token at huggingface.co/settings/tokens.
+`--dry-run` prints the plan without sending anything.
 
-The two `pose_landmarker_{full,lite}.task` files are skipped: nothing loads
-them. `--all` includes them anyway.
+**Vercel Blob does not work for this, and the limit is the plan's, not a
+setting.** Hobby caps storage at 1 GB against 4.84 GB of weights, and transfer
+at 10 GB/month against 2.2 GB per new athlete's first analysis — four new
+athletes and the month's allowance is gone. This was found the hard way: the
+upload ran, three files landed, and the fourth returned
+`Storage quota exceeded for Hobby plan (1GB maximum)`.
+
+A public HF model repo has neither cap, serves from a CDN with CORS already
+enabled, and is what model weights are meant to live in. These are public
+open-source models — YOLOv8, ViTPose, Sapiens, RTMPose, MotionBERT, MediaPipe —
+not anything of the owner's. Cloudflare R2 is the paid alternative (~$0.35/month
+storage, free egress); Vercel Pro is the most expensive, since transfer is
+metered and this app moves 2.2 GB per new athlete.
 
 Uploads land at `models/v1/<name>` and are **never overwritten**. A weight
 file's bytes *are* the model, so replacing one in place would leave cached
@@ -47,13 +57,16 @@ clients and fresh ones silently running different models against the same
 calibration. A new model means `MODEL_VERSION=v2` and a matching
 `NEXT_PUBLIC_MODEL_BASE`.
 
+The two `pose_landmarker_{full,lite}.task` files are skipped: nothing loads
+them.
+
 ## 2. Set the environment variables
 
 The upload script prints the base URL. In Vercel → Settings → Environment
 Variables:
 
 ```
-NEXT_PUBLIC_MODEL_BASE=https://<store>.public.blob.vercel-storage.com/models/v1
+NEXT_PUBLIC_MODEL_BASE=https://huggingface.co/<user>/motionlab-models/resolve/main/models/v1
 ```
 
 `NEXT_PUBLIC_*` is inlined at **build** time, so this must be set *before* the
@@ -86,7 +99,7 @@ production**, which is the worst place to discover them:
 ## 3. Verify what a browser will actually see
 
 ```bash
-node scripts/verify-models.mjs https://<store>.public.blob.vercel-storage.com/models/v1
+node scripts/verify-models.mjs https://huggingface.co/<user>/motionlab-models/resolve/main/models/v1
 ```
 
 Checks each file for presence, exact byte size (a truncated multi-GB upload
