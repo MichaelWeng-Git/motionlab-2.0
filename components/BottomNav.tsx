@@ -56,7 +56,7 @@ export function BottomNav() {
 
       {/* the STANDARD mobile tab bar: full-width, flush to the bottom edge,
           white with a hairline divider — every destination labeled */}
-      <nav className="fixed bottom-0 left-1/2 z-50 w-full max-w-[430px] -translate-x-1/2 border-t border-white/10 bg-graphite/95 text-white backdrop-blur-xl">
+      <nav className="fixed bottom-0 left-1/2 z-50 w-full max-w-phone -translate-x-1/2 border-t border-white/10 bg-graphite/95 text-white backdrop-blur-xl">
         <div className="relative grid grid-cols-3 items-start px-2 pb-[max(0.45rem,env(safe-area-inset-bottom))] pt-1.5">
           {/* Home */}
           <Link href="/" className="flex flex-col items-center gap-1 py-1">

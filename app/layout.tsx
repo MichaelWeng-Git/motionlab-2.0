@@ -35,7 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* This is the route-transition underlay. Keep it dark both inline and
             in CSS so an unmounted template can never expose a pale phone frame. */}
         <div
-          className="ml-backdrop relative isolate flex h-dvh w-full max-w-[430px] flex-col overflow-hidden"
+          className="ml-backdrop relative isolate flex h-dvh w-full max-w-phone flex-col overflow-hidden"
           style={{ backgroundColor: SURFACE.graphite }}
         >
           {/* Decorative only — no fake clock, no fake battery. A rendered time

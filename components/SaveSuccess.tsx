@@ -6,7 +6,7 @@
 export function SaveSuccess({ show, label = "Saved" }: { show: boolean; label?: string }) {
   if (!show) return null;
   return (
-    <div className="pointer-events-auto fixed inset-y-0 left-1/2 z-[70] w-full max-w-[430px] -translate-x-1/2 overflow-hidden">
+    <div className="pointer-events-auto fixed inset-y-0 left-1/2 z-[70] w-full max-w-phone -translate-x-1/2 overflow-hidden">
       {/* rising liquid: ONE sheet, one big wild crest. Peaks are TALL and
           irregular — proper surf, not ripples — and fat droplets get thrown
           off the surface like colliding water. */}

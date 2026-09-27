@@ -664,9 +664,10 @@ button:not(:disabled),
 /* ——— the phone, on anything bigger than a phone ———
    Below this the app IS the device and must fill it: no bezel, no rounding,
    no wasted height. The frame only appears where there is room around it. */
-@media (min-width: 620px) and (min-height: 680px) {
+@media (min-width: 600px) and (min-height: 680px) {
   .ml-backdrop {
-    height: min(calc(100dvh - 48px), 924px);
+    /* iPhone 17 Pro is 874pt tall; shrink only if the window cannot hold it */
+    height: min(calc(100dvh - 48px), 874px);
     align-self: center;
     border-radius: 46px;
     /* bezel, then a hairline highlight, then the drop shadow that lifts it

@@ -1369,7 +1369,7 @@ export default function Activity() {
 
       {/* Strava-style start countdown: black screen, giant white 3 → 2 → 1 → GO */}
       {count !== null && (
-        <div className="fixed inset-y-0 left-1/2 z-[70] grid w-full max-w-[430px] -translate-x-1/2 place-items-center bg-black">
+        <div className="fixed inset-y-0 left-1/2 z-[70] grid w-full max-w-phone -translate-x-1/2 place-items-center bg-black">
           <span
             key={count}
             className="count-pop font-extrabold tracking-tight text-white"

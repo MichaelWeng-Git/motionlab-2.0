@@ -163,7 +163,7 @@ export default function Account() {
       {photoSheet && (
         <div className="fixed inset-0 z-[60] flex items-end justify-center bg-graphite/75 backdrop-blur-[2px]" onClick={() => setPhotoSheet(false)}>
           <div
-            className="w-full max-w-[430px] animate-fade-up rounded-t-3xl bg-sheet p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-fg ring-1 ring-inset ring-hair"
+            className="w-full max-w-phone animate-fade-up rounded-t-3xl bg-sheet p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-fg ring-1 ring-inset ring-hair"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mx-auto h-1 w-10 rounded-full bg-track" />

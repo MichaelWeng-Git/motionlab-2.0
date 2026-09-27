@@ -160,6 +160,17 @@ export default function Home() {
   const chargeRef = useRef<HTMLElement>(null);
   const [introStep, setIntroStep] = useState<number | null>(null);
   const [introRect, setIntroRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
+  const [introShellH, setIntroShellH] = useState(0);
+  // Which steps this athlete will actually see. CHARGE has no card until there
+  // is something to charge, so a new account walks three steps, not four —
+  // and four dots under a three-step tour reads as if it ended early.
+  const [introSteps, setIntroSteps] = useState<number[]>([]);
+  useEffect(() => {
+    const read = () => setIntroShellH(document.querySelector(".ml-backdrop")?.getBoundingClientRect().height ?? 0);
+    read();
+    window.addEventListener("resize", read);
+    return () => window.removeEventListener("resize", read);
+  }, []);
   const INTRO = [
     { t: "TODAY", d: "Your whole day in one score — Move, Analyze, Workout." },
     { t: "FORM & LOAD", d: "FORM is how well you move. LOAD is how much you train." },
@@ -170,15 +181,67 @@ export default function Home() {
   useEffect(() => {
     if (introStep === null) return;
     const target = [todayRef, formRef, musclesRef, chargeRef][introStep]?.current;
-    if (!target) return;
+    if (!target) {
+      // The card this step describes is not on the page — CHARGE, for one, is
+      // not rendered until there is something to charge, so a new athlete never
+      // has it. Returning here left the PREVIOUS step's ring on screen while
+      // the caption advanced, so the bubble said CHARGE while the spotlight sat
+      // on MUSCLES. Skip to the next step that exists instead, and end the tour
+      // if none do.
+      const rest = [todayRef, formRef, musclesRef, chargeRef].slice(introStep + 1).findIndex((r) => r.current);
+      if (rest === -1) {
+        try { localStorage.setItem("ml_home_intro", "1"); } catch {}
+        setIntroStep(null);
+        setIntroRect(null);
+      } else {
+        setIntroStep(introStep + 1 + rest);
+      }
+      return;
+    }
+    setIntroSteps([todayRef, formRef, musclesRef, chargeRef]
+      .map((r, i) => (r.current ? i : -1))
+      .filter((i) => i >= 0));
     target.scrollIntoView({ behavior: "smooth", block: "center" });
+
+    // The spotlight is `fixed`, and `fixed` resolves against .ml-backdrop —
+    // the shell carries a transform, which makes it the containing block. So
+    // the rect has to be measured relative to the SHELL, not the viewport.
+    // getBoundingClientRect gives viewport coordinates, and mixing the two
+    // offset every ring by however far the shell sits from the window corner.
+    const shell = () => document.querySelector(".ml-backdrop")?.getBoundingClientRect();
     const measure = () => {
       const r = target.getBoundingClientRect();
-      setIntroRect({ top: r.top, left: r.left, width: r.width, height: r.height });
+      const s = shell();
+      setIntroRect({ top: r.top - (s?.top ?? 0), left: r.left - (s?.left ?? 0), width: r.width, height: r.height });
+      return r.top;
     };
-    measure();
-    const t = setTimeout(measure, 450);
-    return () => clearTimeout(t);
+
+    // A smooth scroll has no completion event, and the old code guessed 450ms.
+    // On a slower phone the ring drew against a rect the card had already left.
+    // Follow the card every frame instead.
+    //
+    // "Stop when it stops moving" is not enough on its own: scrollIntoView does
+    // not begin in the same frame it is called, so the first frames are still
+    // and the follow quits before the scroll has even started — which is
+    // exactly how steps 2-4 ended up 36, 268 and 386px off their cards while
+    // step 1, which never scrolls, looked perfect. So: keep following for a
+    // minimum span regardless, then stop once it has been still for 3 frames,
+    // and never run longer than the cap.
+    const MIN_MS = 400, MAX_MS = 1600;
+    const t0 = performance.now();
+    let raf = 0, still = 0, prev = measure();
+    const follow = () => {
+      const now = measure();
+      still = Math.abs(now - prev) < 0.5 ? still + 1 : 0;
+      prev = now;
+      const elapsed = performance.now() - t0;
+      if (elapsed < MAX_MS && (elapsed < MIN_MS || still < 3)) raf = requestAnimationFrame(follow);
+    };
+    raf = requestAnimationFrame(follow);
+
+    const onResize = () => measure();
+    window.addEventListener("resize", onResize);
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", onResize); };
   }, [introStep]);
 
   function nextIntro() {
@@ -691,7 +754,9 @@ export default function Home() {
           />
           <div
             className="absolute left-1/2 w-[290px] -translate-x-1/2 animate-bob"
-            style={{ top: Math.min(introRect.top + introRect.height + 18, (typeof window !== "undefined" ? window.innerHeight : 800) - 170) }}
+            // clamped against the SHELL's height, not the window's: on desktop the
+            // window is far taller than the phone and the bubble fell out of it
+            style={{ top: Math.min(introRect.top + introRect.height + 18, (introShellH || 800) - 170) }}
           >
             <div className="relative rounded-2xl bg-sheet p-4 text-fg ring-1 ring-inset ring-hair">
               <span className="absolute -top-[7px] left-1/2 h-3.5 w-3.5 -translate-x-1/2 rotate-45 rounded-[3px] bg-sheet" />
@@ -699,7 +764,7 @@ export default function Home() {
               <p className="mt-2 text-[13px] font-bold leading-snug text-white/90">{INTRO[introStep].d}</p>
               <div className="mt-3 flex items-center justify-between">
                 <span className="flex gap-1.5">
-                  {INTRO.map((_, i) => (
+                  {(introSteps.length ? introSteps : INTRO.map((_, i) => i)).map((i) => (
                     <span key={i} className={`h-1.5 w-1.5 rounded-full bg-fg ${i === introStep ? "" : "opacity-30"}`} />
                   ))}
                 </span>

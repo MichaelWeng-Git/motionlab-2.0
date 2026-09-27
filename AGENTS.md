@@ -63,7 +63,12 @@ when both values are individually correct. Card surface colour counts too — th
 | Server data | Supabase (`profiles`, `friendships`, private `account_data`) |
 | Cloud AI | OpenAI (coach/assistant/fuel), fal.ai (SAM 3D Body) |
 
-Dev server runs on **port 3100**. Layout is a phone frame, `max-w-[430px]`.
+Dev server runs on **port 3100**. Layout is a phone frame: **`max-w-phone`
+(402px, iPhone 17 Pro)**, defined once in `tailwind.config.ts`. Five files used
+to carry the literal `max-w-[430px]`; do not reintroduce it. On viewports with
+room around it the shell wears a bezel and a Dynamic Island (`app/globals.css`,
+`.ml-backdrop` / `.ml-statusbar`); below 600x680 there is no frame at all,
+because on a phone the app IS the device.
 
 ```bash
 npm install
@@ -525,6 +530,8 @@ actual VO2max number, and needs no new model.
 | `lib/model-url.ts` | The one resolver for 13 weight paths; a hard-coded `/models/…` deploys as a 404 with no build error |
 | `guard()` before the body | The guard consumes the request; a route that also calls `req.json()` throws |
 | `apiPost` for the four paid routes | A bare `fetch` 401s for every email-OTP user |
+| The `transform` on `.ml-backdrop` | It makes the shell the containing block for all 35 `position: fixed` descendants. Remove it and every `fixed inset-0` overlay covers the whole monitor while the bottom nav anchors to the window |
+| Coordinates for the Home tour | `getBoundingClientRect()` is viewport-relative, but the spotlight is `fixed` inside the shell. Measure relative to `.ml-backdrop` or every ring lands offset |
 
 ---
 

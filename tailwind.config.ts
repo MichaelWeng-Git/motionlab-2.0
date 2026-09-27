@@ -72,6 +72,12 @@ const config: Config = {
           4: "#A8E89B",
         },
       },
+      // iPhone 17 Pro, logical points: 402 x 874. The app is laid out for a
+      // real device, not a round number — 430 was wider than any current Pro
+      // and made the tour's spotlights land beside their cards on a real phone.
+      // One source: five files used to carry the literal.
+      maxWidth: { phone: "402px" },
+      height: { phone: "874px" },
       fontFamily: {
         // small/running text stays on the system stack — Lilita's tight
         // spacing reads badly at small sizes (user call). Headers + numbers
