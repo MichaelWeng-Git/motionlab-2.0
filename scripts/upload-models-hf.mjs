@@ -16,13 +16,18 @@
 // about the app changes — modelUrl() in lib/model-url.ts already resolves
 // against whatever base it is given.
 //
-// Uses the resumable upload API directly (no SDK): each file is streamed, so
-// the three files over a gigabyte never have to fit in memory.
+// Uses @huggingface/hub rather than hand-rolling the protocol. The plain
+// upload endpoint is retired ("use the commit endpoint instead"), and what
+// replaces it is Git LFS: hash the file, negotiate a batch, push to S3 in
+// parts, then commit the pointer. Every one of these files is far past the LFS
+// threshold, so all ten take that path. The official client streams from disk,
+// which matters — three of them are over a gigabyte and cannot sit in memory.
 
-import { createReadStream, readFileSync, statSync } from "node:fs";
+import { openAsBlob } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { Readable } from "node:stream";
+import { uploadFilesWithProgress } from "@huggingface/hub";
 
 const VERSION = process.env.MODEL_VERSION || "v1";
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -80,21 +85,30 @@ for (const f of needed) {
 
   const started = Date.now();
   process.stdout.write(`up    ${f.name.padEnd(28)} ${mb(f.bytes).padStart(8)}  …`);
-  const res = await fetch(
-    `https://huggingface.co/api/models/${repo}/upload/main/${path}`,
-    {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/octet-stream" },
-      body: Readable.toWeb(createReadStream(local)),
-      duplex: "half",
+  try {
+    // openAsBlob gives a Blob backed by the file on disk — the bytes are read
+    // as the upload consumes them, never all at once.
+    const blob = await openAsBlob(local);
+    let lastPct = -1;
+    for await (const ev of uploadFilesWithProgress({
+      repo: { type: "model", name: repo },
+      accessToken: token,
+      files: [{ path, content: blob }],
+    })) {
+      if (ev.event === "fileProgress" && typeof ev.progress === "number") {
+        const pct = Math.floor(ev.progress * 100);
+        if (pct >= lastPct + 10) {
+          lastPct = pct;
+          process.stdout.write(`\rup    ${f.name.padEnd(28)} ${mb(f.bytes).padStart(8)}  ${String(pct).padStart(3)}%`);
+        }
+      }
     }
-  );
-  if (!res.ok) {
+  } catch (e) {
     console.log("");
-    console.error(`FAIL  ${f.name}: HTTP ${res.status} ${(await res.text()).slice(0, 200)}`);
+    console.error(`FAIL  ${f.name}: ${e?.message ?? e}`);
     process.exit(1);
   }
-  console.log(`\rup    ${f.name.padEnd(28)} ${mb(f.bytes).padStart(8)}  done in ${Math.round((Date.now() - started) / 1000)}s`);
+  console.log(`\rup    ${f.name.padEnd(28)} ${mb(f.bytes).padStart(8)}  done in ${Math.round((Date.now() - started) / 1000)}s   `);
   done++;
 }
 
