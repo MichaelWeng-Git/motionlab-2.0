@@ -85,28 +85,42 @@ for (const f of needed) {
 
   const started = Date.now();
   process.stdout.write(`up    ${f.name.padEnd(28)} ${mb(f.bytes).padStart(8)}  …`);
-  try {
-    // openAsBlob gives a Blob backed by the file on disk — the bytes are read
-    // as the upload consumes them, never all at once.
-    const blob = await openAsBlob(local);
-    let lastPct = -1;
-    for await (const ev of uploadFilesWithProgress({
-      repo: { type: "model", name: repo },
-      accessToken: token,
-      files: [{ path, content: blob }],
-    })) {
-      if (ev.event === "fileProgress" && typeof ev.progress === "number") {
-        const pct = Math.floor(ev.progress * 100);
-        if (pct >= lastPct + 10) {
-          lastPct = pct;
-          process.stdout.write(`\rup    ${f.name.padEnd(28)} ${mb(f.bytes).padStart(8)}  ${String(pct).padStart(3)}%`);
+  // A gigabyte takes minutes on one connection, and connections that live that
+  // long get dropped — the first run died at 99% of 1261 MB with a bare
+  // "fetch failed". Retry rather than restart: LFS dedupes by content hash, so
+  // a retry re-sends only what the server does not already have.
+  let uploaded = false;
+  for (let attempt = 1; attempt <= 4 && !uploaded; attempt++) {
+    try {
+      // openAsBlob gives a Blob backed by the file on disk — the bytes are read
+      // as the upload consumes them, never all at once.
+      const blob = await openAsBlob(local);
+      let lastPct = -1;
+      for await (const ev of uploadFilesWithProgress({
+        repo: { type: "model", name: repo },
+        accessToken: token,
+        files: [{ path, content: blob }],
+      })) {
+        if (ev.event === "fileProgress" && typeof ev.progress === "number") {
+          const pct = Math.floor(ev.progress * 100);
+          if (pct >= lastPct + 10) {
+            lastPct = pct;
+            const tag = attempt > 1 ? ` (try ${attempt})` : "";
+            process.stdout.write(`\rup    ${f.name.padEnd(28)} ${mb(f.bytes).padStart(8)}  ${String(pct).padStart(3)}%${tag}   `);
+          }
         }
       }
+      uploaded = true;
+    } catch (e) {
+      const why = e?.cause?.message ?? e?.message ?? String(e);
+      if (attempt === 4) {
+        console.log("");
+        console.error(`FAIL  ${f.name}: ${why}`);
+        process.exit(1);
+      }
+      process.stdout.write(`\rup    ${f.name.padEnd(28)} ${mb(f.bytes).padStart(8)}  retry ${attempt + 1}/4 after ${why}   \n`);
+      await new Promise((r) => setTimeout(r, 4000 * attempt));
     }
-  } catch (e) {
-    console.log("");
-    console.error(`FAIL  ${f.name}: ${e?.message ?? e}`);
-    process.exit(1);
   }
   console.log(`\rup    ${f.name.padEnd(28)} ${mb(f.bytes).padStart(8)}  done in ${Math.round((Date.now() - started) / 1000)}s   `);
   done++;

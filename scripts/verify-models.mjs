@@ -117,7 +117,7 @@ console.log(
   bad.length
     ? `\n${bad.length} of ${needed.length} files missing or truncated.`
     : warned.length
-      ? `\nAll ${needed.length} files present at the right size, but ${warned.length} send no CORS header — check that only if this host differs from the app's origin.`
+      ? `\nAll ${needed.length} files present at the right size, with ${warned.length} warning(s) above — read them, they are not all the same problem.`
       : `\nAll ${needed.length} files serve correctly, cached for ${Math.round(Math.min(...rows.map((r) => r.maxAge)) / 86400)} days.`
 );
 process.exit(bad.length ? 1 : 0);
