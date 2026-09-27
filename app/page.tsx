@@ -579,7 +579,7 @@ export default function Home() {
               >
                 <span
                   className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-extrabold tabular-nums ${
-                    rank === 1 ? "text-white" : "bg-track text-fg-muted"
+                    rank === 1 ? "text-on-action" : "bg-track text-fg-muted"
                   }`}
                   style={rank === 1 ? { background: "#F5B23D" } : undefined}
                 >

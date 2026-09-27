@@ -601,7 +601,11 @@ function PackArt({ deluxe, rolls }: { deluxe: boolean; rolls: number }) {
         <div className="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-2xl border border-white/25 bg-graphite ring-1 ring-inset ring-hair">
           <span className="font-golden text-xl tracking-tight text-white">ML</span>
         </div>
-        <div className="absolute inset-x-0 bottom-2 text-center text-[11px] font-black tracking-[0.12em] text-white">ORNAMENTS</div>
+        {/* The pack face is gold when deluxe and heat-1 green otherwise, so the
+              label cannot be one fixed colour: white measures 1.93:1 on the gold
+              and #14181B measures 2.19:1 on the green. Each ground gets the one
+              that reads on it. */}
+          <div className={`absolute inset-x-0 bottom-2 text-center text-[11px] font-black tracking-[0.12em] ${deluxe ? "text-on-action" : "text-white"}`}>ORNAMENTS</div>
       </div>
       <span className="absolute right-0 top-0 grid h-9 min-w-9 place-items-center rounded-full border-2 border-white bg-graphite px-1 font-golden text-lg text-white">×{rolls}</span>
     </div>

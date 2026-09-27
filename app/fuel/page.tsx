@@ -190,7 +190,7 @@ export default function Fuel() {
         <div className="flex items-end justify-between"><div><p className="text-[11px] font-black tracking-[0.18em] text-fg-muted">RECENT</p><h2 className="mt-1 font-golden text-xl text-white">MEAL HISTORY</h2></div><span className="font-golden text-lg text-fg-muted">{meals.length}</span></div>
         <div className="mt-4 rounded-xl bg-inset p-3 ring-1 ring-inset ring-hair">
           <div className="flex items-baseline justify-between">
-            <span className="text-[11px] font-bold text-white/50">TODAY&apos;S PROTEIN</span>
+            <span className="text-[11px] font-bold text-white/65">TODAY&apos;S PROTEIN</span>
             <span className="font-golden text-[17px] text-white">{protein}<span className="ml-1 font-sans text-[11px] font-bold text-fg-muted">{target ? `/ ${target} g` : "g"}</span></span>
           </div>
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-track">

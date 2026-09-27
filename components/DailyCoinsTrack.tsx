@@ -64,10 +64,11 @@ export function DailyCoinsTrack({ claims, onClaim }: { claims: string[]; onClaim
               className={`flex min-w-0 flex-col items-center gap-2 rounded-xl py-2.5 transition active:scale-95 ${claimable ? "bg-award-gold/15 text-fg" : node.state === "missed" ? "opacity-35" : ""}`}
             >
               <span className={`grid h-9 w-9 place-items-center rounded-full border-2 ${complete ? "border-award-gold bg-award-gold" : claimable ? "border-award-gold bg-inset" : "border-hair bg-inset"}`}>
+                {/* dark tick: white on award-gold is ~1.9:1, the same mistake as the pack label */}
                 {complete ? (
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 4 4 10-10" /></svg>
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#14181B" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m5 12 4 4 10-10" /></svg>
                 ) : (
-                  <span className="font-golden text-[13px] text-fg-muted">{node.amount}</span>
+                  <span className="font-golden text-[13px] text-fg-soft">{node.amount}</span>
                 )}
               </span>
               <span className="text-[11px] font-extrabold text-fg-muted">{node.label}</span>

@@ -85,9 +85,14 @@ export function BottomNav() {
                 <ScanIcon />
                 <span className="text-xs font-bold">Analyze</span>
               </button>
+              {/* The two colour-filled actions carry DARK labels, not white.
+                  Measured on the rendered page: white on signal-okay is 2.19:1
+                  and on signal-good 3.12:1 — unreadable at 12px. The same text
+                  in #14181B is 8.16 and 5.72. Signal colours say how good a
+                  VALUE is; they were never meant to sit under white type. */}
               <button
                 onClick={() => go("/fuel")}
-                className={`mb-7 flex w-[96px] flex-col items-center gap-1.5 rounded-2xl bg-signal-okay py-3.5 text-white transition-all duration-500 ${
+                className={`mb-7 flex w-[96px] flex-col items-center gap-1.5 rounded-2xl bg-signal-okay py-3.5 text-on-action transition-all duration-500 ${
                   open ? "translate-y-0 scale-100" : "translate-y-4 scale-90"
                 }`}
                 style={{ transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)" }}
@@ -99,7 +104,7 @@ export function BottomNav() {
               </button>
               <button
                 onClick={() => go("/activity")}
-                className={`flex w-[96px] flex-col items-center gap-1.5 rounded-2xl bg-signal-good py-3.5 text-white transition-all duration-500 ${
+                className={`flex w-[96px] flex-col items-center gap-1.5 rounded-2xl bg-signal-good py-3.5 text-on-action transition-all duration-500 ${
                   open ? "translate-x-0 scale-100" : "-translate-x-8 scale-90"
                 }`}
                 style={{ transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)" }}

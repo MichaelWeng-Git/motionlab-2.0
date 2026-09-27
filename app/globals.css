@@ -73,6 +73,19 @@
   color: var(--fg);
 }
 
+/* Signal colours are categorical — they say how good a VALUE is, and
+   lib/palette.ts is their single source. The RED, though, was chosen against
+   paper: as text on the dark shell it measures 3.85:1 on a panel and 4.63:1 on
+   graphite, below AA, across 27 uses including "Log out" and every error line.
+   This lifts only how that one colour RENDERS AS TEXT inside the dark shell —
+   5.41:1 and 6.50:1. Fills, rings and washes keep the palette hex, so the
+   meaning and the Tailwind/lib parity are untouched.
+   Green (4.76:1) and amber (6.79:1) already pass and are deliberately not
+   touched: changing them would alter the look without fixing anything. */
+[data-shell="dark"] .text-signal-work {
+  color: #F0796A;
+}
+
 html,
 body {
   padding: 0;

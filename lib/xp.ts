@@ -21,12 +21,24 @@ export function xpForLevel(level: number): number {
   return 50 * n * (n + 1);
 }
 
+// Tier colours are TEXT on the dark shell as often as they are a fill, and the
+// original set was picked against paper: measured on a #24282B panel, four of
+// the five failed as text (Competitor was 2.6:1) and three failed as a fill
+// under white type. Rookie was the worst of it, because it is what every new
+// athlete sees.
+//
+// This set clears 4.5:1 both ways — as text on a panel (5.3–9.4) and as a fill
+// under DARK type (6.4–11.3). The fills therefore carry dark labels, never
+// white; white on any of these fails.
+//
+// Elite stays gold but is deliberately not #E8A13C: that is signal-okay, and a
+// level badge must not read as a "this value is mediocre" amber.
 const TIERS = [
-  { at: 1, name: "Rookie", color: "#7A8C82" },
-  { at: 5, name: "Mover", color: "#2D8B62" },
-  { at: 10, name: "Athlete", color: "#2675C8" },
-  { at: 15, name: "Competitor", color: "#7354B7" },
-  { at: 20, name: "Elite", color: "#C9821B" },
+  { at: 1, name: "Rookie", color: "#9DB8A9" },
+  { at: 5, name: "Mover", color: "#3FC489" },
+  { at: 10, name: "Athlete", color: "#5AA9F0" },
+  { at: 15, name: "Competitor", color: "#A78BE8" },
+  { at: 20, name: "Elite", color: "#F2C94C" },
 ] as const;
 
 export type XpLevel = {

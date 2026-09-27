@@ -136,15 +136,19 @@ export default function Streak() {
                   <span
                     className={`relative z-10 grid h-12 w-12 shrink-0 place-items-center rounded-full border ${
                       reached
-                        ? "border-[#F5B23D]/50 bg-[#FFF1DC]"
+                        ? "border-award-gold/45 bg-award-gold/15"
                         : "border-white/10 bg-inset"
                     }`}
                   >
                     <MilestoneMark index={i} reached={reached} />
                   </span>
                   <p className="flex-1 text-[15px] font-extrabold text-white">{m.label}</p>
+                  {/* "Reached" was a cream #FFF1DC pill with #C25A12 text — a
+                      light-canvas leftover that read as a bright spot on graphite,
+                      at 3.96:1. The gold-tinted dark fill is what the rest of the
+                      app uses for "achieved", and measures 5.63:1. */}
                   {reached ? (
-                    <span className="rounded-full bg-[#FFF1DC] px-2.5 py-1 text-[11px] font-bold text-[#C25A12]">
+                    <span className="rounded-full bg-award-gold/15 px-2.5 py-1 text-[11px] font-bold text-award-gold">
                       Reached
                     </span>
                   ) : next ? (
