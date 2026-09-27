@@ -195,7 +195,7 @@ export default function Login() {
     return (
       <div className="relative flex flex-1 items-center justify-center px-6">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo-mark.png" alt="MotionLab" className="h-8 w-auto animate-pulse" />
+        <img src="/logo-mark-light.png" alt="MotionLab" className="h-8 w-auto animate-pulse" />
       </div>
     );
   }
@@ -203,11 +203,15 @@ export default function Login() {
   return (
     <div className="relative flex flex-1 items-center justify-center overflow-hidden px-6">
       {/* atmospheric depth: cool low-alpha washes (violet data-light + sage), one per corner */}
+      {/* Atmosphere, retuned for graphite. The originals were built for paper —
+          a white/50 blob and a solid #DFE9E2 ellipse — and on a dark ground they
+          read as two grey smears rather than light. Low-alpha violet and sage
+          glows do on dark what those did on light. */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -right-16 top-14 h-48 w-48 rounded-full bg-[#7C5CFF]/[0.10] blur-2xl" />
-        <div className="absolute -right-6 top-24 h-24 w-24 rounded-full bg-[#7C5CFF]/[0.14] blur-xl" />
-        <div className="absolute -left-20 bottom-40 h-56 w-56 rounded-full bg-white/50 blur-xl" />
-        <div className="absolute -bottom-24 left-1/2 h-64 w-[560px] -translate-x-1/2 rounded-[50%] bg-[#DFE9E2]/80" />
+        <div className="absolute -right-16 top-10 h-56 w-56 rounded-full bg-[#7C5CFF]/[0.16] blur-3xl" />
+        <div className="absolute -right-4 top-24 h-24 w-24 rounded-full bg-[#7C5CFF]/[0.10] blur-2xl" />
+        <div className="absolute -left-24 top-1/3 h-56 w-56 rounded-full bg-[#3BA55D]/[0.10] blur-3xl" />
+        <div className="absolute -bottom-32 left-1/2 h-72 w-[560px] -translate-x-1/2 rounded-[50%] bg-white/[0.045] blur-2xl" />
       </div>
 
       <div className="relative w-full max-w-[340px] pb-8">
@@ -215,19 +219,19 @@ export default function Login() {
         <div className="flex flex-col items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/logo-mark.png"
+            src="/logo-mark-light.png"
             alt="MotionLab"
             className="login-in-r h-10 w-auto"
             style={{ animationDelay: "0.85s" }}
           />
-          <h1 className="login-in-r mt-5 font-golden text-[28px] leading-none text-ink drop-shadow-sm" style={{ animationDelay: "0.6s" }}>
+          <h1 className="login-in-r mt-5 font-golden text-[28px] leading-none text-fg" style={{ animationDelay: "0.6s" }}>
             WELCOME
           </h1>
         </div>
 
         {/* THE BIG BUBBLE rises fast from below; its pieces then slide in and
             click together — layered shadows give it real depth */}
-        <div className="login-card mt-7 rounded-3xl bg-white p-6 shadow-[0_10px_24px_-12px_rgba(14,31,26,0.18),0_30px_70px_-24px_rgba(14,31,26,0.35)]">
+        <div className="login-card mt-7 rounded-3xl bg-sheet p-6 text-fg ring-1 ring-inset ring-hair shadow-[0_24px_60px_-24px_rgba(0,0,0,0.7)]">
           {phase === "email" ? (
             <>
               <form onSubmit={sendCode} className="space-y-3">
@@ -239,7 +243,7 @@ export default function Login() {
                     placeholder="Email"
                     value={email}
                     onChange={(e) => { setEmail(e.target.value); setError(""); }}
-                    className="w-full rounded-2xl bg-paper px-4 py-3.5 text-[15px] font-medium shadow-[inset_0_2px_6px_rgba(14,31,26,0.06)] outline-none placeholder:text-ink-muted focus:border-ink"
+                    className="w-full rounded-2xl bg-track px-4 py-3.5 text-[15px] font-medium text-fg outline-none ring-1 ring-inset ring-hair placeholder:text-fg-muted focus:ring-white/30"
                   />
                 </div>
 
@@ -257,9 +261,9 @@ export default function Login() {
 
               {/* divider */}
               <div className="login-in-l mt-5 flex items-center gap-3" style={{ animationDelay: "1.7s" }}>
-                <span className="h-px flex-1 bg-black/10" />
-                <span className="text-[11px] font-semibold uppercase tracking-widest text-ink-muted">or</span>
-                <span className="h-px flex-1 bg-black/10" />
+                <span className="h-px flex-1 bg-hair" />
+                <span className="text-[11px] font-semibold uppercase tracking-widest text-fg-muted">or</span>
+                <span className="h-px flex-1 bg-hair" />
               </div>
 
               <button
@@ -273,15 +277,15 @@ export default function Login() {
             </>
           ) : (
             <form onSubmit={verifyCode} className="space-y-3">
-              <p className="text-center text-sm font-semibold text-ink-soft">Check your inbox</p>
-              <p className="text-center font-bold text-ink">{email}</p>
+              <p className="text-center text-sm font-semibold text-fg-soft">Check your inbox</p>
+              <p className="text-center font-bold text-fg">{email}</p>
               <input
                 autoFocus
                 inputMode="numeric"
                 placeholder="······"
                 value={code}
                 onChange={(e) => { setCode(e.target.value.trim()); setError(""); }}
-                className="w-full rounded-2xl bg-paper px-4 py-3.5 text-center text-xl font-extrabold tracking-[0.35em] outline-none placeholder:text-ink-muted focus:border-ink"
+                className="w-full rounded-2xl bg-track px-4 py-3.5 text-center text-xl font-extrabold tracking-[0.35em] text-fg outline-none ring-1 ring-inset ring-hair placeholder:text-fg-muted focus:ring-white/30"
               />
 
               {error && <p className="text-center text-sm font-semibold text-signal-work">{error}</p>}
@@ -298,14 +302,14 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => { setPhase("email"); setError(""); }}
-                  className="text-xs font-semibold text-ink-muted underline-offset-2 hover:underline"
+                  className="text-xs font-semibold text-fg-muted underline-offset-2 hover:underline"
                 >
                   Change email
                 </button>
                 <button
                   type="button"
                   onClick={(e) => sendCode(e as unknown as React.FormEvent)}
-                  className="text-xs font-semibold text-ink-muted underline-offset-2 hover:underline"
+                  className="text-xs font-semibold text-fg-muted underline-offset-2 hover:underline"
                 >
                   Resend link
                 </button>
@@ -316,7 +320,7 @@ export default function Login() {
           {/* Readable before signing in, not after. Someone is about to hand this
               app a video of themselves — the page that says what happens to it
               has to be reachable from here. */}
-          <p className="mt-6 text-center text-[11px] font-semibold text-ink-muted">
+          <p className="mt-6 text-center text-[11px] font-semibold text-fg-muted">
             Your video is analysed on your device.{" "}
             <Link href="/privacy" className="font-bold underline underline-offset-2">
               What we do with your data
