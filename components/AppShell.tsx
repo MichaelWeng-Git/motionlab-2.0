@@ -18,9 +18,16 @@ const AUTH_PATHS = ["/login", "/onboarding"];
 // must let it through. It keeps the dark shell; it just has no chrome.
 const PUBLIC_PATHS = ["/privacy"];
 
+// Has the gate finished deciding? Until it has, the app must render NOTHING of
+// its own — not the home page, not the login form. Both directions used to be
+// wrong: a logged-out visitor watched an empty Home paint and then snap to
+// /login, and the redirect itself was a second frame of the wrong screen.
+type AuthState = "unknown" | "in" | "out";
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [auth, setAuth] = useState<AuthState>("unknown");
   const isAuthPage = AUTH_PATHS.includes(pathname);
   const isPublicPage = PUBLIC_PATHS.includes(pathname);
   // MotionLab is one dark product shell. Individual light cards can still be
@@ -66,9 +73,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     // therefore cannot upload local records under an invented identity.
     if (isLocalDevAuthBypass() && !hasAuthCallback()) {
       if (pathname === "/login") router.replace("/");
+      setAuth("in");
       return;
     }
-    if (isAuthPage || isPublicPage) return;
+    if (isAuthPage || isPublicPage) { setAuth("in"); return; }
     // A magic link may land on ANY route (the Supabase Site URL is often just
     // "/"). Its tokens live in the URL — bounce to /login WITH them intact so
     // the login page can complete the sign-in. Redirecting normally here would
@@ -78,7 +86,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       router.replace(`/login${search}${hash}`);
       return;
     }
-    if (localStorage.getItem("ml_auth")) return;
+    // Synchronous, so a returning athlete never sees a splash at all: the very
+    // first effect after mount already knows they are in.
+    if (localStorage.getItem("ml_auth")) { setAuth("in"); return; }
     fetch("/api/auth/session")
       .then((r) => (r.ok ? r.json() : null))
       .then((sess) => {
@@ -91,14 +101,39 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             hasProfile = !!JSON.parse(localStorage.getItem("ml_profile") ?? "{}").name;
           } catch {}
           if (!hasProfile && !localStorage.getItem("ml_onboarded")) router.replace("/onboarding");
-        } else router.replace("/login");
+          else setAuth("in");
+        } else { setAuth("out"); router.replace("/login"); }
       })
-      .catch(() => router.replace("/login"));
+      .catch(() => { setAuth("out"); router.replace("/login"); });
   }, [pathname, isAuthPage, isPublicPage, router]);
 
   if (isAuthPage) {
-    // immersive: no top bar, no bottom nav — main is the scroll area, fills the shell
-    return <main className="flex min-h-0 flex-1 flex-col overflow-y-auto">{children}</main>;
+    // immersive: no top bar, no bottom nav — main is the scroll area, fills the shell.
+    // data-shell has to be here too: /login and /onboarding sit on the same
+    // graphite ground as the app, so without it every token on those pages
+    // resolves to the LIGHT :root values — which is how WELCOME ended up as
+    // near-black text on a near-black background.
+    return (
+      <div className="contents" data-shell="dark">
+        <main className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-graphite">{children}</main>
+      </div>
+    );
+  }
+
+  // The gate has not decided yet. Show the mark on the app's own ground and
+  // nothing else: no Home to flash at someone who is about to be sent to
+  // /login, no login form to flash at someone who is already signed in.
+  // A returning athlete resolves synchronously from localStorage, so in
+  // practice they never see this.
+  if (auth === "unknown") {
+    return (
+      <div className="contents" data-shell="dark">
+        <main className="flex min-h-0 flex-1 items-center justify-center bg-graphite">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-mark-light.png" alt="MotionLab" className="h-8 w-auto animate-pulse" />
+        </main>
+      </div>
+    );
   }
 
   if (isPublicPage) {
