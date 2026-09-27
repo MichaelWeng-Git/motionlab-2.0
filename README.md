@@ -2,6 +2,8 @@
 
 > AI movement coach — film yourself training on a phone, get measured biomechanics: which muscles the session loaded, how recovered your body is, and how your movement quality is trending.
 
+**Live:** [motionlab-2-0.vercel.app](https://motionlab-2-0.vercel.app)
+
 ---
 
 ## What makes it different
