@@ -8,6 +8,7 @@ import { CoachMark } from "@/components/CoachMark";
 import { hasAuthCallback } from "@/lib/supabase-client";
 import { CloudSync } from "@/components/CloudSync";
 import { isLocalDevAuthBypass } from "@/lib/dev-auth";
+import { bootstrapAccountData } from "@/lib/cloud-data";
 
 // Only true authentication/onboarding routes live outside the product shell.
 // The assistant is a normal signed-in destination: excluding it here used to
@@ -23,6 +24,13 @@ const PUBLIC_PATHS = ["/privacy"];
 // wrong: a logged-out visitor watched an empty Home paint and then snap to
 // /login, and the redirect itself was a second frame of the wrong screen.
 type AuthState = "unknown" | "in" | "out";
+
+/** The athlete's name from local storage, or "" — the one signal that says
+ *  onboarding has actually been completed for this profile. */
+function localProfileName(): string {
+  try { return JSON.parse(localStorage.getItem("ml_profile") ?? "{}").name ?? ""; }
+  catch { return ""; }
+}
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -68,6 +76,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   // REAL auth gate: nobody enters the app without logging in.
   // Google login → server session; email OTP → ml_auth flag set by /login.
   useEffect(() => {
+    let dead = false;
     // Local product review goes straight to the app. This deliberately does
     // not write ml_auth: it is a UI-gate bypass, not a fake account, and it
     // therefore cannot upload local records under an invented identity.
@@ -94,17 +103,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       .then((sess) => {
         if (sess?.user) {
           localStorage.setItem("ml_auth", "google");
-          // BUT a live session with no local profile = fresh install/new user:
-          // they still owe us onboarding (weight etc.) before seeing the app
-          let hasProfile = false;
-          try {
-            hasProfile = !!JSON.parse(localStorage.getItem("ml_profile") ?? "{}").name;
-          } catch {}
-          if (!hasProfile && !localStorage.getItem("ml_onboarded")) router.replace("/onboarding");
-          else setAuth("in");
+          void (async () => {
+            // A live session with no LOCAL profile does not mean a new athlete.
+            // It is also exactly what a returning one looks like on a device or
+            // an origin they have not used before — and localhost and the
+            // deployed domain are different origins, so every athlete's first
+            // visit to the real site lands here with empty storage.
+            //
+            // Deciding from local state alone sent them through onboarding
+            // again, asking a returning athlete to re-introduce themselves. The
+            // cloud snapshot is the one thing that knows better, so consult it
+            // BEFORE concluding anyone is new. CloudSync cannot do it — it
+            // mounts inside the shell, which this redirect never reaches.
+            if (!localProfileName() && !localStorage.getItem("ml_onboarded")) {
+              try { await bootstrapAccountData(); } catch { /* offline: fall through to onboarding */ }
+              if (dead) return;
+            }
+            if (!localProfileName() && !localStorage.getItem("ml_onboarded")) router.replace("/onboarding");
+            else setAuth("in");
+          })();
         } else { setAuth("out"); router.replace("/login"); }
       })
       .catch(() => { setAuth("out"); router.replace("/login"); });
+    return () => { dead = true; };
   }, [pathname, isAuthPage, isPublicPage, router]);
 
   if (isAuthPage) {
@@ -120,22 +141,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // The gate has not decided yet. Show the mark on the app's own ground and
-  // nothing else: no Home to flash at someone who is about to be sent to
-  // /login, no login form to flash at someone who is already signed in.
-  // A returning athlete resolves synchronously from localStorage, so in
-  // practice they never see this.
-  if (auth === "unknown") {
-    return (
-      <div className="contents" data-shell="dark">
-        <main className="flex min-h-0 flex-1 items-center justify-center bg-graphite">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-mark-light.png" alt="MotionLab" className="h-8 w-auto animate-pulse" />
-        </main>
-      </div>
-    );
-  }
-
   if (isPublicPage) {
     // No chrome (there is no account to navigate), but the data-shell wrapper
     // still has to be here: without it every --panel/--fg token on the page
@@ -143,6 +148,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return (
       <div className="contents" data-shell="dark">
         <main className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-graphite">{children}</main>
+      </div>
+    );
+  }
+
+  // Render the app ONLY once the gate has confirmed a signed-in athlete.
+  //
+  // The condition is `!== "in"`, not `=== "unknown"`. That was the bug, and it
+  // was measured: with `=== "unknown"`, the session fetch came back, set the
+  // state to "out" and called router.replace in the same tick — but "out" fell
+  // straight through the gate, so React painted Home at 399 ms and the redirect
+  // only landed at 421 ms. Twenty-two milliseconds of somebody else's empty
+  // dashboard, every single time a logged-out visitor arrived.
+  //
+  // "out" means a redirect is already in flight, so it must keep the splash up
+  // exactly like "unknown" does. A returning athlete resolves synchronously
+  // from localStorage in the first effect after mount and never sees it.
+  if (auth !== "in") {
+    return (
+      <div className="contents" data-shell="dark">
+        <main className="flex min-h-0 flex-1 items-center justify-center bg-graphite">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-mark-light.png" alt="MotionLab" className="h-8 w-auto animate-pulse" />
+        </main>
       </div>
     );
   }

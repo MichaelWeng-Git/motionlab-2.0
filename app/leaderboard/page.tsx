@@ -20,16 +20,33 @@ export default function Leaderboard() {
   const [xp, setXp] = useState(0);
   const [friends, setFriends] = useState<Person[]>([]);
   const [now, setNow] = useState(Date.now());
+  // The ranking arrives in three waves — empty first render, then the local
+  // cache, then the server — and each one re-sorts. That showed the athlete
+  // three different positions in under a second. A rank that changes under you
+  // is a wrong number, and this app does not show wrong numbers: hold the
+  // board until the server has answered (or failed), then paint it once.
+  const [ready, setReady] = useState(false);
   useEffect(() => {
     const p = getProfile(); setProfile(p); setName(p.name || (localStorage.getItem("ml_google_name") ?? "").split(" ")[0] || "You"); setXp(getStats().xp);
     try { setFriends(JSON.parse(localStorage.getItem("ml_friends_cache") ?? "[]")); } catch {}
-    syncMe(); fetchFriends().then((state) => { if (state) { setFriends(state.friends); localStorage.setItem("ml_friends_cache", JSON.stringify(state.friends)); } });
+    syncMe();
+    fetchFriends()
+      .then((state) => { if (state) { setFriends(state.friends); localStorage.setItem("ml_friends_cache", JSON.stringify(state.friends)); } })
+      .catch(() => { /* offline — the cache above is the last known truth */ })
+      .finally(() => setReady(true));
     const timer = window.setInterval(() => setNow(Date.now()), 60_000); return () => window.clearInterval(timer);
   }, []);
   const rows = useMemo<Row[]>(() => [{ id: "me", name, xp, me: true }, ...friends.map((f) => ({ id: f.id, name: f.name, xp: f.xp, me: false, icon: iconOf(f), photo: f.photo }))].sort((a, b) => b.xp - a.xp), [friends, name, xp]);
   const myIndex = rows.findIndex((r) => r.me);
   const rival = myIndex > 0 ? { row: rows[myIndex - 1], delta: rows[myIndex - 1].xp - xp, ahead: true } : rows[1] ? { row: rows[1], delta: xp - rows[1].xp, ahead: false } : null;
   const podiumOrder = [rows[1], rows[0], rows[2]].filter(Boolean) as Row[];
+  if (!ready) return <div className="px-5 pb-10 pt-3">
+    <header className="flex items-center gap-2.5"><button onClick={() => router.back()} className="flex h-7 w-11 items-center justify-center rounded-full bg-panel text-[13px] text-fg shadow-panel">←</button><h1 className="font-golden text-[24px] leading-none">Leaderboard</h1></header>
+    <div className="skel mt-3 h-44 rounded-3xl" />
+    <div className="skel mt-3 h-24 rounded-3xl" />
+    <div className="mt-3 space-y-2">{[0, 1, 2, 3].map((i) => <div key={i} className="skel h-14 rounded-2xl" />)}</div>
+  </div>;
+
   return <div className="stagger px-5 pb-10 pt-3">
     <header className="flex items-center gap-2.5"><button onClick={() => router.back()} className="flex h-7 w-11 items-center justify-center rounded-full bg-panel text-[13px] text-fg shadow-panel">←</button><h1 className="font-golden text-[24px] leading-none">Leaderboard</h1></header>
     <section className="relative mt-3 overflow-hidden rounded-3xl bg-graphite ring-1 ring-inset ring-hair p-5 text-white"><div className="absolute -right-16 -top-20 h-52 w-52 rounded-full bg-award-gold/15 blur-3xl" /><div className="relative flex items-start justify-between"><div><p className="text-[11px] font-black tracking-[0.2em] text-award-gold-light">ALL-TIME XP</p><h2 className="mt-1 font-golden text-3xl">TRAINING LEAGUE</h2></div><div className="text-right"><p className="text-[11px] font-black tracking-wider text-fg-muted">WEEK ENDS IN</p><p className="mt-1 font-golden text-lg">{weekCountdown(now)}</p></div></div>
